@@ -609,8 +609,9 @@ margin-left:2.5% !important;
 font-size: 18px;
 cursor: pointer;
 }
-.other-page .edit-mode{
+.other-page table .edit-mode{
 border-bottom: 1px solid #83a234ff !important;
+
 }
 .other-page .fixed-flex{
 display: flex;
@@ -696,7 +697,7 @@ margin-bottom: 20px !important;
 }
 .other-page table tr td input.form-control,
 .other-page table tr td select.form-control{
-border:1px solid transparent !important;
+border:1px solid transparent;
 }
 .other-page table .orders-table tr td .fa-solid,
 .other-page table .orders-table tr td .fa-trash{

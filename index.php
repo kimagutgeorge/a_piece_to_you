@@ -72,7 +72,7 @@ include("components/header.php");?>
     <div class="col-10 side-page overflow-auto">
     <?php 
     include("components/admin/topbar.php");
-    include("views/admin/events.php");
+    include("views/admin/categories.php");
     include("components/admin/footer.php");?>
     </div>
     </div>

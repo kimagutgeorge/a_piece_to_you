@@ -1,4 +1,4 @@
-<?php include("components/admin/response.php"); ?>
+    <?php include("components/admin/response.php"); ?>
     <div class="row dashboard categories">
     <div class="col-12 row">
     <div class="col-4 card" style="height:fit-content !important">

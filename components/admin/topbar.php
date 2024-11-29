@@ -6,6 +6,12 @@
                         echo "Dashboard";
                     }else if($_GET["p"] == 'locations'){
                         echo "Locations";
+                    }else if($_GET["p"] == 'categories'){
+                        echo "Categories";
+                    }else if($_GET["p"] == 'members'){
+                        echo "Members";
+                    }else if($_GET["p"] == 'settings'){
+                        echo "Settings";
                     }
                 ?>
             </p></div>
@@ -17,6 +23,12 @@
                         echo "Dashboard";
                     }else if($_GET["p"] == 'locations'){
                         echo "Locations";
+                    }else if($_GET["p"] == 'categories'){
+                        echo "Categories";
+                    }else if($_GET["p"] == 'members'){
+                        echo "Members";
+                    }else if($_GET["p"] == 'settings'){
+                        echo "Settings";
                     }
                 ?>
             </h3>
