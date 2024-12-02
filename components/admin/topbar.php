@@ -12,6 +12,8 @@
                         echo "Members";
                     }else if($_GET["p"] == 'settings'){
                         echo "Settings";
+                    }else if($_GET["p"] == 'add-event'){
+                        echo "Add Event";
                     }
                 ?>
             </p></div>
@@ -29,6 +31,8 @@
                         echo "Members";
                     }else if($_GET["p"] == 'settings'){
                         echo "Settings";
+                    }else if($_GET["p"] == 'add-event'){
+                        echo "Add Event";
                     }
                 ?>
             </h3>

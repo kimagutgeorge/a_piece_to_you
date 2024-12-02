@@ -3,6 +3,7 @@ window.addEventListener('scroll', this.scrollFunction);
 universal links
 */
 let platforms = [];
+let speakers = [];
 let facebook = "Facebook";
 let instagram = "Instagram";
 let email = "Email";
@@ -17,6 +18,10 @@ let display_ul = document.getElementById("social_link")
 let clear_link_text = document.getElementById("clear_link_text")
 current_link.innerHTML = facebook;
 let platformsLength = 5;
+
+/*
+end of universal links
+*/
 
 
 
@@ -95,4 +100,43 @@ function clearLinks(){
   add_button.hidden = false
   
   platformsLength = 5;
+}
+
+function addSpeaker(){
+  let currentSpeaker = document.getElementById("add_event_speaker").value
+  let selecTed = document.getElementById("add_event_speaker");
+  let selectedOption = selecTed.options[selecTed.selectedIndex].text
+  if (!speakers.find(speaker => speaker.speaker_id === currentSpeaker)) {
+    speakers.push({ "speaker_name": selectedOption, "speaker_id": currentSpeaker })
+  }
+  
+  let speakerHolder = document.getElementById("event_speaker_list")
+  speakerHolder.innerHTML = "";
+  speakers.forEach(function(speaker){
+    let singleSpeaker = document.createElement("div")
+    singleSpeaker.className = "speaker"
+
+    let speakerId = document.createElement("div")
+    speakerId.className = "single-speaker-id"
+    speakerId.innerHTML = speaker.speaker_id
+    
+    let speaker_name = document.createElement("div")
+    speaker_name.className = "speaker-name"
+    speaker_name.innerHTML = speaker.speaker_name
+
+    let del_speaker = document.createElement("div")
+    del_speaker.className = "close-div"
+    del_speaker.innerHTML = `<i class="fa-solid fa-close text-danger" onclick="removeSpeaker"></i>`
+
+    singleSpeaker.appendChild(speakerId)
+    singleSpeaker.appendChild(speaker_name)
+    singleSpeaker.appendChild(del_speaker)
+
+    speakerHolder.appendChild(singleSpeaker)
+  })
+}
+
+function removeSpeaker(){
+  let id = document.querySelector(".single-speaker-id")[0].innerHTML
+  console.log(id)
 }

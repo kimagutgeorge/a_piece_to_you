@@ -1,4 +1,8 @@
 $( document ).ready(function() {
+    /* universal variables*/
+    let url = window.location.href
+    let db_response = document.getElementById("db_response").classList
+
     /* load data */
     getCategories();
     getLocations();
@@ -13,18 +17,29 @@ $.ajax({
     type: 'GET',  
     url: 'app.php?action=get-locations',
     success: function(response) {
-        let tableBody = document.getElementById("tbl_locations")
-        tableBody.innerHTML = "";
+        
         if(response == 2){
-            let db_response = document.getElementById("db_response").classList
             document.getElementById("db_response").style.display="flex"
             db_response.add("bg-warning")
                 $('#get_response').html('No Locations Found')
 
         }else{
         let locations = JSON.parse(response)
+        if(url == "http://localhost/apiecetoyou/?p=add-event" || url == "http://localhost/apiecetoyou/index.php?p=add-event"){
+                let selectBody = document.getElementById("add_event_location")
+                selectBody.innerHTML =="";
+                locations.forEach(function(location){
+                    /* select options */
 
-        locations.forEach(function(location){
+                let option = document.createElement("option")
+                option.value = location.location_id;
+                option.innerHTML = location.location_name
+                selectBody.appendChild(option)
+                })
+            }else{
+            let tableBody = document.getElementById("tbl_locations")
+            tableBody.innerHTML = "";
+            locations.forEach(function(location){
             let row = document.createElement("tr"); // Create a new table row
 
             // Create table cells for each piece of data
@@ -48,6 +63,7 @@ $.ajax({
             $('#tbl').DataTable();
         })
     }
+}
         
     }
 });
@@ -60,17 +76,29 @@ function getMembers(){
         type: 'GET',  
         url: 'app.php?action=get-members',
         success: function(response) {
-            let tableBody = document.getElementById("tbl_members")
-            tableBody.innerHTML = "";
             if(response == 2){
-                let db_response = document.getElementById("db_response").classList
                 document.getElementById("db_response").style.display="flex"
                 db_response.add("bg-warning")
                     $('#get_response').html('No Locations Found')
     
             }else{
             let members = JSON.parse(response)
-    
+            if(url == "http://localhost/apiecetoyou/?p=add-event" || url == "http://localhost/apiecetoyou/index.php?p=add-event"){
+
+                let selectBody = document.getElementById("add_event_speaker")
+                selectBody.innerHTML =="";
+                members.forEach(function(member){
+                    /* select options */
+
+                let option = document.createElement("option")
+                option.value = member.member_id;
+                option.innerHTML = member.name
+                selectBody.appendChild(option)
+                })
+
+            }else{
+            let tableBody = document.getElementById("tbl_members")
+            tableBody.innerHTML = "";
             members.forEach(function(member){
                 let row = document.createElement("tr"); // Create a new table row
     
@@ -125,6 +153,7 @@ function getMembers(){
                 $('#tbl').DataTable();
             })
         }
+    }
             
         }
     });
@@ -137,16 +166,26 @@ function getCategories(){
         type: 'GET',  
         url: 'app.php?action=get-categories',
         success: function(response) {
-            let tableBody = document.getElementById("tbl_categories")
-            tableBody.innerHTML = "";
             if(response == 2){
-                let db_response = document.getElementById("db_response").classList
                 document.getElementById("db_response").style.display="flex"
                 db_response.add("bg-warning")
                     $('#get_response').html('No Categories Found')
 
             }else{
                 let categories = JSON.parse(response)
+                if(url == "http://localhost/apiecetoyou/?p=add-event" || url == "http://localhost/apiecetoyou/index.php?p=add-event"){
+                    let selectBody = document.getElementById("add_event_category")
+                selectBody.innerHTML =="";
+                categories.forEach(function(category){
+                /* select options */
+                let option = document.createElement("option")
+                option.value = category.category_id;
+                option.innerHTML = category.category_name
+                selectBody.appendChild(option)
+                })
+                }else{
+                    let tableBody = document.getElementById("tbl_categories")
+                    tableBody.innerHTML = "";
                 categories.forEach(function(category){
                     let row = document.createElement("tr"); // Create a new table row
         
@@ -171,6 +210,7 @@ function getCategories(){
                     $('#tbl').DataTable();
                 })
             }
+        }
             
         }
     });
@@ -183,16 +223,14 @@ function getRoles(){
         type: 'GET',  
         url: 'app.php?action=get-roles',
         success: function(response) {
-            let url = window.location.href
             if(response == 2){
-                let db_response = document.getElementById("db_response").classList
                 document.getElementById("db_response").style.display="flex"
                 db_response.add("bg-warning")
                     $('#get_response').html('No Roles Found')
     
             }else{
             let roles = JSON.parse(response)
-            if(url == "http://localhost/apiecetoyou/?p=members"){
+            if(url == "http://localhost/apiecetoyou/?p=add-event" || url == "http://localhost/apiecetoyou/index.php?p=add-event"){
                 
                 let selectBody = document.getElementById("member_role")
                 selectBody.innerHTML =="";
@@ -246,7 +284,6 @@ function getSettings(){
         url: 'app.php?action=get-settings',
         success: function(response) {
             if(response == 2){
-                let db_response = document.getElementById("db_response").classList
                 document.getElementById("db_response").style.display="flex"
                 db_response.add("bg-warning")
                     $('#get_response').html('No Roles Found')
@@ -273,7 +310,6 @@ function getSettings(){
             url: 'app.php?action=add-location', 
             data: $('#addLocation').serialize(),
             success: function(response) {
-                let db_response = document.getElementById("db_response").classList
                 document.getElementById("db_response").style.display="flex"
                 if(response == 1){
                     db_response.add("bg-primary")
@@ -295,7 +331,6 @@ function getSettings(){
     $('#addMember').on('submit', function(e){
         e.preventDefault()
         let social_links = document.querySelectorAll(".listed_social_links")
-        let db_response = document.getElementById("db_response").classList
         document.getElementById("db_response").style.display="flex"
         if(social_links.length < 5){
             db_response.add("bg-danger")
@@ -323,7 +358,6 @@ function getSettings(){
             data: form,
             success: function(response) {
                 console.log(response)
-                let db_response = document.getElementById("db_response").classList
                 document.getElementById("db_response").style.display="flex"
                 if(response == 1){
                     db_response.add("bg-primary")
@@ -350,7 +384,6 @@ function getSettings(){
             url: 'app.php?action=edit-setting', 
             data: $('#setSettings').serialize(),
             success: function(response) {
-                let db_response = document.getElementById("db_response").classList
                 document.getElementById("db_response").style.display="flex"
                 if(response == 1){
                     db_response.add("bg-primary")
@@ -404,7 +437,6 @@ function getSettings(){
                     location:new_name
                 },
                 success: function(response) {
-                    let db_response = document.getElementById("db_response").classList
                     document.getElementById("db_response").style.display="flex"
                     if(response == 1){
                         db_response.add("bg-primary")
@@ -455,7 +487,6 @@ function getSettings(){
                    category:new_name
                },
                success: function(response) {
-                   let db_response = document.getElementById("db_response").classList
                    document.getElementById("db_response").style.display="flex"
                    if(response == 1){
                        db_response.add("bg-primary")
@@ -506,7 +537,6 @@ function getSettings(){
                    role:new_name
                },
                success: function(response) {
-                   let db_response = document.getElementById("db_response").classList
                    document.getElementById("db_response").style.display="flex"
                    if(response == 1){
                        db_response.add("bg-primary")
@@ -539,7 +569,6 @@ function getSettings(){
                     id:id
                 },
                 success: function(response) {
-                    let db_response = document.getElementById("db_response").classList
                     document.getElementById("db_response").style.display="flex"
                     console.log(response)
                     if(response == 1){
@@ -572,7 +601,6 @@ function getSettings(){
                     id:id
                 },
                 success: function(response) {
-                    let db_response = document.getElementById("db_response").classList
                     document.getElementById("db_response").style.display="flex"
                     console.log(response)
                     if(response == 1){
@@ -601,7 +629,6 @@ function getSettings(){
             url: 'app.php?action=add-category', 
             data: $('#addCategory').serialize(),
             success: function(response) {
-                let db_response = document.getElementById("db_response").classList
                 document.getElementById("db_response").style.display="flex"
                 if(response == 1){
                     db_response.add("bg-primary")
@@ -627,7 +654,6 @@ function getSettings(){
             url: 'app.php?action=add-role', 
             data: $('#addRole').serialize(),
             success: function(response) {
-                let db_response = document.getElementById("db_response").classList
                 document.getElementById("db_response").style.display="flex"
                 if(response == 1){
                     db_response.add("bg-primary")
