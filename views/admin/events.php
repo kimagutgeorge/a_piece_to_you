@@ -4,15 +4,13 @@
     <div class="col-8">
     <form action="" class="row">
     <div class="form-group col-4">
-    <select class="form-control col-11" @change="searchCategory">
-    <option disabled selected="true">All Categories</option>
-    <option v-for="(category, index) in categories" :value="category.category_id" :key="index">{{category.category_name}}</option>
+    <select class="form-control col-11" id="view_event_category">
+    <!-- input data here -->
     </select>
     </div>
     <div class="form-group col-4">
-    <select class="form-control col-11">
-    <option disabled selected="true">All Locations</option>
-    <option v-for="(location, index) in locations" :value="location.location_id" :key="index">{{location.location_name}}</option>
+    <select class="form-control col-11" id="view_event_speakers">
+    <!-- input data here -->
     </select>
     </div><div class="form-group col-4">
     <input type="date" class="form-control col-11">

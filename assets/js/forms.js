@@ -9,6 +9,22 @@ $( document ).ready(function() {
     getRoles();
     getSettings();
     getMembers();
+    getEvents();
+/*
+default functions 
+*/
+function formatEventTime(startDateStr, eventDuration) {
+    const startDate = new Date(startDateStr);
+    const endDate = new Date(startDate.getTime() + eventDuration * 60 * 60 * 1000); // Calculate end time
+
+    const dateOptions = { day: '2-digit', month: 'short', year: 'numeric' };
+    const formattedDate = startDate.toLocaleDateString('en-GB', dateOptions);
+    const startTime = startDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+    const endTime = endDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+
+    return `${formattedDate}, ${startTime} to ${endTime}`;
+  }
+
 /*
 get locations
 */
@@ -96,6 +112,17 @@ function getMembers(){
                 selectBody.appendChild(option)
                 })
 
+            }else if(url == "http://localhost/apiecetoyou/?p=adminevents" || url == "http://localhost/apiecetoyou/index.php?p=adminevents"){
+                let selectBody = document.getElementById("view_event_speakers")
+                selectBody.innerHTML =="";
+                members.forEach(function(member){
+                    /* select options */
+
+                let option = document.createElement("option")
+                option.value = member.member_id;
+                option.innerHTML = member.name
+                selectBody.appendChild(option)
+                })
             }else{
             let tableBody = document.getElementById("tbl_members")
             tableBody.innerHTML = "";
@@ -175,14 +202,24 @@ function getCategories(){
                 let categories = JSON.parse(response)
                 if(url == "http://localhost/apiecetoyou/?p=add-event" || url == "http://localhost/apiecetoyou/index.php?p=add-event"){
                     let selectBody = document.getElementById("add_event_category")
-                selectBody.innerHTML =="";
-                categories.forEach(function(category){
-                /* select options */
-                let option = document.createElement("option")
-                option.value = category.category_id;
-                option.innerHTML = category.category_name
-                selectBody.appendChild(option)
-                })
+                    selectBody.innerHTML =="";
+                    categories.forEach(function(category){
+                    /* select options */
+                    let option = document.createElement("option")
+                    option.value = category.category_id;
+                    option.innerHTML = category.category_name
+                    selectBody.appendChild(option)
+                    })
+                }else if(url == "http://localhost/apiecetoyou/?p=adminevents" || url == "http://localhost/apiecetoyou/index.php?p=adminevents"){
+                    let selectBody = document.getElementById("view_event_category")
+                    selectBody.innerHTML =="";
+                    categories.forEach(function(category){
+                    /* select options */
+                    let option = document.createElement("option")
+                    option.value = category.category_id;
+                    option.innerHTML = category.category_name
+                    selectBody.appendChild(option)
+                    })
                 }else{
                     let tableBody = document.getElementById("tbl_categories")
                     tableBody.innerHTML = "";
@@ -276,7 +313,7 @@ function getRoles(){
     });
     }
     /*
-get roles
+get settings
 */
 function getSettings(){
     $.ajax({  
@@ -296,6 +333,64 @@ function getSettings(){
                 document.getElementById("email").value = setting.email
                 document.getElementById("phone").value = setting.phone
             } 
+        }
+    });
+    }
+    /*
+get events
+*/
+function getEvents(){
+    $.ajax({  
+        type: 'GET',  
+        url: 'app.php?action=get-events',
+        success: function(response) {
+            if(response == 2){
+                document.getElementById("db_response").style.display="flex"
+                db_response.add("bg-warning")
+                    $('#get_response').html('No Categories Found')
+
+            }else{
+                let categories = JSON.parse(response)
+                if(url == "http://localhost/apiecetoyou/?p=add-event" || url == "http://localhost/apiecetoyou/index.php?p=add-event"){
+                    let selectBody = document.getElementById("add_event_category")
+                    selectBody.innerHTML =="";
+                    categories.forEach(function(category){
+                    /* select options */
+                    let option = document.createElement("option")
+                    option.value = category.category_id;
+                    option.innerHTML = category.category_name
+                    selectBody.appendChild(option)
+                    })
+                }else{
+                    console.log(response)
+                //     let tableBody = document.getElementById("tbl_categories")
+                //     tableBody.innerHTML = "";
+                // categories.forEach(function(category){
+                //     let row = document.createElement("tr"); // Create a new table row
+        
+                //     // Create table cells for each piece of data
+                //     let idCell = document.createElement("td");
+                //     idCell.textContent = category.category_id;
+                //     idCell.hidden = true;
+            
+                //     let nameCell = document.createElement("td");
+                //     nameCell.innerHTML = `<input type="text" class="form-control"  maxlength="200"  value="${category.category_name}" placeholder="Category Name" readonly>`
+                    
+                //     let actionCell = document.createElement('td');
+                //     actionCell.innerHTML = `<i class="fa-solid fa-edit btn-edit-category text-primary"></i>
+                //     <i class="fa-solid fa-trash text-danger btn-del-category"></i> `
+                //     // Append cells to the row
+                //     row.appendChild(idCell);
+                //     row.appendChild(nameCell);
+                //     row.appendChild(actionCell);
+            
+                //     // Append the row to the table body
+                //     tableBody.appendChild(row);
+                //     $('#tbl').DataTable();
+                // })
+            }
+        }
+            
         }
     });
     }
@@ -668,6 +763,46 @@ function getSettings(){
             }
         });
         getRoles();
+    })
+    /*
+    add event
+    */
+    $('#addEvent').on('submit', function(e){
+        e.preventDefault()
+        const editorContent = tinymce.get('editor_content').getContent()
+        const formData = new FormData(document.getElementById('addEvent'))
+        formData.append('content', editorContent);
+        const all_speakers = document.querySelectorAll('.single-speaker-id')
+        
+        all_speakers.forEach(function(speaker){
+            let single_speaker = speaker.innerText
+            formData.append("speakers[]", single_speaker)
+        })
+
+        $.ajax({  
+            type: 'POST',  
+            url: 'app.php?action=add-event', 
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                console.log(response)
+                document.getElementById("db_response").style.display = "flex";
+                if (response == 1) {
+                    db_response.add("bg-primary");
+                    $('#get_response').html('Successful');
+                } else if (response == 2) {
+                    db_response.add("bg-danger");
+                    $('#get_response').html('Failed');
+                } else {
+                    db_response.add("bg-warning");
+                    $('#get_response').html('Already Exists');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('AJAX error:', error);
+            }
+        });
     })
 
 

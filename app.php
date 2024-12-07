@@ -394,8 +394,124 @@ else if($action == 'get-members'){
     echo json_encode($result);
 }
 }
+/*
+ALL EVENT FUNCTIONS
+*/
+/* ADD EVENT */
+else if($action == 'add-event'){
+    $name = $_POST['eventname'];
+    $date_time = $_POST['eventdatetime'];
+    $duration = $_POST['duration'];
+    $location = $_POST['eventlocation'];
+    $category = $_POST['eventcategory'];
+    $content = $_POST['content'];
+    $speakers = $_POST['speakers'];
+    $string_speakers = implode(',', $speakers);
+    
+    $targetDir = "assets/images/bg/events/"; 
+    $allowTypes = array('jpg','png','jpeg'); 
+    
+    $confirm_qry="select * from events where event_name = ? limit 1";
+    $confirm_stmt=mysqli_stmt_init($conn);
+    mysqli_stmt_prepare($confirm_stmt,$confirm_qry);
+    
+    mysqli_stmt_bind_param($confirm_stmt, 's', $name);
+    mysqli_stmt_execute($confirm_stmt);
+    $result=mysqli_stmt_get_result($confirm_stmt);
+    $rowcount=mysqli_num_rows($result);
+    if($rowcount>=1){
+        echo "3";
+    }else{
 
-
+        $fileName = basename($_FILES['event_banner']['name']);
+        $targetFilePath = $targetDir . $fileName;
+    
+        // Check whether file type is valid
+        $fileType = pathinfo($targetFilePath, PATHINFO_EXTENSION);
+        if (in_array($fileType, $allowTypes)) {
+            // Upload file to server
+            if (move_uploaded_file($_FILES["event_banner"]["tmp_name"], $targetFilePath)) {
+                // Resize image to 880x430
+                $imagePath = $targetFilePath;
+                $image = createImage($imagePath);
+    
+                if ($image !== false) {
+                    list($width, $height) = getimagesize($imagePath);
+                    $newWidth = 5700;
+                    $newHeight = 3800;
+                    $imageResized = imagecreatetruecolor($newWidth, $newHeight);
+    
+                    if ($fileType == 'png') {
+                        imagealphablending($imageResized, false); // Set to false before performing operations
+                        imagesavealpha($imageResized, true);      // Set to true before saving the image
+                    }
+    
+                    // Resize and save the image
+                    imagecopyresampled($imageResized, $image, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
+    
+                    // Save the resized image
+                    switch ($fileType) {
+                        case 'jpg':
+                        case 'jpeg':
+                            imagejpeg($imageResized, $targetFilePath);
+                            break;
+                        case 'png':
+                            imagepng($imageResized, $targetFilePath);
+                            break;
+                        default:
+                            // Handle unsupported image type
+                            break;
+                    }
+    
+                    imagedestroy($imageResized);
+                    imagedestroy($image);
+    
+                    //inserting data into db
+                        //inserting data into db
+                        $insert_qry="insert into events(event_name, event_start_date, event_duration, event_location, event_category, event_speaker, event_banner, event_description) values(?,?,?,?,?,?,?,?) ";
+                        $insert_stmt=mysqli_stmt_init($conn);
+                        mysqli_stmt_prepare($insert_stmt, $insert_qry);
+                    
+                        mysqli_stmt_bind_param($insert_stmt, "ssssssss",$name, $date_time, $duration, $location, $category, $string_speakers, $fileName, $confirm_qry );
+                        if(mysqli_stmt_execute($insert_stmt)){
+                            echo "1";
+                        }else{
+                            echo "2";
+                        }
+                } else {
+                    // Handle image creation failure
+                    echo "Failed to create image from file: $imagePath";
+                }
+            } else {
+                echo "Sorry, there was an error uploading your file.";
+            }
+        } else {
+            echo "2";
+    
+    }
+}
+}
+/* VIEW EVENTS */
+else if($action == 'get-events'){
+    $get_events =$conn->query("select * from events inner join locations on events.event_location = locations.location_id inner join categories on events.event_category = categories.category_id order by event_id DESC");
+    $count = mysqli_num_rows($get_events);
+    if($count < 1){
+        $result = 2;
+        echo json_encode($result);
+    }else{
+    while($event = mysqli_fetch_assoc($get_events)){
+        $result[] = [
+            'id' => $event['event_id'],
+            'name' => $event['event_name'],
+            'date' => $event['event_start_date'],
+            'duration' => $event['event_duration'],
+            'location' => $event['location_name'],
+            'banner' => $event['event_banner']
+        ];
+    }
+    echo json_encode($result);
+}
+}
 
 /*
 END OF ALL METHODS

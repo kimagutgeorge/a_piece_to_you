@@ -38,6 +38,10 @@ font-family: "SUSE", sans-serif;
 .other-page .card{
 padding:0px !important;
 }
+.other-page #preview img{
+    width:100%;
+    height: auto;
+}
 .other-page body{
 background-color: rgb(240,240,240);
 }

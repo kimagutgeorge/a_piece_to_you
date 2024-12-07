@@ -136,7 +136,29 @@ function addSpeaker(){
   })
 }
 
-function removeSpeaker(){
-  let id = document.querySelector(".single-speaker-id")[0].innerHTML
-  console.log(id)
+function previewImage() {
+  const fileInput = document.getElementById('upload_file');
+  const previewDiv = document.getElementById('preview');
+  
+  // Clear the previous content
+  previewDiv.innerHTML = '';
+
+  // Check if a file is selected
+  if (fileInput.files && fileInput.files[0]) {
+      const file = fileInput.files[0];
+
+      // Create an image element
+      const img = document.createElement('img');
+      
+      // Use FileReader to read the file and display it
+      const reader = new FileReader();
+      reader.onload = function (e) {
+          img.src = e.target.result;
+          previewDiv.appendChild(img);
+      };
+      reader.readAsDataURL(file);
+  } else {
+      previewDiv.textContent = 'No image uploaded';
+  }
 }
+

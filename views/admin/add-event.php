@@ -36,7 +36,7 @@
               </div>
             <div class="form-group">
                 <label class="text-muted">Banner Image</label>
-                <input type="file" id="upload_file" ref="upload_file" class="form-control" @change="previewImage" accept="image/*"
+                <input type="file" name="event_banner" id="upload_file" class="form-control" onchange="previewImage()" accept="image/*" required
                 capture>
             </div>
             
@@ -49,60 +49,90 @@
 <div class="col-8 editor-holder">
 <!-- editor -->
 <div class="form-group">
-<div id="editor"></div>
+<div id="editor">
+<textarea id="editor_content">
+  <!-- editor content -->
+</textarea>
+</div>
  </div>
       <!-- end of editor -->
       <div class="form-group">
       <button type="submit" class="btn btn-primary" style="margin-top:20px !important">SAVE <i class="fa-solid fa-save"></i></button>
       </div>
   </div>
-			<div class="col-3" style="margin-left:10px !important">
-				<div v-if="imageUrl">
-					<img :src="imageUrl" alt="Image Preview" style="max-width: 100%; height: auto;" />
-				  </div>
+			<div class="col-3" id="preview" style="margin-left:10px !important">
+      No image uploaded
 		</div>
             </div>
             
           </form>
         </div>
+<!-- Place the first <script> tag in your HTML's <head> -->
+<script src="https://cdn.tiny.cloud/1/5q4mvewercb0ylufr84rsdycfzo44grc127l4tcn42ho7zm5/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
 
-<!-- editor -->
-<script type="module">
-import Quill from 'quill';
-import "quill/dist/quill.core.css";
-const toolbarOptions = [
-  ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
-  ['blockquote', 'code-block'],
-  ['link', 'image', 'video'],
+<!-- Place the following <script> and <textarea> tags your HTML's <body> -->
+<script>
+  tinymce.init({
+    selector: '#editor_content',
+    plugins: [
+        // Core editing features
+        'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'image', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount',
+        // Your account includes a free trial of TinyMCE premium features
+        'checklist', 'mediaembed', 'casechange', 'export', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste', 'advtable', 'advcode', 'editimage', 'advtemplate', 'ai', 'mentions', 'tinycomments', 'tableofcontents', 'footnotes', 'mergetags', 'autocorrect', 'typography', 'inlinecss', 'markdown',
+        // Early access to document converters
+        'importword', 'exportword', 'exportpdf'
+    ],
+    toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
+    tinycomments_mode: 'embedded',
+    tinycomments_author: 'Author name',
+    mergetags_list: [
+        { value: 'First.Name', title: 'First Name' },
+        { value: 'Email', title: 'Email' },
+    ],
+    ai_request: (request, respondWith) => respondWith.string(() => Promise.reject('See docs to implement AI Assistant')),
 
-  [{ 'header': 1 }, { 'header': 2 }],               // custom button values
-  [{ 'list': 'ordered'}, { 'list': 'bullet' }, { 'list': 'check' }],
-  [{ 'script': 'sub'}, { 'script': 'super' }],      // superscript/subscript
-  [{ 'indent': '-1'}, { 'indent': '+1' }],          // outdent/indent
-  [{ 'direction': 'rtl' }],                         // text direction
+    // Image upload configuration
+    images_upload_handler: function (blobInfo, success, failure) {
+        const formData = new FormData();
+        formData.append('file', blobInfo.blob(), blobInfo.filename());
 
-  [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
-  [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+        fetch('/upload', { // Replace with your server's upload endpoint
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result && result.location) {
+                success(result.location); // URL of the uploaded image
+            } else {
+                failure('Upload failed: Invalid response from server.');
+            }
+        })
+        .catch(error => {
+            failure('Upload failed: ' + error.message);
+        });
+    },
 
-  [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
-  [{ 'font': [] }],
-  [{ 'align': [] }],
+    file_picker_callback: function (callback, value, meta) {
+        if (meta.filetype === 'image') {
+            const input = document.createElement('input');
+            input.setAttribute('type', 'file');
+            input.setAttribute('accept', 'image/*');
 
-  ['clean']                                         // remove formatting button
-];
+            input.onchange = function () {
+                const file = this.files[0];
+                const reader = new FileReader();
 
-const quill = new Quill('#editor', {
-  modules: {
-    toolbar: toolbarOptions
-  },
-  theme: 'snow'
-});
+                reader.onload = function () {
+                    callback(reader.result, { alt: file.name });
+                };
 
-/* get contents of editor */
+                reader.readAsDataURL(file);
+            };
 
-quill.on('text-change', () => {
-const content = quill.root.innerHTML
-this.editorContent = content
+            input.click();
+        }
+    }
 });
 
 </script>
