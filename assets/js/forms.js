@@ -347,48 +347,79 @@ function getEvents(){
             if(response == 2){
                 document.getElementById("db_response").style.display="flex"
                 db_response.add("bg-warning")
-                    $('#get_response').html('No Categories Found')
+                    $('#get_response').html('No Events Found')
 
             }else{
-                let categories = JSON.parse(response)
-                if(url == "http://localhost/apiecetoyou/?p=add-event" || url == "http://localhost/apiecetoyou/index.php?p=add-event"){
-                    let selectBody = document.getElementById("add_event_category")
-                    selectBody.innerHTML =="";
-                    categories.forEach(function(category){
-                    /* select options */
-                    let option = document.createElement("option")
-                    option.value = category.category_id;
-                    option.innerHTML = category.category_name
-                    selectBody.appendChild(option)
-                    })
-                }else{
-                    console.log(response)
-                //     let tableBody = document.getElementById("tbl_categories")
-                //     tableBody.innerHTML = "";
-                // categories.forEach(function(category){
-                //     let row = document.createElement("tr"); // Create a new table row
+                let events = JSON.parse(response)
+                    let tableBody = document.getElementById("tbl_events")
+                    tableBody.innerHTML = "";
+                events.forEach(function(event){
+                    let row = document.createElement("tr"); // Create a new table row
+                    row.className = "tbl-card-holder card-container";
         
-                //     // Create table cells for each piece of data
-                //     let idCell = document.createElement("td");
-                //     idCell.textContent = category.category_id;
-                //     idCell.hidden = true;
-            
-                //     let nameCell = document.createElement("td");
-                //     nameCell.innerHTML = `<input type="text" class="form-control"  maxlength="200"  value="${category.category_name}" placeholder="Category Name" readonly>`
+                    // Create cards for events
+                    let single_event = document.createElement("td");
+                    single_event.className="card-wrapper";
+
+                    let card_content = document.createElement("div");
+                    card_content.className = "card col-12";
+
+                    let img = document.createElement("img")
+                    img.className = "w-100";
+                    img.src = "assets/images/bg/events/"+ event.banner
+
+                    let card_body = document.createElement("div")
+                    card_body.className="card-body"
+
+                    let title = document.createElement("h5");
+                    title.className = "card-title text-primary"
+                    title.innerText = event.name
+
+                    let date_time_title = document.createElement("h6");
+                    date_time_title.className = "text-primary fw-bold"
+                    date_time_title.innerText = "Date & Time"
+
+                    let date_time = document.createElement("p");
+                    date_time.className = "text-primary fw-bold"
+                    date_time.innerHTML = `<i class="fa-regular fa-clock"></i> ${ formatEventTime(event.date, event.duration)}</p>
+    <h6 class="text-primary fw-bold">Location</h6>
+    <p><i class="fa-solid fa-location-crosshairs"></i> ${event.location}`
                     
-                //     let actionCell = document.createElement('td');
-                //     actionCell.innerHTML = `<i class="fa-solid fa-edit btn-edit-category text-primary"></i>
-                //     <i class="fa-solid fa-trash text-danger btn-del-category"></i> `
-                //     // Append cells to the row
-                //     row.appendChild(idCell);
-                //     row.appendChild(nameCell);
-                //     row.appendChild(actionCell);
+                    //bottom row
+                    let bottom_row = document.createElement("div")
+                    bottom_row.className = "col-12 row"
+
+                    let button_view = document.createElement("div")
+                    button_view.className = "col-6"
+                    button_view.innerHTML=`<button class="card-btn btn-transparent">
+    <i class="fa-solid fa-eye text-primary"></i>
+    </button>`
+
+                    let button_delete = document.createElement("div")
+                    button_delete.className = "col-6"
+                    button_delete.innerHTML=`<button class="card-btn" onclick="deleteEvent(event.events_id)">
+      <i class="fa-solid fa-trash text-danger"></i>
+    </button>`
+
+                    //append children
+                    bottom_row.appendChild(button_view)
+                    bottom_row.appendChild(button_delete)
+                    //card body
+                    card_body.appendChild(title)
+                    card_body.appendChild(date_time_title)
+                    card_body.appendChild(date_time)
+                    //card_content
+                    card_content.appendChild(img)
+                    card_content.appendChild(card_body)
+                    //td
+                    single_event.appendChild(card_content)
+
             
-                //     // Append the row to the table body
-                //     tableBody.appendChild(row);
-                //     $('#tbl').DataTable();
-                // })
-            }
+                    // Append the row to the table body
+                    tableBody.appendChild(single_event);
+                    $('#tbl').DataTable();
+                })
+            
         }
             
         }
