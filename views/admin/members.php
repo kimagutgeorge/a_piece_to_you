@@ -37,7 +37,7 @@
     />
     
     <!-- Add button with dynamic icon based on the current platform -->
-    <span class="btn btn-primary" onclick="addLink()" 
+    <span class="btn btn-primary" onclick="addLink()">
       <i class="fa-solid fa-plus text-white" id="add_button"></i>
       
     </span>

@@ -1,7 +1,7 @@
 <div class="row dashboard">
         <div class="col-7 row">
             <div class="card col-3" style="height:fit-content !important">
-                <h4 class="text-primary fw-bold">Events</h4>
+                <h4 class="text-primary fw-bold"><span id="event_count"><span> Events</h4>
             </div>
             <div class="card col-3" style="height:fit-content !important">
                 <h4 class="text-primary fw-bold">Members</h4>

@@ -47,7 +47,7 @@
             </div>
         </div>
     <div class="col-12 contact-map ten-vh">
-        <Map/>
+    <?php include("components/map.php");?>
     </div>
     
     </div>

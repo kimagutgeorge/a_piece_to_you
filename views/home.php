@@ -114,18 +114,8 @@
                     </vue-cal>
                     
                 </div>
-                <div class="col-8 row">
-                    
-                    <div class="card" v-for="(event, index) in events.slice(0, 4)" :key="index">
-                        <div class="card-body">
-                            <p class="card-text text-third"> {{ formatEventTime(event.event_start_date, event.event_duration) }}</p>
-                            <RouterLink :to="{ name: 'View Event', params: { id: event.events_id }}" :key="$route.fullPath">
-                            <h3 style="cursor:pointer" class="text-primary">{{ event.event_name }}</h3>
-                        </RouterLink>
-                            <p class="card-text text-muted"><i class="fa-solid fa-location-crosshairs"></i> {{ event.event_location }}</p>
-                        </div>
-                    </div>
-                    <!-- end of cards -->
+                <div class="col-8 row" id="home_events">
+                    <!-- insert data here -->
                 </div>
             </div>
         </div>
@@ -148,3 +138,5 @@
               </div>
     </div>
     </div>
+<!-- include map -->
+<?php include("components/map.php");?>

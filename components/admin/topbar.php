@@ -2,6 +2,7 @@
         <div class="col-12">
             <p class="text-sm text-muted">Pages / 
                 <?php
+                    include("conn.php");
                     if($_GET["p"] == "adminhome"){
                         echo "Dashboard";
                     }else if($_GET["p"] == 'locations'){
@@ -14,6 +15,34 @@
                         echo "Settings";
                     }else if($_GET["p"] == 'add-event'){
                         echo "Add Event";
+                    }else if($_GET["p"] == 'adminevents'){
+                        echo "Events";
+                    }else if($_GET["p"] == 'view-event'){
+                        echo "Event Details";
+                    }else if($_GET["p"] == 'adminshop'){
+                        echo "Shop";
+                    }else if($_GET["p"] == 'add-product-category'){
+                        echo "Add Product Category";
+                    }else if($_GET["p"] == 'add-product'){
+                        echo "Add Product";
+                    }else if($_GET["p"] == 'view-product'){
+                        echo "Product Details";
+                    }else if($_GET["p"] == 'adminblogs'){
+                        echo "Blogs";
+                    }else if($_GET["p"] == 'add-blog'){
+                        echo "Add Blog";
+                    }else if($_GET["p"] == 'view-blog'){
+                        echo "Blog Details";
+                    }else if($_GET["p"] == 'newsletters'){
+                        echo "Newsletters";
+                    }else if($_GET["p"] == 'subscribers'){
+                        echo "Subscribers";
+                    }else if($_GET["p"] == 'profile'){
+                        echo "Profile";
+                    }else if($_GET["p"] == 'add-newsletter'){
+                        echo "Create Newsletter";
+                    }else if($_GET["p"] == 'website'){
+                        echo "Website";
                     }
                 ?>
             </p></div>
@@ -33,6 +62,43 @@
                         echo "Settings";
                     }else if($_GET["p"] == 'add-event'){
                         echo "Add Event";
+                    }else if($_GET["p"] == 'adminevents'){
+                        echo "Events";
+                    }else if($_GET["p"] == 'view-event'){
+                        $result = $conn->query("select event_name from events where event_id =".$_SESSION['event-id']." limit 1" );
+                        $product = mysqli_fetch_assoc($result);
+                        $product_name = $product["event_name"];
+                        echo $product_name;
+                    }else if($_GET["p"] == 'adminshop'){
+                        echo "Shop";
+                    }else if($_GET["p"] == 'add-product-category'){
+                        echo "Add Product Category";
+                    }else if($_GET["p"] == 'add-product'){
+                        echo "Add Product";
+                    }else if($_GET["p"] == 'view-product'){
+                        $result = $conn->query("select product_name from products where product_id =".$_SESSION['product-id']." limit 1" );
+                        $product = mysqli_fetch_assoc($result);
+                        $product_name = $product["product_name"];
+                        echo $product_name;
+                    }else if($_GET["p"] == 'adminblogs'){
+                        echo "Blogs";
+                    }else if($_GET["p"] == 'add-blog'){
+                        echo "Add Blog";
+                    }else if($_GET["p"] == 'view-blog'){
+                        $result = $conn->query("select blog_name from blogs where blog_id =".$_SESSION['blog-id']." limit 1" );
+                        $product = mysqli_fetch_assoc($result);
+                        $product_name = $product["blog_name"];
+                        echo $product_name;
+                    }else if($_GET["p"] == 'subscribers'){
+                        echo "Subscribers";
+                    }else if($_GET["p"] == 'newsletters'){
+                        echo "Newsletters";
+                    }else if($_GET["p"] == 'profile'){
+                        echo "Profile";
+                    }else if($_GET["p"] == 'add-newsletter'){
+                        echo "Create Newsletter";
+                    }else if($_GET["p"] == 'website'){
+                        echo "Website";
                     }
                 ?>
             </h3>

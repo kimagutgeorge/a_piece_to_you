@@ -1,4 +1,6 @@
 window.addEventListener('scroll', this.scrollFunction);
+/* initialize global functions */
+
 /*
 universal links
 */
@@ -22,11 +24,9 @@ let platformsLength = 5;
 /*
 end of universal links
 */
-
-
-
-
-
+function changeToDate(){
+  document.getElementById("event-date").type = "date"
+}
 function scrollFunction(){
 const mybutton = document.getElementById('myBtn')
   if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
@@ -107,7 +107,7 @@ function addSpeaker(){
   let selecTed = document.getElementById("add_event_speaker");
   let selectedOption = selecTed.options[selecTed.selectedIndex].text
   if (!speakers.find(speaker => speaker.speaker_id === currentSpeaker)) {
-    speakers.push({ "speaker_name": selectedOption, "speaker_id": currentSpeaker })
+    speakers.push({ "speaker_name": selectedOption, "member_id": currentSpeaker })
   }
   
   let speakerHolder = document.getElementById("event_speaker_list")
@@ -118,7 +118,7 @@ function addSpeaker(){
 
     let speakerId = document.createElement("div")
     speakerId.className = "single-speaker-id"
-    speakerId.innerHTML = speaker.speaker_id
+    speakerId.innerHTML = speaker.member_id
     
     let speaker_name = document.createElement("div")
     speaker_name.className = "speaker-name"
@@ -126,7 +126,7 @@ function addSpeaker(){
 
     let del_speaker = document.createElement("div")
     del_speaker.className = "close-div"
-    del_speaker.innerHTML = `<i class="fa-solid fa-close text-danger" onclick="removeSpeaker"></i>`
+    del_speaker.innerHTML = `<i class="fa-solid fa-close text-danger" onclick="removeSpeaker(${speaker.member_id})"></i>`
 
     singleSpeaker.appendChild(speakerId)
     singleSpeaker.appendChild(speaker_name)
@@ -134,6 +134,11 @@ function addSpeaker(){
 
     speakerHolder.appendChild(singleSpeaker)
   })
+console.log(speakers)
+}
+function removeSpeaker(member_id){
+  let speakerIndex = member_id
+  alert(speakerIndex)
 }
 
 function previewImage() {
@@ -160,5 +165,35 @@ function previewImage() {
   } else {
       previewDiv.textContent = 'No image uploaded';
   }
+}
+
+function previewProductImage() {
+  const fileInput = document.getElementById('upload_file');
+  const previewDiv = document.getElementById('preview');
+  const all_files = Array.from(fileInput.files); // Convert FileList to an array
+
+  // Clear previous previews
+  previewDiv.innerHTML = '';
+
+  all_files.forEach(function(single_file) {
+    if (single_file.type.startsWith('image/')) { // Check if the file is an image
+      const reader = new FileReader();
+
+      reader.onload = function(event) {
+        // Create an img element
+        const img = document.createElement('img');
+        img.src = event.target.result; // Set the src to the data URL
+        img.alt = single_file.name; // Add alt text
+        img.className = "col-6"
+
+        // Append the img element to the preview div
+        previewDiv.appendChild(img);
+      };
+
+      reader.readAsDataURL(single_file); // Read the file as a data URL
+    } else {
+      console.warn(`${single_file.name} is not an image file.`);
+    }
+  });
 }
 

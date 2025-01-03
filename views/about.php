@@ -158,30 +158,8 @@ encourages discipleship, fostering growth in individuals who then inspire others
 <div class="hero-84 col-12 centered-div fifteen-vh">
 <h3 class="text-primary fw-bold">MEET OUR <span class="text-black">TEAM</span></h3>
 </div>
-<div class="members four-vh">
-
-<div class="col-3" v-for="(member, index) in db_members" :key="index" style="margin-bottom:20px !important">
-<div class="member-inner">
-<img :src="require(`../../assets/images/bg/members/${member.photo}`)" alt=""><br>
-<h4 class="text-black">{{ member.name }}</h4>
-<p class="text-third">{{ member.role_name }}</p>
-<div class="col-12">
-<a :href="member.facebook.startsWith('http') ? member.facebook : 'https://' + member.facebook" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-facebook-f"></i></a>
-
-<a :href="member.instagram.startsWith('http') ? member.instagram : 'https://' + member.instagram" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-instagram"></i></a>
-
-<a :href="member.linkedin.startsWith('http') ? member.linkedin : 'https://' + member.linkedin" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-linkedin"></i></a>
-
-<a :href="'mailto:' + member.email"><i class="fa-solid fa-envelope"></i></a>
-
-
-<a :href="member.twitter.startsWith('http') ? member.twitter : 'https://' + member.twitter" target="_blank" rel="noopener noreferrer">
-<i class="fa-brands fa-twitter"></i>
-</a>
-</div>
-</div>
-</div>
-
+<div class="members four-vh" id="tbl_members">
+<!-- insert data here -->
 </div>
 <!-- end of wrapper -->
 </div>

@@ -113,6 +113,11 @@ flex-wrap: wrap;
 padding-bottom: 20px !important;
 }
 /*cards*/
+.other-page .row.dashboard{
+    height: 82vh;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
 .other-page .row.dashboard .col-7.row .card.col-3,
 .other-page .row.dashboard .col-11.card,
 .other-page .row.dashboard .col-4.card,
@@ -806,6 +811,11 @@ padding:5px 10px !important;
 cursor: pointer;
 height: 36px;
 float: left;
+}
+.other-page .col-12.events-panel.settings .col-4.card{
+    max-height: 78vh;
+    padding-bottom:10px !important;
+    overflow-y: scroll !important;
 }
 .home-route .small-nav .col-8.four-vh .fa-solid{
 color:#ffffff;
@@ -1638,8 +1648,7 @@ height: fit-content;
 z-index: 4;
 height: fit-content;
 background-color: #ffffff;
-width: 94%;
-left:3% !important;
+width: 100%;
 border-radius: 5px;
 padding:5px 5px !important;
 }

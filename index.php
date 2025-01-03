@@ -1,4 +1,6 @@
 <?php
+error_reporting(E_ERROR | E_PARSE);
+session_start();
 include("components/header.php");?>
   <?php
     # include main pages
@@ -101,6 +103,76 @@ include("components/header.php");?>
     <?php 
     include("components/admin/topbar.php");
     include("views/admin/shop.php");
+    include("components/admin/footer.php");?>
+    </div>
+    </div>
+    </div>
+    <?php }else if($_GET["p"] == "add-blog"){?>
+    <div class="other-page">
+    <div class="main-page row">
+    <div class="col-2">
+    <?php include("components/admin/navbar.php");?>
+    </div>
+    <div class="col-10 side-page overflow-auto">
+    <?php 
+    include("components/admin/topbar.php");
+    include("views/admin/add-blog.php");
+    include("components/admin/footer.php");?>
+    </div>
+    </div>
+    </div>
+    <?php }else if($_GET["p"] == "website"){?>
+    <div class="other-page">
+    <div class="main-page row">
+    <div class="col-2">
+    <?php include("components/admin/navbar.php");?>
+    </div>
+    <div class="col-10 side-page overflow-auto">
+    <?php 
+    include("components/admin/topbar.php");
+    include("views/admin/website.php");
+    include("components/admin/footer.php");?>
+    </div>
+    </div>
+    </div>
+    <?php }else if($_GET["p"] == "add-newsletter"){?>
+    <div class="other-page">
+    <div class="main-page row">
+    <div class="col-2">
+    <?php include("components/admin/navbar.php");?>
+    </div>
+    <div class="col-10 side-page overflow-auto">
+    <?php 
+    include("components/admin/topbar.php");
+    include("views/admin/add-newsletter.php");
+    include("components/admin/footer.php");?>
+    </div>
+    </div>
+    </div>
+    <?php }else if($_GET["p"] == "profile"){?>
+    <div class="other-page">
+    <div class="main-page row">
+    <div class="col-2">
+    <?php include("components/admin/navbar.php");?>
+    </div>
+    <div class="col-10 side-page overflow-auto">
+    <?php 
+    include("components/admin/topbar.php");
+    include("views/admin/profile.php");
+    include("components/admin/footer.php");?>
+    </div>
+    </div>
+    </div>
+    <?php }else if($_GET["p"] == "subscribers"){?>
+    <div class="other-page">
+    <div class="main-page row">
+    <div class="col-2">
+    <?php include("components/admin/navbar.php");?>
+    </div>
+    <div class="col-10 side-page overflow-auto">
+    <?php 
+    include("components/admin/topbar.php");
+    include("views/admin/subscribers.php");
     include("components/admin/footer.php");?>
     </div>
     </div>
@@ -213,6 +285,76 @@ include("components/header.php");?>
     <?php 
     include("components/admin/topbar.php");
     include("views/admin/add-event.php");
+    include("components/admin/footer.php");?>
+    </div>
+    </div>
+    </div>
+    <?php }else if($_GET["p"] == "view-event"){?>
+        <div class="other-page">
+    <div class="main-page row">
+    <div class="col-2">
+    <?php include("components/admin/navbar.php");?>
+    </div>
+    <div class="col-10 side-page overflow-auto">
+    <?php 
+    include("components/admin/topbar.php");
+    include("views/admin/viewevent.php");
+    include("components/admin/footer.php");?>
+    </div>
+    </div>
+    </div>
+    <?php }else if($_GET["p"] == "view-blog"){?>
+        <div class="other-page">
+    <div class="main-page row">
+    <div class="col-2">
+    <?php include("components/admin/navbar.php");?>
+    </div>
+    <div class="col-10 side-page overflow-auto">
+    <?php 
+    include("components/admin/topbar.php");
+    include("views/admin/viewblog.php");
+    include("components/admin/footer.php");?>
+    </div>
+    </div>
+    </div>
+    <?php }else if($_GET["p"] == "view-product"){?>
+        <div class="other-page">
+    <div class="main-page row">
+    <div class="col-2">
+    <?php include("components/admin/navbar.php");?>
+    </div>
+    <div class="col-10 side-page overflow-auto">
+    <?php 
+    include("components/admin/topbar.php");
+    include("views/admin/viewproduct.php");
+    include("components/admin/footer.php");?>
+    </div>
+    </div>
+    </div>
+    <?php }else if($_GET["p"] == "add-product"){?>
+        <div class="other-page">
+    <div class="main-page row">
+    <div class="col-2">
+    <?php include("components/admin/navbar.php");?>
+    </div>
+    <div class="col-10 side-page overflow-auto">
+    <?php 
+    include("components/admin/topbar.php");
+    include("views/admin/add-product.php");
+    include("components/admin/footer.php");?>
+    </div>
+    </div>
+    </div>
+    <?php }else if($_GET["p"] == "add-product-category"){?>
+        <div class="other-page">
+    <div class="main-page row">
+    <div class="col-2">
+    <?php include("components/admin/navbar.php");?>
+    </div>
+    <div class="col-10 side-page overflow-auto">
+    <?php 
+    include("components/admin/topbar.php");
+    include("views/admin/add-product-category.php");
     include("components/admin/footer.php");?>
     </div>
     </div>

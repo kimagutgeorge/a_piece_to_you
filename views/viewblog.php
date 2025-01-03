@@ -22,7 +22,6 @@
                     </div>
                 </div>
                 <h3 class="text-third four-vh">{{ blog_name }}</h3>
-                <div style="all-blog-holder" v-html="content"></div>
                 
             </div>
             <!-- end of blog one -->

@@ -45,34 +45,8 @@
     <tr class="tbl-card-holder " v-for="(chunk, rowIndex) in chunkedEvents" :key="rowIndex">
     <td>
     <!-- Flex container to wrap cards in rows of four -->
-    <div class="card-container">
-    <div class="col-3"  v-for="(event, index) in chunk" :key="index">
-    <div class="card" v-if="event">
-    <img :src="require(`../../assets/images/bg/events/${event.event_banner}`)" alt="" class="card-img-top">
-    <div class="card-body position-relative">
-    <div class="card-body-inner">
-    <h3 class="text-third">{{ event.event_name }}</h3>
-    <div class="col-12">
-    <p class="text-primary">Date & Time</p>
-    <p class="text-muted"><i class="fa-regular fa-clock"></i> {{ formatEventTime(event.event_start_date, event.event_duration) }} </p>
-    <p class="text-primary" style="margin-top:20px !important">Location</p>
-    <p class="text-muted"><i class="fa-solid fa-location-crosshairs"></i> {{ event.event_location }}</p>
-    </div>
-    <div class="col-12" style="border-top:1px solid rgb(230,230,230)">
-    <RouterLink :to="{ name: 'View Event', params: { id: event.events_id }}" :key="$route.fullPath">
-    <button class="btn btn-primary-box btn-primary">
-    READ MORE
-    </button>
-    </RouterLink>
-    </div>
-    </div>
-    </div>
-    </div>
-    <!-- Empty card to fill up row if fewer than four items -->
-    <div v-else class="card empty-card"></div>
-    </div>
-    
-    </div>
+    <div class="card-container" id="tbl_shop">
+    <!-- insert data here -->
     </td>
     </tr>
     </tbody>
