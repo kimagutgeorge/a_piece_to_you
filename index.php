@@ -14,9 +14,24 @@ include("components/header.php");?>
         <?php include("views/about.php");
         include("components/footer.php");?>
         </div>
+    <?php }else if($_GET["p"] == "product-details"){?>
+        <div class="home-route">
+        <?php include("views/viewproduct.php");
+        include("components/footer.php");?>
+        </div>
     <?php }else if($_GET["p"] == "event-details"){?>
         <div class="home-route">
         <?php include("views/viewevent.php");
+        include("components/footer.php");?>
+        </div>
+    <?php }else if($_GET["p"] == "cart"){?>
+        <div class="home-route">
+        <?php include("views/cart.php");
+        include("components/footer.php");?>
+        </div>
+    <?php }else if($_GET["p"] == "read-blog"){?>
+        <div class="home-route">
+        <?php include("views/viewblog.php");
         include("components/footer.php");?>
         </div>
     <?php }else if($_GET["p"] == "register"){?>

@@ -53,14 +53,20 @@ $( document ).ready(function() {
     if(url == "http://localhost/apiecetoyou/?p=add-event" || url == "http://localhost/apiecetoyou/?p=add-product" || url =="http://localhost/apiecetoyou/?p=add-blog" || url =="http://localhost/apiecetoyou/?p=add-newsletter"){
         InitEditor();
     }
-    if(url== "http://localhost/apiecetoyou/?p=view-product"){
+    if(url== "http://localhost/apiecetoyou/?p=view-product" || url== "http://localhost/apiecetoyou/index.php?p=view-product" || url == "http://localhost/apiecetoyou/?p=product-details" || url == "http://localhost/apiecetoyou/index.php?p=product-details"){
         viewProduct();
     }
-    if(url== "http://localhost/apiecetoyou/?p=adminblogs" || url== "http://localhost/apiecetoyou/?p=blogs"){
+    if(url== "http://localhost/apiecetoyou/?p=cart" || url== "http://localhost/apiecetoyou/index.php?p=cart"){
+        displayCart();
+    }
+    if(url== "http://localhost/apiecetoyou/?p=shop" || url== "http://localhost/apiecetoyou/index.php?p=shop"){
+        updateCartCount();
+    }
+    if(url== "http://localhost/apiecetoyou/?p=adminblogs" || url== "http://localhost/apiecetoyou/?p=blogs" || url== "http://localhost/apiecetoyou/?p=read-blog" || url== "http://localhost/apiecetoyou/index.php?p=read-blog"){
         getBlogs();
         getBlogCount();
     }
-    if(url== "http://localhost/apiecetoyou/?p=view-blog"){
+    if(url== "http://localhost/apiecetoyou/?p=view-blog" || url== "http://localhost/apiecetoyou/index.php?p=view-blog" || url == "http://localhost/apiecetoyou/?p=read-blog" || url == "http://localhost/apiecetoyou/index.php?p=read-blog"){
         viewBlog();
     }
     if(url == "http://localhost/apiecetoyou/?p=profile"){
@@ -390,6 +396,7 @@ $(document).on('click', '.edit-blog', function() {
                 if (response == 1) {
                     db_response.add("bg-primary");
                     $('#get_response').html('Successful');
+                    viewBlog()
                     // disableEditor()
                 } else if (response == 2) {
                     db_response.add("bg-danger");
@@ -404,7 +411,6 @@ $(document).on('click', '.edit-blog', function() {
             }
         });
 
-        viewBlog()
     }
     
     
@@ -1022,18 +1028,19 @@ function getProducts(){
                         row.className = "col-3"
                         row.innerHTML = `
                         <div class="card">
-                        <img src="assets/images/bg/products/${product.product_image}" alt="" class="card-img-top">
+                        <img src="assets/images/bg/products/${product.product_image}" alt="" class="card-img-top product-img">
                         <div class="card-body position-relative">
                         <div class="card-body-inner">
-                        <h3 class="text-third">${ product.product_name }</h3>
+                        <h3 class="text-third btn-product-name" style="cursor:pointer">${ product.product_name }</h3>
                         <div class="col-12">
                         <p class="text-primary">Price</p>
-                        <p class="text-muted"><i class="fa-solid fa-coins"></i> ${ product.product_price} </p>
+                        <p class="text-muted"><i class="fa-solid fa-coins"></i> <span class="product-price">${ product.product_price} ${product.currency}</span> </p>
                         <p class="text-primary" style="margin-top:20px !important">In Stock</p>
-                        <p class="text-muted"><i class="fa-solid fa-boxes"></i> ${product.product_balance}</p>
+                        <p class="text-muted"><i class="fa-solid fa-boxes"></i> <span class="product-balance">${product.product_balance}</span></p>
                         </div>
-                        <div class="col-12" style="border-top:1px solid rgb(230,230,230)">
-                        <button class="btn btn-primary-box btn-primary">
+                        <div class="col-12 bottom-card-details" style="border-top:1px solid rgb(230,230,230)">
+                        <p class="card-id" hidden>${product.product_id}</p>
+                        <button class="btn btn-primary-box btn-primary btn-add-cart">
                         ADD TO CART
                         </button>
                         </div>
@@ -1088,7 +1095,7 @@ function getProducts(){
 
                     let date_time = document.createElement("p");
                     date_time.className = "text-primary fw-bold"
-                    date_time.innerHTML = `<i class="fa-solid fa-coins"></i> ${product.product_price}`
+                    date_time.innerHTML = `<i class="fa-solid fa-coins"></i> ${product.product_price} ${product.currency}`
 
                     let in_stock = document.createElement("h6");
                     in_stock.className = "text-primary fw-bold"
@@ -1335,7 +1342,13 @@ function viewBlog(){
 
         if(url == "http://localhost/apiecetoyou/?p=read-blog" || url == "http://localhost/apiecetoyou/index.php?p=read-blog"){
 
-            document.getElementById("blog_banner").src == "assets/images/bg/blogs/"+blog.banner
+        document.getElementById("blog_banner").src = "assets/images/bg/blogs/"+ blog.banner
+        document.getElementById("blog_icon").innerHTML = `<span class="text-muted"><i class="fa-solid fa-user"></i> ${ blog.writer }</span>`
+        document.getElementById("blog_calendar").innerHTML = `<span class="text-muted"><i class="fa-solid fa-calendar"></i> ${formatDate(blog.created)} </span>`
+        document.getElementById("blog_category").innerHTML = `<span class="text-muted"><i class="fa-solid fa-tags"></i> ${ blog.category_name }</span>`
+        document.getElementById("blog_name").innerHTML = blog.name
+        document.getElementById("blog_content").innerHTML = blog.content
+
 
         }else{
         let eventBody = document.getElementById("tbl_single_blog")
@@ -1403,6 +1416,16 @@ function viewProduct(){
         success: function(response) {
         let products = JSON.parse(response)
         let product = products[0]
+
+        if(url == "http://localhost/apiecetoyou/?p=product-details" || url == "http://localhost/apiecetoyou/index.php?p=product-details"){
+            document.getElementById("product_name").innerHTML = product.name
+            document.getElementById("product_description").innerHTML = product.description
+            document.getElementById("product_price").innerHTML = product.price
+            document.getElementById("product_discount").innerHTML = product.discount + "%"
+            document.getElementById("product_stock").innerHTML = product.balance
+            document.getElementById("product_category").innerHTML = product.category
+
+        }else{
         let productBody = document.getElementById("tbl_single_product")
         let toggle_button_body = document.getElementById("edit_product_toggle")
 
@@ -1468,10 +1491,96 @@ function viewProduct(){
     </div>
               </div>
   `
+    }
 
     }  
     });
     }
+/* view product */
+$(document).on('click', '.btn-product-name', function () {
+    let id = $(this).closest('.card').find('.card-id').text().trim();
+
+    $.ajax({  
+        type: 'POST',  
+        url: 'app.php?action=view-product', 
+        data: {
+            id:id
+        },
+        success: function(response) {
+            setTimeout(() => {
+                location.href="?p=product-details"
+            }, 200);
+        }
+    });
+    
+})
+/* add to cart */
+$(document).on('click', '.btn-add-cart', function () {
+    let productId = $(this).closest('.bottom-card-details').find('.card-id').text().trim();
+    let productName = $(this).closest('.card').find('.product-name').text().trim();
+    let productPrice = parseFloat($(this).closest('.card').find('.product-price').text().trim());
+    let productImage = $(this).closest('.card').find('.product-img').attr('src').trim();
+    let productBalance = parseInt($(this).closest('.card').find('.product-balance').text().trim());
+
+    // Retrieve cart from localStorage or initialize an empty array
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+    // Check if the product is already in the cart
+    let existingProduct = cart.find(item => item.id === productId);
+
+    if (existingProduct) {
+        // Increment the quantity if it doesn't exceed product_balance
+        if (existingProduct.quantity < productBalance) {
+            existingProduct.quantity++;
+        } else {
+            alert("Cannot add more than Available in stock");
+            return;
+        }
+    } else {
+        // Add new product to the cart
+        if (productBalance > 0) {
+            cart.push({
+                id: productId,
+                name: productName,
+                price: productPrice,
+                image: productImage,
+                quantity: 1,
+                balance: productBalance
+            });
+        } else {
+            alert("Cannot add product. Out of stock.");
+            return;
+        }
+    }
+
+    // Save the updated cart back to localStorage
+    localStorage.setItem("cart", JSON.stringify(cart));
+
+    // Calculate the total price of all products in the cart
+    let totalPrice = cart.reduce((sum, product) => sum + product.price * product.quantity, 0);
+
+    // Log the cart details and the total price
+    console.log("Cart updated:", cart);
+    console.log("Total Price of Cart: ", totalPrice.toFixed(2));
+
+    // Update the cart count
+    updateCartCount();
+});
+
+function updateCartCount() {
+    // Retrieve cart from localStorage
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+    // Calculate the number of unique items in the cart
+    let cartCount = cart.length;
+
+    // Update the cart count in the DOM
+    let cartCountElement = document.getElementById("cart_count");
+    if (cartCountElement) {
+        cartCountElement.textContent = cartCount;
+    }
+
+}
 /* disable product */
 $(document).on('click', '.disable-product', function(){
         let db_response = document.getElementById("db_response").classList
@@ -1497,6 +1606,152 @@ $(document).on('click', '.disable-product', function(){
         }
         
 })
+function displayCart() {
+    // Retrieve cart from localStorage
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+    // Find the cart table element
+    let cartTable = document.getElementById("cart_table");
+    let display_cart_body = document.getElementById("display_cart_body")
+    let empty_cart = document.getElementById("empty_cart")
+    // Clear the cart table
+    cartTable.innerHTML = "";
+
+    let totalPrice = 0; // Initialize total price
+
+    // Populate the cart table
+    cart.forEach(function (product) {
+        let row = document.createElement("tr");
+        row.innerHTML = `<td>
+              <img src="${product.image}" alt="No image" class="cart-image" />
+              <p class="text-muted" style="margin-top:10px !important">${product.name}</p>
+              <p hidden class="cart-product-id">${product.id}</p>
+            </td>
+            <td>
+              <div class="quantity-control">
+                <div class="quantity-side">
+                <span>${product.quantity}</span>
+              </div>
+              <div class="control-side">
+                <button class="btn btn-primary-box btn-primary add-cart-item">
+                  <i class="fa-solid fa-angle-up"></i>
+                </button>
+                <button class="btn btn-primary-box btn-primary reduce-cart-item">
+                  <i class="fa-solid fa-angle-down"></i>
+                </button>
+              </div>
+              </div>
+            </td>
+            <td>${product.price}</td>
+            <td>${(product.price * product.quantity).toFixed(2)}</td>
+            <td>
+              <i class="fa-solid fa-close bg-danger del-from-cart text-white"></i>
+            </td>`;
+        cartTable.appendChild(row);
+
+        // Add the product's total price to the cart total
+        totalPrice += product.price * product.quantity;
+    });
+
+    // Display a message if the cart is empty
+    if (cart.length === 0) {
+        display_cart_body.style.display = "none"
+        empty_cart.style.display = "block"
+    }
+
+    // Log the total price of all items in the cart
+    document.getElementById("cart_total").innerHTML = totalPrice.toFixed(2)
+
+    // Update the cart count
+    updateCartCount();
+}
+
+//remove from cart
+$(document).on('click', '.del-from-cart', function(){
+    let productId = $(this).closest('tr').find('.cart-product-id').text().trim()
+    
+    // Retrieve the cart from localStorage
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+    // Filter out the product to remove it
+    cart = cart.filter(item => item.id !== productId);
+
+    // Save the updated cart back to localStorage
+    localStorage.setItem("cart", JSON.stringify(cart));
+
+    // Refresh the cart display
+    displayCart();
+})
+/* addition 
+and reduction
+*/
+// add product
+$(document).off('click', '.add-cart-item').on('click', '.add-cart-item', function () {
+    let productId = $(this).closest('tr').find('.cart-product-id').text().trim();
+
+    // Retrieve the cart from localStorage
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+    // Find the product in the cart
+    let product = cart.find(item => item.id === productId);
+
+    if (product) {
+        // Check if the quantity is less than the available stock
+        if (product.quantity < product.balance) {
+            product.quantity++; // Increment by 1
+        } else {
+            alert("Cannot add more than available in stock.");
+            return;
+        }
+    } else {
+        console.error("Product not found in the cart.");
+    }
+
+    // Save the updated cart back to localStorage
+    localStorage.setItem("cart", JSON.stringify(cart));
+
+    // Calculate and log the cart total
+    let totalPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    console.log("Cart Total Price:", totalPrice.toFixed(2));
+
+    // Refresh the cart display
+    displayCart();
+});
+
+// Reduce Cart Item
+$(document).off('click', '.reduce-cart-item').on('click', '.reduce-cart-item', function () {
+    let productId = $(this).closest('tr').find('.cart-product-id').text().trim();
+
+    // Retrieve the cart from localStorage
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+    // Find the product in the cart
+    let product = cart.find(item => item.id === productId);
+
+    if (product) {
+        // Check if the quantity is greater than 1
+        if (product.quantity > 1) {
+            product.quantity--; // Decrease the quantity
+        } else {
+            alert("Cannot reduce quantity below 1");
+            return;
+        }
+    } else {
+        console.error("Product not found in the cart.");
+        return;
+    }
+
+    // Save the updated cart back to localStorage
+    localStorage.setItem("cart", JSON.stringify(cart));
+
+    // Calculate and log the cart total
+    let totalPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    console.log("Cart Total Price:", totalPrice.toFixed(2));
+
+    // Refresh the cart display
+    displayCart();
+});
+
 /* enable product */
 $(document).on('click', '.enable-product', function(){
     let db_response = document.getElementById("db_response").classList
@@ -1726,8 +1981,24 @@ function getBlogCount(){
             if(response == 2){
                 console.log("No categories found!");
             }else{
-                let categories = JSON.parse(response)
-                categories.forEach(function(category){
+                    let categories = JSON.parse(response)
+                    if(url == "http://localhost/apiecetoyou/?p=read-blog" || url == "http://localhost/apiecetoyou/index.php?p=read-blog"){
+                        let selectBody = document.getElementById("tbl_user_categories")
+                        selectBody.innerHTML =="";
+                        
+                        categories.forEach(function(category){
+                        /* select options */
+                        let card = document.createElement("div")
+                        card.className = "col-11 row two-vh"
+                        card.innerHTML = `
+                            <p hidden class="cat-id">${category.id}</p>
+                            <p class="col-11">${category.name}</p>
+                            <p class="col-1">${category.count}</p>`
+                        
+                        //append child
+                        selectBody.appendChild(card)
+                    })
+                    }else{
                     let selectBody = document.getElementById("tbl_user_categories")
                     selectBody.innerHTML =="";
                     
@@ -1743,7 +2014,7 @@ function getBlogCount(){
                     //append child
                     selectBody.appendChild(card)
                     })
-                })
+                }
             }
         }
     })
@@ -1867,6 +2138,17 @@ function getCategories(){
                     let categories = JSON.parse(response)
                     if(url == "http://localhost/apiecetoyou/?p=adminshop" || url == "http://localhost/apiecetoyou/index.php?p=adminshop"){
                         let selectBody = document.getElementById("shop_product_category")
+                        selectBody.innerHTML =="";
+                        
+                        categories.forEach(function(category){
+                        /* select options */
+                        let option = document.createElement("option")
+                        option.value = category.category_id;
+                        option.innerHTML = category.category_name
+                        selectBody.appendChild(option)
+                        })
+                    }else if(url == "http://localhost/apiecetoyou/?p=shop" || url == "http://localhost/apiecetoyou/index.php?p=shop"){
+                        let selectBody = document.getElementById("product_categories")
                         selectBody.innerHTML =="";
                         
                         categories.forEach(function(category){
@@ -2025,6 +2307,11 @@ function getSettings(){
                 .openPopup();
                 /* end of map */
 
+            }else if(url == "http://localhost/apiecetoyou/index.php?p=cart" || url == "http://localhost/apiecetoyou/?p=cart" ){
+                let settings = JSON.parse(response)
+                let setting = settings[0]
+                document.getElementById("cart_currency").innerHTML = `(${setting.currency})`
+                document.getElementById("cart_header_currency").innerHTML = `(${setting.currency})`
             }else if(url == "http://localhost/apiecetoyou/?p=event-details" || url == "http://localhost/apiecetoyou/index.php?p=event-details"){
                 let settings = JSON.parse(response)
                 let setting = settings[0]
@@ -2340,9 +2627,7 @@ function getEvents(){
         }
     });
     }
- /*
-get events
-*/
+ /* get events */
 function getBlogs(){
     $.ajax({  
         type: 'GET',  
@@ -2403,6 +2688,26 @@ function getBlogs(){
                             
                         recent_post.appendChild(card)
                     })
+                }else if(url == "http://localhost/apiecetoyou/?p=read-blog" || url == "http://localhost/apiecetoyou/index.php?p=read-blog"){
+                    let recent_post = document.getElementById("recent_posts")
+                    recent_post.innerHTML = ""
+                    //view recent posts
+                    blogs.slice(0, 3).forEach(function(blog){
+                        let card = document.createElement("div")
+                        card.className = "col-11 card small-blog"
+                        card.innerHTML = `
+                            <div class="col-4">
+                                    <img src="assets/images/bg/blogs/${blog.banner}" class="w-100" alt="">
+                                </div>
+                                <div class="col-8">
+                                    <p class="fw-bold two-vh text-primary"> ${blog.name}</p>
+                                    <p class="text-muted"><i class="fa-solid fa-calendar"></i>  ${formatDate(blog.created)}</p>
+                                </div>
+                        `
+                            
+                        recent_post.appendChild(card)
+                    })
+
                 }else{
                 let tableBody = document.getElementById("tbl_blogs")
                 tableBody.innerHTML = "";

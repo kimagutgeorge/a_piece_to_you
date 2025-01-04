@@ -949,6 +949,7 @@ else if($action == "get-products"){
         p.product_description,
         p.product_category,
         p.product_status,
+        currency,
         MIN(pi.product_image_name) AS product_image
     FROM 
         Products p
@@ -956,6 +957,8 @@ else if($action == "get-products"){
         product_images pi 
     ON 
         p.product_id = pi.product_id_key
+    JOIN
+        settings
     GROUP BY 
         p.product_id
 ";
@@ -979,7 +982,8 @@ while ($row = mysqli_fetch_assoc($result)) {
         'product_description' => $row['product_description'],
         'product_category' => $row['product_category'],
         'product_image' => $row['product_image'],
-        'product_status' => $row['product_status']
+        'product_status' => $row['product_status'],
+        'currency' => $row['currency']
     ];
 }
 

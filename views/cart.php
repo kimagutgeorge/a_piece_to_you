@@ -9,52 +9,25 @@
 
   <div class="events hero-84 row four-vh">
     <!-- Show items in the cart -->
-    <div v-if="cartItems.length > 0">
+    <div id="display_cart_body">
       <table id="_tbl" class="cart-table" style="width:100%">
         <thead>
           <tr>
             <th>Product</th>
             <th>Quantity</th>
-            <th>Price</th>
+            <th>Price <span id="cart_header_currency"></span></th>
             <th>Total</th>
             <th>Actions</th>
           </tr>
         </thead>
-        <tbody>
-          <tr v-for="(item, index) in cartItems" :key="index">
-            <td>
-              <img :src="require(`../../assets/images/bg/products/${item.product_image}`)" alt="" class="cart-image" />
-              <p class="text-muted" style="margin-top:10px !important">{{ item.product_name }}</p>
-            </td>
-            <td>
-              <div class="quantity-control">
-                <div class="quantity-side">
-                <span>{{ item.quantity }}</span>
-              </div>
-              <div class="control-side">
-                <button class="btn btn-primary-box btn-primary" @click="updateQuantity(item.product_id, 'increase')">
-                  <i class="fa-solid fa-angle-up"></i>
-                </button>
-                <button class="btn btn-primary-box btn-primary" @click="updateQuantity(item.product_id, 'decrease')">
-                  <i class="fa-solid fa-angle-down"></i>
-                </button>
-              </div>
-              </div>
-            </td>
-            <td>{{ item.product_price }}</td>
-            <td>{{ item.product_price * item.quantity }}</td>
-            <td>
-              <i class="fa-solid fa-close bg-danger text-white" @click="removeFromCart(item.product_id)">
-                
-              </i>
-            </td>
-          </tr>
+        <tbody id="cart_table">
+            <!-- feed cart here -->
         </tbody>
       </table>
 
       <!-- Show total price -->
       <div class="cart-summary four-vh">
-        <h3 class="text-primary">Total (Kshs): <span class="text-dark fw-bold">{{ totalPrice }}</span></h3>
+        <h3 class="text-primary">Total <span id="cart_currency">(Kshs)</span>: <span class="text-dark fw-bold" id="cart_total"></span></h3>
         <div class="col-12 order-details four-vh" v-if="beforeCheckout">
           <div class="col-12">
             <h3 class="text-muted">Please Fill In The Details</h3>
@@ -62,19 +35,19 @@
           <div class="col-12 delivery">
             <div class="form-group">
               <label class="text-muted">Enter Your Name</label>
-              <input type="text" v-model="client_name" class="form-control" placeholder="John Doe">
+              <input type="text" name="client_name" class="form-control" placeholder="John Doe">
             </div>
             <div class="form-group">
               <label class="text-muted">Enter Your Phone Number</label>
-              <input type="number" v-model="phone" class="form-control" placeholder="0700000000">
+              <input type="number" name="phone" class="form-control" placeholder="0700000000">
             </div>
             <div class="form-group">
               <label class="text-muted">Enter Your Email</label>
-              <input type="text" v-model="email" class="form-control" placeholder="someone@example.com">
+              <input type="text" name="email" class="form-control" placeholder="someone@example.com">
             </div>
             <div class="form-group">
               <label class="text-muted">County/Region</label>
-              <select class="form-control" v-model="county" onfocus='this.size=10;' onblur='this.size=1;' 
+              <select class="form-control" name="county" onfocus='this.size=10;' onblur='this.size=1;' 
               onchange='this.size=1; this.blur();'>
                 <option value="" disabled selected>Select a county</option>
                 <option value="Baringo">Baringo</option>
@@ -129,20 +102,19 @@
             </div>
             <div class="form-group">
               <label class="text-muted">City/Town</label>
-              <input type="text" v-model="town" class="form-control" placeholder="Kilomani">
+              <input type="text" name="town" class="form-control" placeholder="Kilomani">
             </div>
           </div>
         </div>
         <button v-if="beforeCheckout" class="btn btn-primary-box btn-primary" @click="checkout">Checkout</button>
-        <button v-if="!beforeCheckout" class="btn btn-primary-box btn-primary" @click="nextPage">Next <i class="fa-solid fa-angle-right"></i></button>
         <div class="four-vh">
-          <p>{{ response }}</p>
+          <p id="cart_response"></p>
         </div>
       </div>
     </div>
 
     <!-- Show message if cart is empty -->
-    <div v-else>
+    <div id="empty_cart">
       <p>Your cart is empty!</p>
     </div>
 </div>

@@ -11,23 +11,27 @@
     <div class="col-12 search-panel">
     <div class="col-3">
     <div class="form-group">
-    <select class="form-control">
-    <option disabled selected="true">All Locations</option>
-    <option v-for="(location, index) in locations" :key="index" :value="location.location_id">{{location.location_name}}</option>
+        <a href="?p=cart"><button class="btn btn-primary-box btn-primary"><span id="cart_count">0</span> <i class="fa-solid fa-shopping-cart"></i> CART<button></a>
+    </div>
+    </div>
+    <div class="col-3">
+    <div class="form-group">
+    <select class="form-control" id="product_categories">
+    <!-- insert data here -->
     </select>
     </div>
     </div>
     <div class="col-3">
     <div class="form-group">
     <select class="form-control">
-    <option disabled selected="true">All Categories</option>
-    <option v-for="(category, index) in categories" :value="category.category_id" :key="index">{{category.category_name}}</option>
+    <option disabled selected="true">All Prices</option>
+    <option id="1000">Less than 1, 000</option>
+    <option id="1001-5000">1, 001 - 5, 0000</option>
+    <option id="5001-10000">5, 001 - 10, 0000</option>
+    <option id="10,001-15000">10, 001 - 15, 0000</option>
+    <option id="15,001-20000">15, 001 - 20, 0000</option>
+    <option id="1000">More than 20, 000</option>
     </select>
-    </div>
-    </div>
-    <div class="col-3">
-    <div class="form-group">
-    <input type="text" @click="changeToDate" id="event-date" placeholder="Event Date" class="form-control">
     </div>
     </div>
     <div class="col-3">

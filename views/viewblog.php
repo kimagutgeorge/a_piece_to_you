@@ -9,19 +9,21 @@
         <div class="view-event blogs hero-84 row ten-vh">
             <div class="col-8 row">
             <div class="col-11 card">
-                <img id="blog_banner" :src="" class="w-100 banner-img" alt="">
+                <img id="blog_banner" src="" class="w-100 banner-img" alt="No Image">
                 <div class="blog-detail four-vh">
-                    <div class="icon">
-                        <span class="text-muted"><i class="fa-solid fa-user"></i> {{ writer }}</span>
+                    <div class="icon" id="blog_icon">
+                        <!-- insert data here -->
                     </div>
-                    <div class="icon">
-                        <span class="text-muted"><i class="fa-solid fa-calendar"></i> {{ created }}</span>
+                    <div class="icon" id="blog_calendar">
+                        <!-- insert data here -->
                     </div>
-                    <div class="icon">
-                        <span class="text-muted"><i class="fa-solid fa-tags"></i> {{  category  }}</span>
+                    <div class="icon" id="blog_category">
+                        <!-- insert data here -->
                     </div>
                 </div>
-                <h3 class="text-third four-vh">{{ blog_name }}</h3>
+                <h3 class="text-third four-vh" id="blog_name"></h3>
+
+                <div id="blog_content"></div>
                 
             </div>
             <!-- end of blog one -->
@@ -29,26 +31,14 @@
             <div class="col-4">
                 <div class="card col-12">
                     <h4 class="text-third two-vh">Categories</h4>
-                    <div class="col-11">
-                        <div class="col-11 row two-vh" v-for="(blogcount, index) in blog_count" :key="index">
-                            <p class="col-11">{{blogcount.category}}</p>
-                            <p class="col-1">{{blogcount.count}}</p>
-                        </div>
+                    <div class="col-11" id="tbl_user_categories">
+                            <!-- insert data here -->
                     </div>
                 </div>
                 <div class="card col-12 four-vh">
                     <h4 class="text-third two-vh">Recent Posts</h4>
-                    <div class="col-11">
-                        <div class="col-11 card small-blog"  v-for="(blog, index) in blogs" :key="index">
-                            <div class="col-4">
-                                <img :src="require(`../../assets/images/bg/blogs/${blog.blog_banner}`)" class="w-100" alt="">
-                            </div>
-                            <div class="col-8">
-                                <p class="fw-bold two-vh text-primary">{{blog.blog_name}}</p>
-                                <p class="text-muted"><i class="fa-solid fa-calendar"></i>  {{ formatDate(blog.created) }}</p>
-                            </div>
-                        </div>
-                        
+                    <div class="col-11" id="recent_posts">
+                        <!-- insrt data here -->
                     </div>
                 </div>
             </div>

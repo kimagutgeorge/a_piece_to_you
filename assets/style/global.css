@@ -1398,6 +1398,9 @@ padding:10px 14px !important;
 background-color: #83a234ff;
 color:#000;
 }
+.home-route #empty_cart{
+    display: none;
+}
 .home-route .bottom-banner{
 width:100%;
 text-align: center;
