@@ -107,3 +107,117 @@ $get_newsletters = $conn->query("select * from newsletters order by newsletter_i
         }
         echo json_encode($result); // Send result as JSON
     }
+
+/* home about */
+<p class="text-white four-vh">WHO ARE WE?</p>
+                    <h4 class="text-white">we believe everyone has a unique purpose and calling.</h4>
+                    <p class="text-white">Our
+                        mission is to help you discover your SHAPE—your Spiritual gifts, Heart, Abilities, Personality,
+                        and Experience—so you can live a fulfilling and impactful life.</p>
+
+/* home programs */
+<div class="card">
+                    <div class="text-center">
+                        <i class="fa-solid fa-shapes"></i>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title text-primary">SHAPE</h5>
+                        <p class="card-text">Identify your unique Spiritual gifts, Heart, Abilities, Personality, and Experience.</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="text-center">
+                        <i class="fa-solid fa-random"></i>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title text-primary">FLEXI</h5>
+                        <p class="card-text">Learn to cultivate a FLEXI mindset, focusing on Fire or Spirit, Leadership Community Influence.</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="text-center">
+                        <i class="fa-solid fa-tools"></i>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title text-primary">Workshops</h5>
+                        <p class="card-text">Through APY Crafts and Pepali Defined, engage in hands-on projects that foster creativity.</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="text-center">
+                        <i class="fa-solid fa-hands-helping"></i>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title text-primary">Discipleships</h5>
+                        <p class="card-text">Our discipleship model emphasizes four critical relationships.</p>
+                    </div>
+                </div>
+
+/* about vision */
+To reconnect individuals to their original identity in Christ. We strive to raise five hundred thousand leaders who are passionate, purpose-driven, and impactful in their communities.
+
+/* mission & approach */
+<h4 class="text-primary four-vh">OUR <span class="text-black">MISSION</span></h4>
+<p class="text-third</span>">Our Mission is two-fold: </p>
+<p class="text-secondary col-10 two-vh">1. Help individuals understand their <span class="fw-bold text-primary">SHAPE— </span>Spiritual gifts, Heart, Abilities, Personality,
+and Experience—so they can fulfill their unique calling.</p>
+<p class="text-secondary col-10 two-vh">2. Foster a <span class="fw-bold text-primary">FLEXI</span> mindset—growing the Fire of the Spirit, Leadership of Self,
+Entrepreneurial X-factor, and Impactful community influence.</p>
+
+<h4 class="text-primary four-vh">OUR <span class="text-black">APPROACH</span></h4>
+<p class="text-third</span>">We provide structured programs that combine personal development and
+creative expression through our initiatives—APY Crafts and Pepali Defined. Our model
+encourages discipleship, fostering growth in individuals who then inspire others.</p>
+
+/* home offer */
+<p class="text-white four-vh">WE OFFER</p>
+<h4 class="text-white">Personal Development Programs</h4>
+<p class="text-white">Join our workshops and coaching sessions to grow in your faith and leadership skills.</p>
+<h4 class="text-white">Creative Expression</h4>
+<p class="text-white">Explore APY Crafts and Pepali Defined, where creativity meets   purpose through crafts and productivity tools.</p>
+<h4 class="text-white">Community Support</h4>
+<p class="text-white">Connect with like-minded individuals through our coaching
+    relationships—find a coach, a peer, and become an apprentice.</p>
+
+/* top values */
+<div class="col-3 value bg-gradient">
+<div class="inner-value">
+<i class="fa-solid fa-person-praying text-white"></i>
+<p class="text-white">PRAYER</p>
+</div>
+</div>
+<div class="col-3 value bg-gradient">
+<div class="inner-value">
+<i class="fa-solid fa-scroll text-white"></i>
+<p class="text-white">PROPHECY</p>
+</div>
+</div>
+<div class="col-3 value bg-gradient">
+<div class="inner-value">
+<i class="fa-solid fa-handshake text-white"></i>
+<p class="text-white">PARTNERSHIP</p>
+</div>
+</div>
+
+/* bottom values */
+<div class="col-4 card four-vh">
+  <div class="icon-holder">
+    <i class="fa-solid fa-person-praying"></i>
+  </div>
+      <p class="two-vh text-third fw-bold">PRAYER</p>
+      <p class="text-muted two-vh">Our foundation is built on a strong connection with God.</p>
+  </div>
+  <div class="col-4 card four-vh">
+    <div class="icon-holder">
+        <i class="fa-solid fa-scroll"></i>
+      </div>
+          <p class="two-vh text-third fw-bold">PROPHECY</p>
+          <p class="text-muted two-vh">We align our individual purposes with God's greater plan for reconciliation.</p>
+          </div>
+  <div class="col-4 card four-vh">
+    <div class="icon-holder">
+      <i class="fa-solid fa-handshake"></i>
+    </div>
+        <p class="two-vh text-third fw-bold">PARTNERSHIP</p>
+        <p class="text-muted two-vh">Building authentic relationships within the body of Christ to support and uplift one another.</p>
+  </div>

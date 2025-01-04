@@ -1,10 +1,6 @@
 $( document ).ready(function() {
     /* universal variables*/
     let url = window.location.href
-    // if(url != "http://localhost/apiecetoyou/?p=home" && url != "http://localhost/apiecetoyou" && url != "http://localhost/apiecetoyou/" && url != "http://localhost/apiecetoyou/?p=about-us" && url !="http://localhost/apiecetoyou/?p=events" && url != "http://localhost/apiecetoyou/?p=shop" && url != "http://localhost/apiecetoyou/?p=blogs" && url != "http://localhost/apiecetoyou/?p=contact-us"){
-    //     // let db_response = document.getElementById("db_response").classList
-    // }
-    
     let universal_disabled = true
 
 
@@ -47,11 +43,14 @@ $( document ).ready(function() {
     getCount();
     getPrograms();
     getValues();
+    getContacts();
+    getVolunteers();
+    getRegistrations();
     
-    if(url == "http://localhost/apiecetoyou/?p=view-event"){
+    if(url == "http://localhost/apiecetoyou/?p=view-event" || url == "http://localhost/apiecetoyou/index.php?p=view-event" || url == "http://localhost/apiecetoyou/?p=event-details" || url == "http://localhost/apiecetoyou/index.php?p=event-details"){
         viewEvent();
     }
-    if(url == "http://localhost/apiecetoyou/?p=add-event" || url == "http://localhost/apiecetoyou/?p=add-product" || url =="http://localhost/apiecetoyou/?p=add-blog" || url =="http://localhost/apiecetoyou/?p=add-newsletter" || url =="http://localhost/apiecetoyou/?p=website"){
+    if(url == "http://localhost/apiecetoyou/?p=add-event" || url == "http://localhost/apiecetoyou/?p=add-product" || url =="http://localhost/apiecetoyou/?p=add-blog" || url =="http://localhost/apiecetoyou/?p=add-newsletter"){
         InitEditor();
     }
     if(url== "http://localhost/apiecetoyou/?p=view-product"){
@@ -70,7 +69,7 @@ $( document ).ready(function() {
     if(url == "http://localhost/apiecetoyou/?p=newsletters" || url == "http://localhost/apiecetoyou/index.php?p=newsletters"){
         getNewsletters();
     }
-    if(url == "http://localhost/apiecetoyou/?p=website" || url == "http://localhost/apiecetoyou/index.php?p=website"){
+    if(url == "http://localhost/apiecetoyou/?p=website" || url == "http://localhost/apiecetoyou/index.php?p=website" || url == "http://localhost/apiecetoyou/?p=home" || url == "http://localhost/apiecetoyou/index.php?p=home" || url == "http://localhost/apiecetoyou/" || url == "http://localhost/apiecetoyou/index.php" || url == "http://localhost/apiecetoyou/?p=about-us" || url == "http://localhost/apiecetoyou/index.php?p=about-us"){
         getAboutUs();
     }
     
@@ -417,16 +416,36 @@ function getAboutUs(){
             url: 'app.php?action=get-about',
             success: function(response) {
                 if(response == 2){
+                    
+                    let db_response = document.getElementById("db_response").classList
                     document.getElementById("db_response").style.display="flex"
                     db_response.add("bg-warning")
                         $('#get_response').html('No Content Found')
         
                 }else{
                     let abouts = JSON.parse(response)
-
-                    let db_response = document.getElementById("db_response").classList
                     //admins
                     let about = abouts[0]
+                    if(url == "http://localhost/apiecetoyou/?p=home" || url == "http://localhost/apiecetoyou/index.php?p=home" || url == "http://localhost/apiecetoyou/" || url == "http://localhost/apiecetoyou/index.php"){
+                        //home
+                        let tableBody = document.getElementById("home_about")
+                        tableBody.innerHTML = `<p class="text-white four-vh">WHO ARE WE?</p>
+                    <h4 class="text-white">${about.title}</h4>
+                    <p class="text-white">${about.mission}</p>`
+
+                        let tableBody2 = document.getElementById("home_offer")
+                        tableBody2.innerHTML =`<p class="text-white four-vh">WE OFFER</p>
+                        <div class="text-white">${about.offer}</div>`
+
+                    }else if(url == "http://localhost/apiecetoyou/?p=about-us" || url == "http://localhost/apiecetoyou/index.php?p=about-us"){
+                        let tableBodyParagraph = document.getElementById("about_vision")
+                        tableBodyParagraph.innerHTML = about.vision
+                        //about
+                        let tableBody = document.getElementById("mission_approach")
+                        tableBody.innerHTML =`<h4 class="text-primary four-vh">OUR <span class="text-black">MISSION</span></h4>
+                        ${about.mission}
+                        `
+                    }else{
                     let tableBody = document.getElementById("add_about")
                     tableBody.innerHTML = ""
                     
@@ -456,6 +475,7 @@ function getAboutUs(){
                     </div>`
 
                     tableBody.appendChild(form_content)
+                    }
                 }
             }
         })
@@ -643,6 +663,339 @@ function getNewsletters(){
         }
     });
     }
+/* get attendees */
+function getRegistrations(){
+    $.ajax({  
+        type: 'GET',  
+        url: 'app.php?action=get-registration',
+        success: function(response) {
+            
+            if(response == 2){
+                let db_response = document.getElementById("db_response").classList
+                document.getElementById("db_response").style.display="flex"
+                db_response.add("bg-warning")
+                    $('#get_response').html('No Registration Found')
+    
+            }else{
+                let registrations = JSON.parse(response)
+                let tableBody = document.getElementById("tbl_registration")
+                tableBody.innerHTML = "";
+                registrations.forEach(function(registration){
+                //check status here
+                function showStatus(){
+                    if(registration.status == '0'){
+                        return `<span>PENDING</span>`
+                    }else if(registration.status == '1'){
+                        return `<span class="text-primary">ATTENDED</span>`
+                    }else{
+                        return `<span class="text-muted">CANCELLED</span>`
+                    }
+                }
+                function showEnquiry(){
+                    if(registration.enquiries == null){
+                        return `None`
+                    }else{
+                        return `${registration.enquiries}`
+                    }
+                }
+                function checkStatus1(){
+                    if(registration.status == '0'){
+                        return `<i class="fa-solid fa-check check-registration"></i>`
+                    }else{
+                        return ``
+                    }
+                }
+                function checkStatus2(){
+                    if(registration.status == '0'){
+                        return `<i class="fas fa-times text-danger cancel-registration"></i>`
+                    }else if(registration.status == '1'){
+                        return ``
+                    }else{
+                        return `<i class="fa-solid fa-user-plus reg-registration"></i>`
+                    }
+                }
+
+                let row = document.createElement("tr"); // Create a new table row
+    
+                // Create table cells for each piece of data
+                let idCell = document.createElement("td");
+                idCell.textContent = registration.id;
+                idCell.hidden = true;
+        
+                let nameCell = document.createElement("td");
+                nameCell.innerHTML = `<p class="fw-bold text-primary">Name: ${registration.name}</p>
+                <p>Email: ${registration.email}</p>
+                <p>Enquiry: ${showEnquiry()}</p>`
+
+                let eventCell = document.createElement("td");
+                eventCell.innerHTML = `${registration.event}`
+
+                let enquiryCell = document.createElement("td");
+                enquiryCell.innerHTML = ``
+
+                let statusCell = document.createElement("td")
+                statusCell.innerHTML = `${showStatus()}`
+                
+                let actionCell = document.createElement('td');
+                actionCell.innerHTML = `${checkStatus1()}
+                ${checkStatus2()}
+                <i class="fa-solid fa-trash del-registration"></i> `
+
+                // // Append cells to the row
+                row.appendChild(idCell);
+                row.appendChild(nameCell);
+                row.appendChild(eventCell);
+                row.appendChild(statusCell);
+                row.appendChild(actionCell);
+        
+                // // Append the row to the table body
+                tableBody.appendChild(row);
+                $('#tbl').DataTable();
+            })
+        
+    }
+            
+        }
+    });
+    }
+        /* get volunteers*/
+function getVolunteers(){
+    $.ajax({  
+        type: 'GET',  
+        url: 'app.php?action=get-volunteers',
+        success: function(response) {
+            
+            if(response == 2){
+                let db_response = document.getElementById("db_response").classList
+                document.getElementById("db_response").style.display="flex"
+                db_response.add("bg-warning")
+                    $('#get_response').html('No Volunteers Found')
+    
+            }else{
+                let contacts = JSON.parse(response)
+                let tableBody = document.getElementById("tbl_volunteers")
+                tableBody.innerHTML = "";
+                contacts.forEach(function(contact){
+                //check status here
+                function showStatus(){
+                    if(contact.status == '0'){
+                        return `<span class="text-danger">UNREAD</span>`
+                    }else{
+                        return `<span class="text-primary">READ</span>`
+                    }
+                }
+                function showRead(){
+                    if(contact.status == '0'){
+                        return `<i class="fa-solid fa-check read-volunteer"></i>`
+                    }else{
+                        return ``
+                    }
+                }
+
+                let row = document.createElement("tr"); // Create a new table row
+    
+                // // Create table cells for each piece of data
+                let idCell = document.createElement("td");
+                idCell.textContent = contact.id;
+                idCell.hidden = true;
+        
+                let nameCell = document.createElement("td");
+                nameCell.innerHTML = `<p class="fw-bold text-primary">${contact.name}</p>
+                <p class="two-vh">${contact.phone}</p>
+                ${showStatus()}`
+
+                
+                let actionCell = document.createElement('td');
+                actionCell.innerHTML = `${showRead()}
+                <i class="fa-solid fa-trash del-volunteer"></i> `
+
+                // // Append cells to the row
+                row.appendChild(idCell);
+                row.appendChild(nameCell);
+                row.appendChild(actionCell);
+        
+                // // Append the row to the table body
+                tableBody.appendChild(row);
+                $('#tbl').DataTable();
+            })
+        
+    }
+            
+        }
+    });
+    }
+    /* get contacts*/
+function getContacts(){
+    $.ajax({  
+        type: 'GET',  
+        url: 'app.php?action=get-contacts',
+        success: function(response) {
+            
+            if(response == 2){
+                let db_response = document.getElementById("db_response").classList
+                document.getElementById("db_response").style.display="flex"
+                db_response.add("bg-warning")
+                    $('#get_response').html('No Contacts Found')
+    
+            }else{
+                let contacts = JSON.parse(response)
+                let tableBody = document.getElementById("tbl_contacts")
+                tableBody.innerHTML = "";
+                contacts.forEach(function(contact){
+                //check status here
+                function showStatus(){
+                    if(contact.status == '0'){
+                        return `<span class="text-danger">UNREAD</span>`
+                    }else{
+                        return `<span class="text-primary">READ</span>`
+                    }
+                }
+                function showRead(){
+                    if(contact.status == '0'){
+                        return `<i class="fa-solid fa-check read-contact"></i>`
+                    }else{
+                        return ``
+                    }
+                }
+
+                let row = document.createElement("tr"); // Create a new table row
+    
+                // // Create table cells for each piece of data
+                let idCell = document.createElement("td");
+                idCell.textContent = contact.id;
+                idCell.hidden = true;
+        
+                let nameCell = document.createElement("td");
+                nameCell.innerHTML = `<p class="fw-bold text-primary">${contact.name}</p>
+                <p class="two-vh">${contact.email}</p>`
+
+                let dateCell = document.createElement("td");
+                dateCell.innerHTML = `
+                <p>${contact.subject}</p>
+                <p>${contact.message}</p>
+                <p>${formatDateWithTime(contact.date)}</p>
+                ${showStatus()}`
+                
+                let actionCell = document.createElement('td');
+                actionCell.innerHTML = `${showRead()}
+                <i class="fa-solid fa-trash del-contact"></i> `
+
+                // // Append cells to the row
+                row.appendChild(idCell);
+                row.appendChild(nameCell);
+                row.appendChild(dateCell);
+                row.appendChild(actionCell);
+        
+                // // Append the row to the table body
+                tableBody.appendChild(row);
+                $('#tbl').DataTable();
+            })
+        
+    }
+            
+        }
+    });
+    }
+/* read contact */
+$(document).on('click', '.read-contact', function(){
+    let db_response = document.getElementById("db_response").classList
+    let status = confirm("Mark As Read?");
+    if(status == true){
+    const id = $(this).closest('tr').find('td:eq(0)').text().trim()
+    $.ajax({  
+        type: 'POST',  
+        url: 'app.php?action=read-contact', 
+        data: {id: id},
+        success: function(response) {
+            document.getElementById("db_response").style.display = "flex";
+            if (response == 1) {
+                db_response.add("bg-primary");
+                $('#get_response').html('Successful');
+                getContacts();
+            } else if (response == 2) {
+                db_response.add("bg-danger");
+                $('#get_response').html('Failed');
+            }
+        }
+    });
+}
+})
+/* read volunteer */
+$(document).on('click', '.read-volunteer', function(){
+    let db_response = document.getElementById("db_response").classList
+    let status = confirm("Mark As Read?");
+    if(status == true){
+    const id = $(this).closest('tr').find('td:eq(0)').text().trim()
+    $.ajax({  
+        type: 'POST',  
+        url: 'app.php?action=read-volunteer', 
+        data: {id: id},
+        success: function(response) {
+            document.getElementById("db_response").style.display = "flex";
+            if (response == 1) {
+                db_response.add("bg-primary");
+                $('#get_response').html('Successful');
+                getVolunteers();
+            } else if (response == 2) {
+                db_response.add("bg-danger");
+                $('#get_response').html('Failed');
+            }
+        }
+    });
+}
+})
+/* delete contact */
+$(document).on('click', '.del-contact', function(){
+    let db_response = document.getElementById("db_response").classList
+    let status = confirm("Delete this contact?");
+    if(status == true){
+    const id = $(this).closest('tr').find('td:eq(0)').text().trim()
+    $.ajax({  
+        type: 'POST',  
+        url: 'app.php?action=del-contact', 
+        data: {id: id},
+        success: function(response) {
+            document.getElementById("db_response").style.display = "flex";
+            if (response == 1) {
+                db_response.add("bg-primary");
+                $('#get_response').html('Successful');
+                getContacts();
+            } else if (response == 2) {
+                db_response.add("bg-danger");
+                $('#get_response').html('Failed');
+            }
+        }
+    });
+}
+
+})
+
+/* delete volunteer */
+$(document).on('click', '.del-volunteer', function(){
+    let db_response = document.getElementById("db_response").classList
+    let status = confirm("Delete this volunteer?");
+    if(status == true){
+    const id = $(this).closest('tr').find('td:eq(0)').text().trim()
+    $.ajax({  
+        type: 'POST',  
+        url: 'app.php?action=del-contact', 
+        data: {id: id},
+        success: function(response) {
+            document.getElementById("db_response").style.display = "flex";
+            if (response == 1) {
+                db_response.add("bg-primary");
+                $('#get_response').html('Successful');
+                getVolunteers();
+            } else if (response == 2) {
+                db_response.add("bg-danger");
+                $('#get_response').html('Failed');
+            }
+        }
+    });
+}
+
+})
+
 /*
 get products
 */
@@ -817,6 +1170,46 @@ function viewEvent(){
         success: function(response) {
         let events = response
         let event = events[0]
+
+        if(url == "http://localhost/apiecetoyou/?p=event-details" || url == "http://localhost/apiecetoyou/index.php?p=event-details"){
+
+            //get speakers
+        function showClientSpeakers(){
+            return event.event_speakers.map(function(speaker, index){
+                return `<div class="card">
+                <img src="assets/images/bg/members/${speaker.member_photo}" alt="">
+                <h4 class="card-title two-vh">${speaker.member_name}</h4>
+                <p class="text-third">${speaker.role}</p>
+                </div>`
+            }).join('')
+            }
+
+            let id = document.getElementById("event_id")
+            id.innerHTML = event.event_id
+            let event_name = document.getElementById("event_name")
+            event_name.innerHTML = event.event_name
+
+            let event_img = document.getElementById("event_img")
+            event_img.src = "assets/images/bg/events/"+ event.event_banner
+
+            let event_details_img = document.getElementById("event_details_banner")
+            event_details_img.src = "assets/images/bg/events/"+ event.event_banner
+
+            let event_description = document.getElementById("event_description")
+            event_description.innerHTML = event.event_description
+
+            let speakers = document.getElementById("client_speakers")
+            speakers.innerHTML = `${showClientSpeakers()}`
+
+            let event_time = document.getElementById("event_time")
+            event_time.innerHTML = `<i class="fa-regular fa-clock"></i> ${formatEventTime(event.event_start_date, event.event_duration) }`
+
+            let event_location = document.getElementById("event_location")
+            event_location.innerHTML = `<i class="fa-solid fa-location-crosshairs"></i> ${event.event_location}`
+
+
+
+        }else{
         let eventBody = document.getElementById("tbl_single_event")
         eventBody.innerHTML = ""
 
@@ -924,7 +1317,9 @@ function viewEvent(){
               </div>`
 
     }  
+}
     });
+    
     }
     /*
 view blog
@@ -937,6 +1332,12 @@ function viewBlog(){
         
         let blogs = response
         let blog = blogs[0]
+
+        if(url == "http://localhost/apiecetoyou/?p=read-blog" || url == "http://localhost/apiecetoyou/index.php?p=read-blog"){
+
+            document.getElementById("blog_banner").src == "assets/images/bg/blogs/"+blog.banner
+
+        }else{
         let eventBody = document.getElementById("tbl_single_blog")
         eventBody.innerHTML = ""
 
@@ -989,8 +1390,9 @@ function viewBlog(){
             </div>`
 
     }  
-    });
-    }
+}
+});
+}
 /*
 get product
 */
@@ -1271,17 +1673,17 @@ function getMembers(){
                 let linkCell = document.createElement("td")
                 linkCell.className = "tbl-links"
                 linkCell.innerHTML = `<span class="text-primary">
-        <a href="${member.facebook}">
+        <a href="${member.facebook}" target="_blank">
           <i class="fa-brands fa-facebook-f"></i>
       </a>
       </span>
       <span class="text-primary">
-        <a href="${member.instagram}">
+        <a href="${member.instagram}" target="_blank">
           <i class="fa-brands fa-instagram"></i>
       </a>
       </span>
       <span class="text-primary">
-        <a href="${member.linkedin}">
+        <a href="${member.linkedin}" target="_blank">
           <i class="fa-brands fa-linkedin"></i>
       </a>
       </span>
@@ -1289,7 +1691,7 @@ function getMembers(){
         <a href="'mailto:'${member.email}"><i class="fa-solid fa-envelope"></i></a>
 
       </span>
-      <span class="text-primary">
+      <span class="text-primary" target="_blank">
         <a href="${member.twitter}">
           <i class="fa-brands fa-twitter"></i>
       </a>
@@ -1623,6 +2025,13 @@ function getSettings(){
                 .openPopup();
                 /* end of map */
 
+            }else if(url == "http://localhost/apiecetoyou/?p=event-details" || url == "http://localhost/apiecetoyou/index.php?p=event-details"){
+                let settings = JSON.parse(response)
+                let setting = settings[0]
+
+                document.getElementById("event_phone").innerHTML = setting.phone
+                document.getElementById("event_email").innerHTML = setting.email
+
             }else{
             let settings = JSON.parse(response)
             let setting = settings[0]
@@ -1786,7 +2195,7 @@ function getEvents(){
                     tableBody.appendChild(card)
                 })
 
-            }else if(url =="http://localhost/apiecetoyou/?p=events"){
+            }else if(url =="http://localhost/apiecetoyou/?p=events" || url =="http://localhost/apiecetoyou/index.php?p=events"){
                 let events = JSON.parse(response)
                 let tableBody = document.getElementById("tbl_events")
                 tableBody.innerHTML = "";
@@ -1805,8 +2214,40 @@ function getEvents(){
                     <p class="text-primary" style="margin-top:20px !important">Location</p>
                     <p class="text-muted"><i class="fa-solid fa-location-crosshairs"></i> ${event.location}</p>
                     </div>
-                    <div class="col-12" style="border-top:1px solid rgb(230,230,230)">
-                    <button class="btn btn-primary-box btn-primary">
+                    <div class="col-12 bottom-holder" style="border-top:1px solid rgb(230,230,230)">
+                    <p class="event-id" hidden>${event.id}</p>
+                    <button class="btn btn-primary-box btn-primary client-view-event">
+                    READ MORE
+                    </button>
+                    </div>
+                    </div>
+                    </div>
+                    </div>`
+
+                    tableBody.appendChild(row)
+                })
+            }else if(url =="http://localhost/apiecetoyou/?p=event-details" || url =="http://localhost/apiecetoyou/index.php?p=event-details"){
+                let events = JSON.parse(response)
+                let tableBody = document.getElementById("event_details_events")
+                tableBody.innerHTML = "";
+                events.slice(0,4).forEach(function(event){
+                    let row = document.createElement("div")
+                    row.className = "col-3"
+                    row.innerHTML = `
+                    <div class="card">
+                    <img src="assets/images/bg/events/${event.banner}" alt="" class="card-img-top">
+                    <div class="card-body position-relative">
+                    <div class="card-body-inner">
+                    <h3 class="text-third">${event.name }</h3>
+                    <div class="col-12">
+                    <p class="text-primary">Date & Time</p>
+                    <p class="text-muted"><i class="fa-regular fa-clock"></i> ${ formatEventTime(event.date, event.duration)} </p>
+                    <p class="text-primary" style="margin-top:20px !important">Location</p>
+                    <p class="text-muted"><i class="fa-solid fa-location-crosshairs"></i> ${event.location}</p>
+                    </div>
+                    <div class="col-12 bottom-holder" style="border-top:1px solid rgb(230,230,230)">
+                    <p class="event-id" hidden>${event.id}</p>
+                    <button class="btn btn-primary-box btn-primary client-view-event">
                     READ MORE
                     </button>
                     </div>
@@ -1924,7 +2365,7 @@ function getBlogs(){
 
                     blogs.forEach(function(blog){
                         let row = document.createElement("div")
-                        row.className = "col-11 card"
+                        row.className = "col-11 card blog-card"
                         row.style.marginBottom = "30px !important";
                         row.innerHTML = `<img  src="assets/images/bg/blogs/${blog.banner}" class="w-100 banner-img" alt="">
                         <div class="blog-detail four-vh">
@@ -1938,8 +2379,9 @@ function getBlogs(){
                                 <span class="text-muted"><i class="fa-solid fa-tags"></i> ${blog.category}</span>
                             </div>
                         </div>
+                        <p class="blog-id" hidden>${blog.id}</p>
                         <h3 class="text-third four-vh"> ${blog.name}</h3>
-                        <button class="btn btn-primary four-vh">READ MORE</button>`
+                        <button class="btn btn-primary four-vh read-blog">READ MORE</button>`
 
                         //apend child
                         tableBody.appendChild(row)
@@ -2165,6 +2607,22 @@ function getBlogs(){
                 document.getElementById("db_response").style.display="flex"
                 setTimeout(() => {
                     location.href="?p=view-blog"
+                }, 200);
+            }
+        });
+        
+    })
+    $(document).on('click', '.read-blog', function(){
+        let id = $(this).closest('.blog-card').find('.blog-id').text().trim()
+        $.ajax({  
+            type: 'POST',  
+            url: 'app.php?action=view-blog', 
+            data: {
+                id:id
+            },
+            success: function(response) {
+                setTimeout(() => {
+                    location.href="?p=read-blog"
                 }, 200);
             }
         });
@@ -2705,9 +3163,7 @@ function getBlogs(){
         }
 
     });
-    /*
-    * view event
-    */
+    /* view event */
     $(document).on('click', '.view-event', function() {
         let db_response = document.getElementById("db_response").classList
         // Find the associated input field
@@ -2725,7 +3181,145 @@ function getBlogs(){
             }, 200);
         }
     });
+    });
+/* mark registration */
+$(document).on('click', '.check-registration', function() {
+    if(confirm("Mark as attended?") == true){
+    let db_response = document.getElementById("db_response").classList
+    // Find the associated input field
+   let id = $(this).closest('tr').find('td:eq(0)').text().trim()
+   $.ajax({  
+    type: 'POST',  
+    url: 'app.php?action=check-registration', 
+    data: {
+        id:id
+    },
+    success: function(response) {
+        console.log(response)
+        if (response == 1) {
+            db_response.add("bg-primary");
+            $('#get_response').html('Successful');
+            getRegistrations();
+        } else if (response == 2) {
+            db_response.add("bg-danger");
+            $('#get_response').html('Failed');
+        }
+    }
+    });
+    }
+});
+/* cancel registration */
+$(document).on('click', '.cancel-registration', function() {
+    if(confirm("Cancel registration?") == true){
+    let db_response = document.getElementById("db_response").classList
+    // Find the associated input field
+   let id = $(this).closest('tr').find('td:eq(0)').text().trim()
+   $.ajax({  
+    type: 'POST',  
+    url: 'app.php?action=cancel-registration', 
+    data: {
+        id:id
+    },
+    success: function(response) {
+        console.log(response)
+        if (response == 1) {
+            db_response.add("bg-primary");
+            $('#get_response').html('Successful');
+            getRegistrations();
+        } else if (response == 2) {
+            db_response.add("bg-danger");
+            $('#get_response').html('Failed');
+        }
+    }
+    });
+    }
+});
+/* re register */
+$(document).on('click', '.reg-registration', function() {
+    if(confirm("Re-register this attendee?") == true){
+    let db_response = document.getElementById("db_response").classList
+    // Find the associated input field
+   let id = $(this).closest('tr').find('td:eq(0)').text().trim()
+   $.ajax({  
+    type: 'POST',  
+    url: 'app.php?action=reg-registration', 
+    data: {
+        id:id
+    },
+    success: function(response) {
+        console.log(response)
+        if (response == 1) {
+            db_response.add("bg-primary");
+            $('#get_response').html('Successful');
+            getRegistrations();
+        } else if (response == 2) {
+            db_response.add("bg-danger");
+            $('#get_response').html('Failed');
+        }
+    }
+    });
+    }
+});
+/* delete registration */
+$(document).on('click', '.del-registration', function() {
+    if(confirm("Delete this registration?") == true){
+    let db_response = document.getElementById("db_response").classList
+    // Find the associated input field
+   let id = $(this).closest('tr').find('td:eq(0)').text().trim()
+   $.ajax({  
+    type: 'POST',  
+    url: 'app.php?action=del-registration', 
+    data: {
+        id:id
+    },
+    success: function(response) {
+        console.log(response)
+        if (response == 1) {
+            db_response.add("bg-primary");
+            $('#get_response').html('Successful');
+            getRegistrations();
+        } else if (response == 2) {
+            db_response.add("bg-danger");
+            $('#get_response').html('Failed');
+        }
+    }
+    });
+    }
+});
+/* register event */
+$(document).on('click', '#register-event', function() {
+    // Find the associated input field
+   let id = document.getElementById("event_id").innerText
+   $.ajax({  
+    type: 'POST',  
+    url: 'app.php?action=register-event', 
+    data: {
+        id:id
+    },
+    success: function(response) {
+        setTimeout(() => {
+            location.href="?p=register"
+        }, 200);
+    }
+});
+});
 
+/* view event */
+    $(document).on('click', '.client-view-event', function() {
+        // Find the associated input field
+       let id = $(this).closest('.bottom-holder').find('.event-id').text().trim()
+       $.ajax({  
+        type: 'POST',  
+        url: 'app.php?action=view-event', 
+        data: {
+            id:id
+        },
+        success: function(response) {
+            setTimeout(() => {
+                location.href="?p=event-details"
+            }, 200);
+        }
+    });
     });
     /*
     * view event
@@ -2967,7 +3561,6 @@ function getBlogs(){
         url: 'app.php?action=add-subscriber', 
         data: $('#addSubscriber').serialize(),
         success: function(response) {
-            console.log(response)
             document.getElementById("db_response").style.display = "flex";
             if (response == 1) {
                 db_response.add("bg-primary");
@@ -2980,6 +3573,87 @@ function getBlogs(){
                 db_response.add("bg-warning");
                 $('#get_response').html('Already Exists');
             }
+        }
+   })
+   })
+   $('#regSubscriber').on('submit', function(e){
+    e.preventDefault()
+    $.ajax({  
+        type: 'POST',  
+        url: 'app.php?action=add-subscriber', 
+        data: $('#regSubscriber').serialize(),
+        success: function(response) {
+            if (response == 1) {
+                $('#footer_response').html('Registered. Thank You');
+            } else if (response == 2) {
+                $('#footer_response').html('Failed');
+            } else {
+                $('#footer_response').html('Already Registered');
+            }
+            setTimeout(() => {
+                $('#footer_response').html('');
+            }, 2000);
+        }
+   })
+   })
+   /* add volunteer */
+   $('#addVolunteer').on('submit', function(e){
+    e.preventDefault()
+    $.ajax({  
+        type: 'POST',  
+        url: 'app.php?action=add-volunteer', 
+        data: $('#addVolunteer').serialize(),
+        success: function(response) {
+            if (response == 1) {
+                $('#volunteer_response').html('Registered. Thank You');
+            } else if (response == 2) {
+                $('#volunteer_response').html('Failed');
+            } else {
+                $('#volunteer_response').html('Already Registered');
+            }
+            setTimeout(() => {
+                $('#volunteer_response').html('');
+            }, 2000);
+        }
+   })
+   })
+   /* add contact */
+   $('#addContact').on('submit', function(e){
+    e.preventDefault()
+    $.ajax({  
+        type: 'POST',  
+        url: 'app.php?action=add-contact', 
+        data: $('#addContact').serialize(),
+        success: function(response) {
+            if (response == 1) {
+                $('#contact_response').html('Sent, We will get back to you. Thank You');
+            } else if (response == 2) {
+                $('#contact_response').html('Failed');
+            }
+            setTimeout(() => {
+                $('#contact_response').html('');
+            }, 2000);
+        }
+   })
+   })
+   /* register event */
+   $('#registerEvent').on('submit', function(e){
+    e.preventDefault()
+    $.ajax({  
+        type: 'POST',  
+        url: 'app.php?action=reg-event', 
+        data: $('#registerEvent').serialize(),
+        success: function(response) {
+            if (response == 1) {
+                $('#contact_response').html('Registered, We will get back to you. Thank You');
+            } else if (response == 2) {
+                $('#contact_response').html('Failed');
+            } else if (response == 3) {
+                $('#contact_response').html('Already Registered');
+            }
+            setTimeout(() => {
+                $('#contact_response').html('');
+            }, 2000);
         }
    })
    })
@@ -3023,6 +3697,26 @@ function getPrograms(){
     
             }else{
             let programs = JSON.parse(response)
+
+            if(url == "http://localhost/apiecetoyou/?p=home" || url == "http://localhost/apiecetoyou/index.php?p=home" || url == "http://localhost/apiecetoyou/" || url == "http://localhost/apiecetoyou/index.php"){
+                let tableBody = document.getElementById("home_programs")
+                tableBody.innerHTML = "";
+                programs.slice(0, 4).forEach(function(program){
+                    
+                    let row = document.createElement("div")
+                    row.className = "card"
+                    row.innerHTML =`<div class="text-center">
+                        ${program.icon}
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title text-primary">${program.title}</h5>
+                        <p class="card-text">${program.content}</p>
+                    </div>`
+
+                    tableBody.appendChild(row)
+                })
+
+            }else{
             
                 let tableBody = document.getElementById("tbl_programs")
                 tableBody.innerHTML = "";
@@ -3058,6 +3752,7 @@ function getPrograms(){
                 tableBody.appendChild(row);
                 $('#tbl').DataTable();
             })
+        }
         
     }
             
@@ -3184,6 +3879,36 @@ function getValues(){
     
             }else{
             let programs = JSON.parse(response)
+
+            if(url == "http://localhost/apiecetoyou/?p=about-us" || url == "http://localhost/apiecetoyou/index.php?p=about-us"){
+                let tableBody = document.getElementById("about_top_values")
+                tableBody.innerHTML = "";
+                programs.slice(0, 3).forEach(function(program){
+                    let value_card = document.createElement("div")
+                    value_card.className = "col-3 value bg-gradient"
+                    value_card.innerHTML = `<div class="inner-value text-white">
+                    ${program.icon}
+                    <p class="text-white">${program.title}</p>
+                    </div>`
+                    tableBody.appendChild(value_card)
+                })
+
+                //bottom values
+                let bottomBody = document.getElementById("bottom_values")
+                bottomBody.innerHTML = ""
+                programs.forEach(function(program){
+                    let value_card = document.createElement("div")
+                    value_card.className = "col-4 card four-vh"
+                    value_card.innerHTML = `<div class="icon-holder">
+                    ${program.icon}
+                    </div>
+                    <p class="two-vh text-third fw-bold text-uppercase">${program.title}</p>
+                    <p class="text-muted two-vh">${program.content}</p>`
+
+                    bottomBody.appendChild(value_card)
+                })
+
+            }else{
             
                 let tableBody = document.getElementById("tbl_values")
                 tableBody.innerHTML = "";
@@ -3219,6 +3944,7 @@ function getValues(){
                 tableBody.appendChild(row);
                 $('#tbl').DataTable();
             })
+        }
         
     }
             

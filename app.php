@@ -578,6 +578,45 @@ else if($action == 'get-events'){
 else if($action === "view-event"){
     $_SESSION['event-id'] = $_POST['id'];
 }  
+/* GO TO REGISTER */
+else if($action === "register-event"){
+    $_SESSION['event-id'] = $_POST['id'];
+    
+}
+/* REGISTER EVENT */
+else if($action == "reg-event"){
+    $event_id = $_SESSION["event-id"];
+    $name = $_POST["name"];
+    $email = $_POST["email"];
+    $enquries = $_POST["enquiries"];
+
+    $confirm_qry="select * from registration where registration_email = ? and registration_event_id = ? limit 1";
+    $confirm_stmt=mysqli_stmt_init($conn);
+    mysqli_stmt_prepare($confirm_stmt,$confirm_qry);
+    
+    mysqli_stmt_bind_param($confirm_stmt, 'ss', $email, $event_id);
+    mysqli_stmt_execute($confirm_stmt);
+    $result=mysqli_stmt_get_result($confirm_stmt);
+    $rowcount=mysqli_num_rows($result);
+    if($rowcount>=1){
+        echo "3";
+    }else{
+    //inserting data into db
+    $insert_qry="insert into registration(registration_event_id, registration_name, registration_email, registration_enquiries) values(?, ?, ?, ?) ";
+    $insert_stmt=mysqli_stmt_init($conn);
+    mysqli_stmt_prepare($insert_stmt, $insert_qry);
+   
+    mysqli_stmt_bind_param($insert_stmt, "ssss",$event_id, $name, $email, $enquries);
+    if(mysqli_stmt_execute($insert_stmt)){
+        echo "1";
+    }else{
+        echo "2";
+        echo mysqli_error($conn);
+    }
+    
+    }
+
+}
 /* VIEW SINGLE EVENT */
 else if($action == 'viewevent'){
     // Event ID to filter
@@ -610,9 +649,9 @@ while ($row = $result->fetch_assoc()) {
     $speaker_ids_placeholder = implode(",", array_fill(0, count($speaker_ids), "?"));
     $speaker_sql = "
         SELECT 
-        member_id, member_name, member_role, member_photo, facebook, instagram, linkedin, email, twitter
-        FROM members
-        WHERE member_id IN ($speaker_ids_placeholder)
+        member_id, member_name, member_role, member_photo, facebook, instagram, linkedin, email, twitter, role_name
+        FROM members inner join roles on members.member_role = roles.role_id
+        and member_id IN ($speaker_ids_placeholder)
     ";
     
 
@@ -628,6 +667,7 @@ while ($row = $result->fetch_assoc()) {
             'member_id' => $speaker['member_id'],
             'member_name' => $speaker['member_name'],
             'member_role' => $speaker['member_role'],
+            'role' => $speaker['role_name'],
             'member_photo' => $speaker['member_photo'],
             'facebook' => $speaker['facebook'],
             'instagram' => $speaker['instagram'],
@@ -1028,6 +1068,86 @@ else if($action == 'disable-product'){
 else if($action == 'enable-product'){
     $id = $_POST['id'];
     if($conn->query("update products set product_status = '0' where product_id =".$id)){
+        echo "1";
+    }else{
+        echo "2";
+    }
+
+}
+/* DELETE CONTACT */
+else if($action == 'del-contact'){
+    $id = $_POST['id'];
+    if($conn->query("delete from contacts where contact_id =".$id)){
+        echo "1";
+    }else{
+        echo "2";
+    }
+
+}
+/* DELETE VOLUNTEER */
+else if($action == 'del-volunteers'){
+    $id = $_POST['id'];
+    if($conn->query("delete from volunteers where volunteer_id =".$id)){
+        echo "1";
+    }else{
+        echo "2";
+    }
+
+}
+/* MARK AS READ */
+else if($action == 'read-contact'){
+    $id = $_POST['id'];
+    if($conn->query("update contacts set contact_status = '1' where contact_id =".$id)){
+        echo "1";
+    }else{
+        echo "2";
+    }
+
+}
+/* MARK AS ATTENDED */
+else if($action == 'check-registration'){
+    $id = $_POST['id'];
+    if($conn->query("update registration set registration_status = '1' where registration_id =".$id)){
+        echo "1";
+    }else{
+        echo "2";
+    }
+
+}
+/* MARK AS CANCELLED */
+else if($action == 'cancel-registration'){
+    $id = $_POST['id'];
+    if($conn->query("update registration set registration_status = '2' where registration_id =".$id)){
+        echo "1";
+    }else{
+        echo "2";
+    }
+
+}
+/* MARK AS CANCELLED */
+else if($action == 'reg-registration'){
+    $id = $_POST['id'];
+    if($conn->query("update registration set registration_status = '1' where registration_id =".$id)){
+        echo "1";
+    }else{
+        echo "2";
+    }
+
+}
+/* DELETE REGISTRATION */
+else if($action == 'del-registration'){
+    $id = $_POST['id'];
+    if($conn->query("delete from registration where registration_id =".$id)){
+        echo "1";
+    }else{
+        echo "2";
+    }
+
+}
+/* MARK AS READ */
+else if($action == 'read-volunteer'){
+    $id = $_POST['id'];
+    if($conn->query("update volunteers set volunteer_status = '0' where volunteer_id =".$id)){
         echo "1";
     }else{
         echo "2";
@@ -1476,6 +1596,78 @@ else if($action == "get-newsletters"){
         echo json_encode($result); // Send result as JSON
     }
 }
+/* GET REGISTRATION */
+else if($action == "get-registration"){
+    $get_registration = $conn->query("select * from registration inner join events on events.event_id = registration.registration_event_id order by registration_id DESC");
+    $count = mysqli_num_rows($get_registration);
+
+    if ($count < 1) {
+        $result = 2;
+        echo json_encode($result);
+    } else {
+        $result = []; // Initialize result array
+        while ($registration = mysqli_fetch_assoc($get_registration)) {
+            // Prepare each newsletter with attachments
+            $result[] = [
+                'id' => $registration['registration_id'],
+                'name' => $registration['registration_name'],
+                'email' => $registration['registration_email'],
+                'enquiries' => $registration['registration_enquiries'],
+                'status' => $registration['registration_status'],
+                'event' => $registration['event_name']
+            ];
+        }
+        echo json_encode($result); // Send result as JSON
+    }
+}
+/* GET CONTACTS */
+else if($action == "get-contacts"){
+    $get_contacts = $conn->query("select * from contacts order by contact_id DESC");
+    $count = mysqli_num_rows($get_contacts);
+
+    if ($count < 1) {
+        $result = 2;
+        echo json_encode($result);
+    } else {
+        $result = []; // Initialize result array
+        while ($contact = mysqli_fetch_assoc($get_contacts)) {
+            // Prepare each newsletter with attachments
+            $result[] = [
+                'id' => $contact['contact_id'],
+                'name' => $contact['contact_name'],
+                'email' => $contact['contact_email'],
+                'subject' => $contact['contact_subject'],
+                'date' => $contact['contact_date'],
+                'message' => $contact['contact_message'],
+                'status' => $contact['contact_status']
+            ];
+        }
+        echo json_encode($result); // Send result as JSON
+    }
+}
+/* GET CONTACTS */
+else if($action == "get-volunteers"){
+    $get_contacts = $conn->query("select * from volunteers order by volunteer_id DESC");
+    $count = mysqli_num_rows($get_contacts);
+
+    if ($count < 1) {
+        $result = 2;
+        echo json_encode($result);
+    } else {
+        $result = []; // Initialize result array
+        while ($contact = mysqli_fetch_assoc($get_contacts)) {
+            // Prepare each newsletter with attachments
+            $result[] = [
+                'id' => $contact['volunteer_id'],
+                'name' => $contact['volunteer_name'],
+                'phone' => $contact['volunteer_phone'],
+                'status' => $contact['volunteer_status'],
+                'date' => $contact['volunteer_date']
+            ];
+        }
+        echo json_encode($result); // Send result as JSON
+    }
+}
 /* DELETE NEWSLETTER */
 else if($action == "del-letter"){
     $id = $_POST['id'];
@@ -1523,6 +1715,53 @@ else if($action == "add-subscriber"){
     }else{
         echo "2";
     }
+}
+
+}
+/* ADD VOLUNETTER */
+else if($action == "add-volunteer"){
+    $name = $_POST["volunteer_name"];
+    $phone = $_POST["volunteer_phone"];
+
+    $confirm_qry="select * from volunteers where volunteer_phone = ? limit 1";
+    $confirm_stmt=mysqli_stmt_init($conn);
+    mysqli_stmt_prepare($confirm_stmt,$confirm_qry);
+    
+    mysqli_stmt_bind_param($confirm_stmt, 's', $phone);
+    mysqli_stmt_execute($confirm_stmt);
+    $result=mysqli_stmt_get_result($confirm_stmt);
+    $rowcount=mysqli_num_rows($result);
+    if($rowcount>=1){
+        echo "3";
+    }else{
+    $insert_qry = "insert into volunteers(volunteer_name, volunteer_phone) values(?,?)";
+    $insert_stmt = mysqli_stmt_init($conn);
+    mysqli_stmt_prepare($insert_stmt, $insert_qry);
+    mysqli_stmt_bind_param($insert_stmt, "ss", $name, $phone);
+    if(mysqli_stmt_execute($insert_stmt)){
+        echo "1";
+    }else{
+        echo "2";
+    }
+}
+
+}
+/* ADD CONTACT */
+else if($action == "add-contact"){
+    $name = $_POST["contact_name"];
+    $email = $_POST["contact_email"];
+    $subject = $_POST["contact_subject"];
+    $message = $_POST["contact_message"];
+    
+    $insert_qry = "insert into contacts(contact_name, contact_email, contact_subject, contact_message) values(?,?,?,?)";
+    $insert_stmt = mysqli_stmt_init($conn);
+    mysqli_stmt_prepare($insert_stmt, $insert_qry);
+    mysqli_stmt_bind_param($insert_stmt, "ssss", $name, $email, $subject, $message);
+    if(mysqli_stmt_execute($insert_stmt)){
+        echo "1";
+    }else{
+        echo "2";
+    
 }
 
 }

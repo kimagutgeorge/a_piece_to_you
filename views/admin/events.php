@@ -19,7 +19,7 @@
     </div>
     <div class="col-4">
     <a href="?p=add-event"><button class="btn btn-primary">ADD EVENT</button></a>
-    <button class="btn btn-primary" @click="$router.push('/registration')">ATTENDEES</button>
+    <a href="?p=registration"><button class="btn btn-primary">REGISTRATION</button></a>
     </div>
     </div>
     <div class="col-12 events-panel" style="margin-top:15px !important" id="tbl_events">

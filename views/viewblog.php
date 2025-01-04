@@ -7,9 +7,9 @@
           </div>
         </div>
         <div class="view-event blogs hero-84 row ten-vh">
-            <div class="col-8 row" v-if="blogs">
+            <div class="col-8 row">
             <div class="col-11 card">
-                <img v-if="blog_banner" :src="require(`../../assets/images/bg/blogs/${ blog_banner }`)" class="w-100 banner-img" alt="">
+                <img id="blog_banner" :src="" class="w-100 banner-img" alt="">
                 <div class="blog-detail four-vh">
                     <div class="icon">
                         <span class="text-muted"><i class="fa-solid fa-user"></i> {{ writer }}</span>

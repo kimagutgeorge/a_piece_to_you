@@ -14,6 +14,16 @@ include("components/header.php");?>
         <?php include("views/about.php");
         include("components/footer.php");?>
         </div>
+    <?php }else if($_GET["p"] == "event-details"){?>
+        <div class="home-route">
+        <?php include("views/viewevent.php");
+        include("components/footer.php");?>
+        </div>
+    <?php }else if($_GET["p"] == "register"){?>
+        <div class="home-route">
+        <?php include("views/register.php");
+        include("components/footer.php");?>
+        </div>
     <?php }else if($_GET["p"] == "events"){?>
         <div class="home-route">
         <?php include("views/events.php");
@@ -121,6 +131,34 @@ include("components/header.php");?>
     </div>
     </div>
     </div>
+    <?php }else if($_GET["p"] == "contacts"){?>
+    <div class="other-page">
+    <div class="main-page row">
+    <div class="col-2">
+    <?php include("components/admin/navbar.php");?>
+    </div>
+    <div class="col-10 side-page overflow-auto">
+    <?php 
+    include("components/admin/topbar.php");
+    include("views/admin/contacts.php");
+    include("components/admin/footer.php");?>
+    </div>
+    </div>
+    </div>
+    <?php }else if($_GET["p"] == "roles"){?>
+    <div class="other-page">
+    <div class="main-page row">
+    <div class="col-2">
+    <?php include("components/admin/navbar.php");?>
+    </div>
+    <div class="col-10 side-page overflow-auto">
+    <?php 
+    include("components/admin/topbar.php");
+    include("views/admin/roles.php");
+    include("components/admin/footer.php");?>
+    </div>
+    </div>
+    </div>
     <?php }else if($_GET["p"] == "website"){?>
     <div class="other-page">
     <div class="main-page row">
@@ -215,6 +253,20 @@ include("components/header.php");?>
     <?php 
     include("components/admin/topbar.php");
     include("views/admin/newsletters.php");
+    include("components/admin/footer.php");?>
+    </div>
+    </div>
+    </div>
+    <?php }else if($_GET["p"] == "registration"){?>
+    <div class="other-page">
+    <div class="main-page row">
+    <div class="col-2">
+    <?php include("components/admin/navbar.php");?>
+    </div>
+    <div class="col-10 side-page overflow-auto">
+    <?php 
+    include("components/admin/topbar.php");
+    include("views/admin/attendees.php");
     include("components/admin/footer.php");?>
     </div>
     </div>

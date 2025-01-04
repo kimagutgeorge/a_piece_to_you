@@ -11,21 +11,23 @@
                 <div class="card">
                     <h4 class="text-primary two-vh">Register</h4>
                     <p class="text-muted two-vh">Fill out this form to register for the event. An invite link and Details will be sent to your Email</p>
+                    <form id="registerEvent">
                     <div class="form-group">
-                        <input type="text" class="form-control" v-model="name" placeholder="Your Name">
+                        <input type="text" class="form-control" name="name" placeholder="Your Name" required>
                     </div>
                     <div class="form-group">
-                        <input type="text" class="form-control" v-model="email" placeholder="Your Email Address">
+                        <input type="email" class="form-control" name="email" placeholder="Your Email Address" required>
                     </div>
                         <div class="form-group">
-                            <textarea placeholder="Any Enquiries?" v-model="enquiries" class="form-control"></textarea>
+                            <textarea placeholder="Any Enquiries?" name="enquiries" class="form-control"></textarea>
                         </div>
                         <div class="form-group">
-                            <p class="text-primary">{{response}}</p>
+                            <p class="text-primary" id="contact_response"></p>
                         </div>
                         <div class="form-group">
-                            <button class="btn btn-primary-box btn-primary" @click="register">REGISTER <i class="fa-solid fa-paper-plane"></i></button>
+                            <button type="submit" class="btn btn-primary-box btn-primary" >REGISTER <i class="fa-solid fa-paper-plane"></i></button>
                         </div>
+                    </form>
                         
                     </div>
             </div>

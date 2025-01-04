@@ -25,23 +25,25 @@
                 <div class="card">
                     <h4 class="text-primary two-vh">Send Us A Message</h4>
                     <p class="text-muted two-vh">Fill out this form to send your inquires or complaints.</p>
+                    <form id="addContact">
                     <div class="form-group">
-                        <input type="text" v-model="contact_name" class="form-control" placeholder="Your Name">
+                        <input type="text" name="contact_name" class="form-control" placeholder="Your Name" required>
                     </div>
                     <div class="form-group">
-                        <input type="text" v-model="contact_email" class="form-control" placeholder="Your Email Address">
+                        <input type="email" name="contact_email" class="form-control" placeholder="Your Email Address" required>
                     </div>
                         <div class="form-group">
-                            <input type="text" v-model="contact_subject" class="form-control" placeholder="Subject">
+                            <input type="text" name="contact_subject" class="form-control" placeholder="Subject" required>
                         </div>
                         <div class="form-group">
-                            <textarea placeholder="Your Message" class="form-control" v-model="contact_message"></textarea>
+                            <textarea placeholder="Your Message" class="form-control" name="contact_message" required></textarea>
                         </div>
                         <div class="form-group">
-                            <button class="btn btn-primary-box btn-primary" @click="contactUs">SUBMIT <i class="fa-solid fa-paper-plane"></i></button>
+                            <button class="btn btn-primary-box btn-primary" >SUBMIT <i class="fa-solid fa-paper-plane"></i></button>
                         </div>
+                        </form>
                         <div class="form-group">
-                            <p class="text-primary">{{contact_response}}</p>
+                            <p class="text-primary" id="contact_response"></p>
                         </div>
                     </div>
             </div>

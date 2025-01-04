@@ -43,6 +43,12 @@
                         echo "Create Newsletter";
                     }else if($_GET["p"] == 'website'){
                         echo "Website";
+                    }else if($_GET["p"] == 'contacts'){
+                        echo "Contacts";
+                    }else if($_GET["p"] == 'roles'){
+                        echo "Roles";
+                    }else if($_GET["p"] == 'registration'){
+                        echo "Registration";
                     }
                 ?>
             </p></div>
@@ -99,6 +105,12 @@
                         echo "Create Newsletter";
                     }else if($_GET["p"] == 'website'){
                         echo "Website";
+                    }else if($_GET["p"] == 'contacts'){
+                        echo "Contacts";
+                    }else if($_GET["p"] == 'roles'){
+                        echo "Roles";
+                    }else if($_GET["p"] == 'registration'){
+                        echo "Registration";
                     }
                 ?>
             </h3>
