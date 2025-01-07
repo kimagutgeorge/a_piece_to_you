@@ -993,6 +993,10 @@ echo json_encode($products);
 else if($action === "view-product"){
     $_SESSION['product-id'] = $_POST['id'];
 }
+/* GO TO VIEW ORDER */
+else if($action === "view-order"){
+    $_SESSION['order-id'] = $_POST['id'];
+}
 /* VIEW PRODUCT */
 else if($action == "viewproduct"){
     $products = [];
@@ -1600,6 +1604,30 @@ else if($action == "get-newsletters"){
         echo json_encode($result); // Send result as JSON
     }
 }
+/* GET ORDERS */
+else if($action == "get-orders"){
+    $get_orders = $conn->query("select * from client_order_details order by client_id DESC");
+    $count = mysqli_num_rows($get_orders);
+
+    if ($count < 1) {
+        $result = 2;
+        echo json_encode($result);
+    } else {
+        $result = []; // Initialize result array
+        while ($order = mysqli_fetch_assoc($get_orders)) {
+            // Prepare each newsletter with attachments
+            $result[] = [
+                'id' => $order['client_id'],
+                'name' => $order['client_name'],
+                'phone' => $order['client_phone'],
+                'order' => $order['client_order_id'],
+                'status' => $order['order_status'],
+                'date' => $order['client_order_date']
+            ];
+        }
+        echo json_encode($result); // Send result as JSON
+    }
+}
 /* GET REGISTRATION */
 else if($action == "get-registration"){
     $get_registration = $conn->query("select * from registration inner join events on events.event_id = registration.registration_event_id order by registration_id DESC");
@@ -2091,6 +2119,124 @@ else if($action == 'del-value'){
     }else{
         echo "2";
     }
+}
+/* PLACE ORDER */
+else if($action == "place-order"){
+
+    $client_name = $_POST["client_name"];
+    $phone = $_POST["phone"];
+    $email = $_POST["email"];
+    $county = $_POST["county"];
+    $town = $_POST["town"];
+    $total__order_price = $_POST["total_price"];
+
+    // Retrieve and decode the products array
+    $products =  $_POST['products'];
+
+    // Generate a random string
+    $random_string = substr(str_shuffle("ABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, 4);
+
+    // Existing order details
+    $apy = "#APY";
+    $order = "ODR";
+
+    // Combine the order with the random string
+    $order_with_random = "{$apy}-{$random_string}-{$order}";
+
+    // Insert initial record into the `client_order_details` table to get the client_id
+    $stmt = $conn->prepare("INSERT INTO client_order_details (client_name, client_phone, client_email, client_county, client_residence, client_product_total_price) VALUES (?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("ssssss", $client_name, $phone, $email, $county, $town, $total__order_price);
+    $stmt->execute();
+    $client_id = $stmt->insert_id; // Get the last inserted client_id
+
+    // Combine the order with the random string and client_id
+    $order_with_random = "{$apy}-{$random_string}-{$order}-{$client_id}";
+
+    // echo "Town: ".$town." Residence: ".$town." Order Id: ".$order_with_random;
+
+    // Update the `client_order_id` column with the combined value
+    $stmt = $conn->prepare("UPDATE client_order_details SET client_order_id = ? WHERE client_id = ?");
+    $stmt->bind_param("si", $order_with_random, $client_id);
+    $stmt->execute();
+
+    //Insert products into the `orders` table
+    if (!empty($products)) {
+        $stmt = $conn->prepare("INSERT INTO orders (order_product_id, order_product_quantity, order_product_price, order_product_total_price, order_number) VALUES (?, ?, ?, ?, ?)");
+
+        foreach ($products as $product) {
+            $decoded_product = json_decode($product, true); // Decode each product JSON string
+
+            $product_id = $decoded_product['product_id'];
+            $product_quantity = $decoded_product['product_quantity'];
+            $product_price = $decoded_product['product_price'];
+            $product_sub_total = $decoded_product['product_sub_total'];
+
+            // Bind and execute the query for each product
+            $stmt->bind_param("sssss", $product_id, $product_quantity, $product_price, $product_sub_total, $order_with_random);
+            $stmt->execute();
+
+            //update products table
+            $conn->query("update products set product_balance = product_balance - '$product_quantity' where product_id = '$product_id' ");
+        }
+
+        echo "1";
+
+    }
+
+}
+/* VIEW SINGLE ORDER */
+else if($action == 'vieworder'){
+    // Event ID to filter
+$event_id = $_SESSION['order-id'];
+
+// Query to get the event with associated category and location
+$sql = "select * from client_order_details where client_order_details.client_id = ?";
+
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $event_id);
+$stmt->execute();
+$result = $stmt->get_result();
+
+$response = [];
+
+while ($row = $result->fetch_assoc()) {
+    $order_number = $row["client_order_id"];
+
+    $order_product_results = "select * from orders inner join products on products.product_id = orders.order_product_id and orders.order_number = ?";
+    
+
+    $orders_stmt = $conn->prepare($order_product_results);
+    $orders_stmt->bind_param("s", $order_number);
+    $orders_stmt->execute();
+    $orders_result = $orders_stmt->get_result();
+
+    $order_list = [];
+
+    while ($order = $orders_result->fetch_assoc()) {
+        $order_list[] = [
+            'order_id' => $order['order_product_id'],
+            'order_product_quantity' => $order['order_product_quantity'],
+            'order_product_price' => $order['order_product_price'],
+            'order_product_total_price' => $order['order_product_total_price'],
+            'product_name' => $order['product_name'],
+            'product_price' => $order['product_price'],
+            'product_discount' => $order['product_discount']
+        ];
+    }
+
+    // Append event data with speaker details
+    $response[] = [
+        'client_name' => $row['client_name'],
+        'client_phone' => $row['client_phone'],
+        'client_email' => $row['client_email'],
+        'client_order_id' => $row['client_order_id'],
+        'order_status' => $row['order_status'],
+        'client_order_date' => $row['client_order_date'],
+        'order_list' => $order_list
+    ];
+}
+
+echo json_encode($response);
 }
 
 

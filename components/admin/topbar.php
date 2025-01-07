@@ -49,6 +49,10 @@
                         echo "Roles";
                     }else if($_GET["p"] == 'registration'){
                         echo "Registration";
+                    }else if($_GET["p"] == 'orders'){
+                        echo "Orders";
+                    }else if($_GET["p"] == 'view-order'){
+                        echo "View Order";
                     }
                 ?>
             </p></div>
@@ -111,6 +115,10 @@
                         echo "Roles";
                     }else if($_GET["p"] == 'registration'){
                         echo "Registration";
+                    }else if($_GET["p"] == 'orders'){
+                        echo "Orders";
+                    }else if($_GET["p"] == 'view-order'){
+                        echo "View Order";
                     }
                 ?>
             </h3>

@@ -90,6 +90,36 @@ include("components/header.php");?>
     </div>
     </div>
     </div>
+    <?php }else if($_GET["p"] == "orders"){?>
+    <div class="other-page">
+    <div class="main-page row">
+    <div class="col-2">
+    <?php include("components/admin/navbar.php");?>
+    </div>
+    <div class="col-10 side-page overflow-auto">
+    <!-- admin routes -->
+    <?php 
+    include("components/admin/topbar.php");
+    include("views/admin/orders.php");
+    include("components/admin/footer.php");?>
+    </div>
+    </div>
+    </div>
+    <?php }else if($_GET["p"] == "view-order"){?>
+    <div class="other-page">
+    <div class="main-page row">
+    <div class="col-2">
+    <?php include("components/admin/navbar.php");?>
+    </div>
+    <div class="col-10 side-page overflow-auto">
+    <!-- admin routes -->
+    <?php 
+    include("components/admin/topbar.php");
+    include("views/admin/vieworder.php");
+    include("components/admin/footer.php");?>
+    </div>
+    </div>
+    </div>
     <?php }else if($_GET["p"] == "categories"){?>
     <div class="other-page">
     <div class="main-page row">

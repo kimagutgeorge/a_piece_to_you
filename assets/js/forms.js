@@ -78,6 +78,12 @@ $( document ).ready(function() {
     if(url == "http://localhost/apiecetoyou/?p=website" || url == "http://localhost/apiecetoyou/index.php?p=website" || url == "http://localhost/apiecetoyou/?p=home" || url == "http://localhost/apiecetoyou/index.php?p=home" || url == "http://localhost/apiecetoyou/" || url == "http://localhost/apiecetoyou/index.php" || url == "http://localhost/apiecetoyou/?p=about-us" || url == "http://localhost/apiecetoyou/index.php?p=about-us"){
         getAboutUs();
     }
+    if(url == "http://localhost/apiecetoyou/?p=orders" || url == "http://localhost/apiecetoyou/index.php?p=orders" ){
+        getOrders();
+    }
+    if(url == "http://localhost/apiecetoyou/?p=view-order" || url == "http://localhost/apiecetoyou/index.php?p=view-order" ){
+        viewOrder();
+    }
     
     
     
@@ -437,7 +443,7 @@ function getAboutUs(){
                         let tableBody = document.getElementById("home_about")
                         tableBody.innerHTML = `<p class="text-white four-vh">WHO ARE WE?</p>
                     <h4 class="text-white">${about.title}</h4>
-                    <p class="text-white">${about.mission}</p>`
+                    <p class="text-white">${about.vision}</p>`
 
                         let tableBody2 = document.getElementById("home_offer")
                         tableBody2.innerHTML =`<p class="text-white four-vh">WE OFFER</p>
@@ -503,6 +509,7 @@ $(document).on('click', '.save-about', function(){
     let vision = document.getElementById("vision").value
     const mission_Content = tinymce.get('editor_content').getContent()
     const offer_Content = tinymce.get("editor_content_2").getContent()
+    
     if(title == "" || vision == "" || mission_Content == "" || offer_Content == ""){
         document.getElementById("db_response").style.display="flex"
         db_response.add("bg-warning")
@@ -669,6 +676,94 @@ function getNewsletters(){
         }
     });
     }
+    /* get orders*/
+function getOrders(){
+    $.ajax({  
+        type: 'GET',  
+        url: 'app.php?action=get-orders',
+        success: function(response) {
+            console.log(response)
+            if(response == 2){
+                let db_response = document.getElementById("db_response").classList
+                document.getElementById("db_response").style.display="flex"
+                db_response.add("bg-warning")
+                    $('#get_response').html('No Orders Found')
+    
+            }else{
+                let orders = JSON.parse(response)
+                let tableBody = document.getElementById("tbl_orders")
+                tableBody.innerHTML = "";
+                orders.forEach(function(order){
+                //check status here
+                function showStatus(){
+                    if(order.status == '0'){
+                        return `<span class="text-secondary">PENDING</span>`
+                    }else if(order.status == '1'){
+                        return `<span class="text-success">COMPLETE</span>`
+                    }else{
+                        return `<span class="text-danger">CANCELLED</span>`
+                    }
+                }
+
+                let row = document.createElement("tr"); // Create a new table row
+    
+                // // Create table cells for each piece of data
+                let idCell = document.createElement("td");
+                idCell.textContent = order.id;
+                idCell.hidden = true;
+        
+                let nameCell = document.createElement("td");
+                nameCell.innerHTML = `<p class="fw-bold"><span>Name: </span><span class="text-primary">${order.name}</span></p>
+                <p><span>Phone: </span>${order.phone}</p>`
+
+                let orderCell = document.createElement("td")
+                orderCell.innerHTML = `${order.order}`
+
+                let statusCell = document.createElement("td")
+                statusCell.innerHTML = `${showStatus()}`
+
+                let dateCell = document.createElement("td");
+                dateCell.innerHTML = `${formatDateWithTime(order.date)}`
+                
+                let actionCell = document.createElement('td');
+                actionCell.innerHTML = `<i class="fa-solid fa-eye view-order"></i>
+                <i class="fa-solid fa-trash del-order"></i> `
+
+                // // Append cells to the row
+                row.appendChild(idCell);
+                row.appendChild(nameCell);
+                row.appendChild(orderCell);
+                row.appendChild(statusCell);
+                row.appendChild(dateCell);
+                row.appendChild(actionCell);
+        
+                // // Append the row to the table body
+                tableBody.appendChild(row);
+                $('#tbl').DataTable();
+            })
+        
+    }
+            
+        }
+    });
+    }
+/* view order */
+$(document).on('click', '.view-order', function(){
+    let id = $(this).closest('tr').find('td:eq(0)').text().trim()
+
+    $.ajax({  
+        type: 'POST',  
+        url: 'app.php?action=view-order', 
+        data: {
+            id:id
+        },
+        success: function(response) {
+            setTimeout(() => {
+                location.href="?p=view-order"
+            }, 200);
+        }
+    });
+})
 /* get attendees */
 function getRegistrations(){
     $.ajax({  
@@ -1024,31 +1119,47 @@ function getProducts(){
                     tableBody.innerHTML =="";
                     
                     products.forEach(function(product){
-                        let row = document.createElement("div")
-                        row.className = "col-3"
-                        row.innerHTML = `
-                        <div class="card">
-                        <img src="assets/images/bg/products/${product.product_image}" alt="" class="card-img-top product-img">
-                        <div class="card-body position-relative">
-                        <div class="card-body-inner">
-                        <h3 class="text-third btn-product-name" style="cursor:pointer">${ product.product_name }</h3>
-                        <div class="col-12">
-                        <p class="text-primary">Price</p>
-                        <p class="text-muted"><i class="fa-solid fa-coins"></i> <span class="product-price">${ product.product_price} ${product.currency}</span> </p>
-                        <p class="text-primary" style="margin-top:20px !important">In Stock</p>
-                        <p class="text-muted"><i class="fa-solid fa-boxes"></i> <span class="product-balance">${product.product_balance}</span></p>
-                        </div>
-                        <div class="col-12 bottom-card-details" style="border-top:1px solid rgb(230,230,230)">
-                        <p class="card-id" hidden>${product.product_id}</p>
-                        <button class="btn btn-primary-box btn-primary btn-add-cart">
-                        ADD TO CART
-                        </button>
-                        </div>
-                        </div>
-                        </div>
-                        </div>`
+                        if(product.product_balance > 0){
+                            function checkDiscount(){
+                                if(product.product_discount > 0){
+                                    let product_price = product.product_price
+                                    let product_discount = product.product_discount
+                                    let new_price = product_price - ((product_discount/100)* product_price)
+                                    new_price = new_price.toFixed(0)
+                                    return `<del>${product.product_price}</del> <span class="product-price">${new_price}</span>`
+                                }else{
+                                    return `<span class="product-price">${product.product_price}</span>`
+                                }
+                            }
     
-                        tableBody.appendChild(row)
+                            let row = document.createElement("div")
+                            row.className = "col-3"
+                            row.innerHTML = `
+                            <div class="card">
+                            <img src="assets/images/bg/products/${product.product_image}" alt="" class="card-img-top product-img">
+                            <div class="card-body position-relative">
+                            <div class="card-body-inner">
+                            <h3 class="text-third btn-product-name" style="cursor:pointer">${ product.product_name }</h3>
+                            <div class="col-12">
+                            <p class="text-primary">Price</p>
+                            <p class="text-muted"><i class="fa-solid fa-tag"></i> ${ checkDiscount()} ${product.currency} </p>
+                            <p class="text-primary" style="margin-top:20px !important">In Stock</p>
+                            <p class="text-muted"><i class="fa-solid fa-boxes"></i> <span class="product-balance">${product.product_balance}</span></p>
+                            </div>
+                            <div class="col-12 bottom-card-details" style="border-top:1px solid rgb(230,230,230)">
+                            <p class="card-id" hidden>${product.product_id}</p>
+                            <button class="btn btn-primary-box btn-primary btn-add-cart">
+                            ADD TO CART
+                            </button>
+                            </div>
+                            </div>
+                            </div>
+                            </div>`
+        
+                            tableBody.appendChild(row)
+                        }
+
+            
                     })
                 }else{
                 
@@ -1167,9 +1278,108 @@ function getProducts(){
         
     });
 }
-/*
-get event
-*/
+/* view order */
+function viewOrder(){
+    $.ajax({  
+        type: 'GET',  
+        url: 'app.php?action=vieworder',
+        success: function(response) {
+            let orders = JSON.parse(response)
+            let order = orders[0]
+
+            //show data
+        let orderBody = document.getElementById("tbl_single_order")
+        orderBody.innerHTML = ""
+
+        let toggle_button_body = document.getElementById("view_order_toggle")
+        toggle_button_body.innerHTML=`<button
+        class="btn btn-primary edit-event"
+        type = "${universal_disabled ? 'button' : 'submit'}"
+      >
+        <i class="${universal_disabled ? 'fa-solid fa-edit' : 'fa-solid fa-check'}"></i>
+      </button>`
+
+        //get locations
+        function shoProducts(){
+            return order.order_list.map(function(product, index){
+                return `
+                <table>
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Product Details</th>
+                        <th>Product Order Details</th>
+                        <th>Product Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                        <td>${product.order_id}</td>
+                        <td>
+                            <p><span class="fw-bold">Name: </span> <span class="text-primar">${product.product_name}</span></p>
+                            <p><span class="fw-bold">Prev Price: </span> <span class="text-primar">${product.product_price}</span></p>
+                            <p><span class="fw-bold">Discount: </span> <span class="text-primar">${product.product_discount}</span></p>
+                        </td>
+                        <td>
+                            <p><span class="fw-bold">Quantity: </span> <span class="text-primar">${product.order_product_quantity}</span></p>
+                            <p><span class="fw-bold">Price: </span> <span class="text-primar">${product.order_product_price}</span></p>
+                            <p><span class="fw-bold">Total Price: </span> <span class="text-primar">${product.order_product_total_price}</span></p>
+                        </td>
+                        <td>
+                            <i class="fa-solid fa-edit"></i>
+                        </td>
+                        </tr>
+                    </tbody>
+                </table>
+                `
+            }).join('')
+            }
+
+        function showStatus(){
+            if(order.order_status == "0"){
+                return `<span class="form-control text-muted" style="padding:0px 10px !important;">PENDING</span>`
+            }else if(order.order_status == "1"){
+                return `<span class="form-control text-muted" style="padding:10px 10px 0px 10px !important;">COMPLETE</span>`
+            }else{
+                return `<span class="form-control text-danger" style="padding:0px 10px !important;">CANCELLED</span>`
+            }
+        }
+
+
+            orderBody.innerHTML = `<div class="col-12 row" style="margin-top:20px !important">
+            <div class="col-12 row">
+                <p>Client Details</p>
+            </div>
+      <div class="form-group">
+          <label class="text-muted">Client Name</label>
+          <input type="text" class="form-control"  value="${order.client_name}" ${universal_disabled ? 'readonly' : ''} id="event_name" />
+          </div>
+          <div class="form-group">
+          <label class="text-muted">Order Date</label>
+          <input type="text" @change="checkDate" class="form-control"  value="${order.client_phone}" ${universal_disabled ? 'readonly': ''} id="event_date">
+            </div>
+            <div class="form-group">
+          <label class="text-muted">Client Email</label>
+          <input type="text" @change="checkDate" class="form-control"  value="${order.client_email}" ${universal_disabled ? 'readonly': ''} id="event_date">
+            </div>
+            <div class="form-group">
+          <label class="text-muted">Order Status</label>
+          ${showStatus()}
+            </div>
+          <div class="form-group">
+          <label class="text-muted">Order Date</label>
+          <input type="text" @change="checkDate" class="form-control"  value="${formatDate(order.client_order_date)}" ${universal_disabled ? 'readonly': ''} id="event_date">
+          
+      </div>
+      
+        <div class="col-12 row" style="margin-top:40px !important; display:flex;">
+            ${shoProducts()}
+        </div>`
+                }
+        //end of show data
+    })
+}
+/* get event */
 function viewEvent(){
     $.ajax({  
         type: 'GET',  
@@ -1418,12 +1628,123 @@ function viewProduct(){
         let product = products[0]
 
         if(url == "http://localhost/apiecetoyou/?p=product-details" || url == "http://localhost/apiecetoyou/index.php?p=product-details"){
+            function checkProductDiscount(){
+                return product.images.map(function(image, index){
+                    let product_price = product.price
+                    let product_discount = product.discount
+                    let product_discount_price = ((product_discount/100)* product_price)
+                    product_discount_price = product_discount_price.toFixed(0)
+                    return `${product_discount_price}`;
+                }).join('');
+            }
+
+            function checkDiscount(){
+                if(product.discount > 0){
+                    let product_price = product.price
+                    let product_discount = product.discount
+                    let new_price = product_price - ((product_discount/100)* product_price)
+                    new_price = new_price.toFixed(0)
+                    return `<del>${product.price}</del> <span id="single_product_id">${new_price}</span>`
+                }else{
+                    return `<span id="single_product_id">${product.price}</span>`
+                }
+            }
+            
             document.getElementById("product_name").innerHTML = product.name
             document.getElementById("product_description").innerHTML = product.description
-            document.getElementById("product_price").innerHTML = product.price
-            document.getElementById("product_discount").innerHTML = product.discount + "%"
+            document.getElementById("product_price").innerHTML = checkDiscount();
+            document.getElementById("product_discount").innerHTML = checkProductDiscount();
             document.getElementById("product_stock").innerHTML = product.balance
             document.getElementById("product_category").innerHTML = product.category
+            document.getElementById("product_id").innerHTML = product.product_id
+
+            /* carousel */
+            // Initialize the products array and process images
+            const products = [];
+            product.images.forEach(function (image) {
+                products.push({ image_name: image.image_name });
+            });
+
+            let currentImageIndex = 0;
+
+            // DOM Elements
+            const carouselImage = document.getElementById("carouselImage");
+            const prevBtn = document.getElementById("prevBtn");
+            const nextBtn = document.getElementById("nextBtn");
+            const indicatorsContainer = document.getElementById("indicators");
+
+            // Initialize carousel
+            function initCarousel() {
+            if (products.length === 0) {
+                console.error("No images found in products.");
+                return;
+            }
+            updateImage();
+            createIndicators();
+            }
+
+            // Update the displayed image
+            function updateImage() {
+            carouselImage.src = `assets/images/bg/products/${products[currentImageIndex].image_name}`; // Update with your actual path
+            }
+
+            // Create indicators dynamically
+            function createIndicators() {
+            indicatorsContainer.innerHTML = ""; // Clear existing indicators
+            products.forEach((_, index) => {
+                const indicator = document.createElement("span");
+                indicator.classList.add("indicator");
+                if (index === currentImageIndex) {
+                indicator.classList.add("active");
+                }
+                indicator.addEventListener("click", () => goToImage(index));
+                indicatorsContainer.appendChild(indicator);
+            });
+            }
+
+            // Navigate to the previous image
+            function prevImage() {
+            currentImageIndex =
+                (currentImageIndex - 1 + products.length) % products.length;
+            updateImage();
+            updateIndicators();
+            }
+
+            // Navigate to the next image
+            function nextImage() {
+            currentImageIndex = (currentImageIndex + 1) % products.length;
+            updateImage();
+            updateIndicators();
+            }
+
+            // Navigate to a specific image
+            function goToImage(index) {
+            currentImageIndex = index;
+            updateImage();
+            updateIndicators();
+            }
+
+            // Update active indicator
+            function updateIndicators() {
+            const indicators = document.querySelectorAll(".indicator");
+            indicators.forEach((indicator, index) => {
+                if (index === currentImageIndex) {
+                indicator.classList.add("active");
+                } else {
+                indicator.classList.remove("active");
+                }
+            });
+            }
+
+            // Event Listeners
+            prevBtn.addEventListener("click", prevImage);
+            nextBtn.addEventListener("click", nextImage);
+
+            // Initialize the carousel on page load
+            initCarousel();
+
+  
+            /* end of carousel */
 
         }else{
         let productBody = document.getElementById("tbl_single_product")
@@ -1514,13 +1835,34 @@ $(document).on('click', '.btn-product-name', function () {
     });
     
 })
+$(document).on('click', '.cart-product-name', function () {
+    let id = $(this).closest('tr').find('td:eq(0)').find('.cart-product-id').text().trim();
+
+    $.ajax({  
+        type: 'POST',  
+        url: 'app.php?action=view-product', 
+        data: {
+            id:id
+        },
+        success: function(response) {
+            setTimeout(() => {
+                location.href="?p=product-details"
+            }, 200);
+        }
+    });
+    
+})
+
 /* add to cart */
 $(document).on('click', '.btn-add-cart', function () {
     let productId = $(this).closest('.bottom-card-details').find('.card-id').text().trim();
-    let productName = $(this).closest('.card').find('.product-name').text().trim();
+    let productName = $(this).closest('.card').find('.btn-product-name').text().trim();
     let productPrice = parseFloat($(this).closest('.card').find('.product-price').text().trim());
     let productImage = $(this).closest('.card').find('.product-img').attr('src').trim();
     let productBalance = parseInt($(this).closest('.card').find('.product-balance').text().trim());
+
+    let home_response = document.getElementById("home_response")
+    let home_response_inner = document.getElementById("home_response_inner")
 
     // Retrieve cart from localStorage or initialize an empty array
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
@@ -1533,7 +1875,8 @@ $(document).on('click', '.btn-add-cart', function () {
         if (existingProduct.quantity < productBalance) {
             existingProduct.quantity++;
         } else {
-            alert("Cannot add more than Available in stock");
+            home_response.style.display = "flex"
+            $(home_response_inner).html('Cannot add more than Available in stock')
             return;
         }
     } else {
@@ -1547,8 +1890,11 @@ $(document).on('click', '.btn-add-cart', function () {
                 quantity: 1,
                 balance: productBalance
             });
+            home_response.style.display = "flex"
+            $(home_response_inner).html('Product Added To Cart')
         } else {
-            alert("Cannot add product. Out of stock.");
+            home_response.style.display = "flex"
+            $(home_response_inner).html('Cannot add product. Out of stock.')
             return;
         }
     }
@@ -1559,9 +1905,62 @@ $(document).on('click', '.btn-add-cart', function () {
     // Calculate the total price of all products in the cart
     let totalPrice = cart.reduce((sum, product) => sum + product.price * product.quantity, 0);
 
-    // Log the cart details and the total price
-    console.log("Cart updated:", cart);
-    console.log("Total Price of Cart: ", totalPrice.toFixed(2));
+    // Update the cart count
+    updateCartCount();
+});
+
+/* add to cart 2 */
+$(document).on('click', '.btn-add-product-cart', function () {
+    let productId = document.getElementById("product_id").innerHTML.trim()
+    let productName = document.getElementById("product_name").innerHTML.trim()
+    let productPrice = document.getElementById("single_product_id").innerHTML.trim()
+    let productBalance = document.getElementById("product_stock").innerHTML.trim()
+    let productImage = document.getElementById("carouselImage").getAttribute('src').trim();
+
+    let home_response = document.getElementById("home_response")
+    let home_response_inner = document.getElementById("home_response_inner")
+
+    // Retrieve cart from localStorage or initialize an empty array
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+    // Check if the product is already in the cart
+    let existingProduct = cart.find(item => item.id === productId);
+
+    if (existingProduct) {
+        // Increment the quantity if it doesn't exceed product_balance
+        if (existingProduct.quantity < productBalance) {
+            existingProduct.quantity++;
+        } else {
+            home_response.style.display = "flex"
+                $(home_response_inner).html('Cannot add more than Available in stock')
+            return;
+        }
+    } else {
+        // Add new product to the cart
+        if (productBalance > 0) {
+            cart.push({
+                id: productId,
+                name: productName,
+                price: productPrice,
+                image: productImage,
+                quantity: 1,
+                balance: productBalance
+            });
+        // alert product added
+        home_response.style.display = "flex"
+        $(home_response_inner).html('Product Added To Cart')
+        } else {
+            home_response.style.display = "flex"
+                $(home_response_inner).html('Cannot add product. Out of stock.')
+            return;
+        }
+    }
+
+    // Save the updated cart back to localStorage
+    localStorage.setItem("cart", JSON.stringify(cart));
+
+    // Calculate the total price of all products in the cart
+    let totalPrice = cart.reduce((sum, product) => sum + product.price * product.quantity, 0);
 
     // Update the cart count
     updateCartCount();
@@ -1624,7 +2023,7 @@ function displayCart() {
         let row = document.createElement("tr");
         row.innerHTML = `<td>
               <img src="${product.image}" alt="No image" class="cart-image" />
-              <p class="text-muted" style="margin-top:10px !important">${product.name}</p>
+              <p class="text-muted cart-product-name" style="margin-top:10px !important; cursor:pointer;">${product.name}</p>
               <p hidden class="cart-product-id">${product.id}</p>
             </td>
             <td>
@@ -1668,10 +2067,15 @@ function displayCart() {
 
 //remove from cart
 $(document).on('click', '.del-from-cart', function(){
+    let home_response = document.getElementById("home_response")
+    let home_response_inner = document.getElementById("home_response_inner")
     let productId = $(this).closest('tr').find('.cart-product-id').text().trim()
     
     // Retrieve the cart from localStorage
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+    home_response.style.display = "flex"
+    $(home_response_inner).html('Product Removed From Cart')
 
     // Filter out the product to remove it
     cart = cart.filter(item => item.id !== productId);
@@ -1687,6 +2091,9 @@ and reduction
 */
 // add product
 $(document).off('click', '.add-cart-item').on('click', '.add-cart-item', function () {
+    let home_response = document.getElementById("home_response")
+    let home_response_inner = document.getElementById("home_response_inner")
+
     let productId = $(this).closest('tr').find('.cart-product-id').text().trim();
 
     // Retrieve the cart from localStorage
@@ -1700,7 +2107,8 @@ $(document).off('click', '.add-cart-item').on('click', '.add-cart-item', functio
         if (product.quantity < product.balance) {
             product.quantity++; // Increment by 1
         } else {
-            alert("Cannot add more than available in stock.");
+            home_response.style.display = "flex"
+            $(home_response_inner).html('Cannot add more than available in stock.')
             return;
         }
     } else {
@@ -1720,6 +2128,9 @@ $(document).off('click', '.add-cart-item').on('click', '.add-cart-item', functio
 
 // Reduce Cart Item
 $(document).off('click', '.reduce-cart-item').on('click', '.reduce-cart-item', function () {
+    let home_response = document.getElementById("home_response")
+    let home_response_inner = document.getElementById("home_response_inner")
+
     let productId = $(this).closest('tr').find('.cart-product-id').text().trim();
 
     // Retrieve the cart from localStorage
@@ -1733,7 +2144,8 @@ $(document).off('click', '.reduce-cart-item').on('click', '.reduce-cart-item', f
         if (product.quantity > 1) {
             product.quantity--; // Decrease the quantity
         } else {
-            alert("Cannot reduce quantity below 1");
+            home_response.style.display = "flex"
+            $(home_response_inner).html('Cannot reduce quantity below 1')
             return;
         }
     } else {
@@ -2312,6 +2724,12 @@ function getSettings(){
                 let setting = settings[0]
                 document.getElementById("cart_currency").innerHTML = `(${setting.currency})`
                 document.getElementById("cart_header_currency").innerHTML = `(${setting.currency})`
+                document.getElementById("cart_total_header_currency").innerHTML = `(${setting.currency})`
+            }else if(url == "http://localhost/apiecetoyou/index.php?p=product-details" || url == "http://localhost/apiecetoyou/?p=product-details" ){
+                let settings = JSON.parse(response)
+                let setting = settings[0]
+                document.getElementById("product_currency").innerHTML = `${setting.currency}`
+                document.getElementById("product_discount_currency").innerHTML = `${setting.currency}`
             }else if(url == "http://localhost/apiecetoyou/?p=event-details" || url == "http://localhost/apiecetoyou/index.php?p=event-details"){
                 let settings = JSON.parse(response)
                 let setting = settings[0]
@@ -2880,7 +3298,6 @@ function getBlogs(){
             url: 'app.php?action=edit-other-setting', 
             data: $('#otherSettings').serialize(),
             success: function(response) {
-                alert(response)
                 document.getElementById("db_response").style.display="flex"
                 if(response == 1){
                     db_response.add("bg-primary")
@@ -2896,6 +3313,75 @@ function getBlogs(){
             }
         });
     }
+    })
+
+    /*  place order  */
+    $('#placeOrder').on('submit', function(e){
+        e.preventDefault()
+        let home_response = document.getElementById("home_response")
+        let home_response_inner = document.getElementById("home_response_inner")
+        // Get product details
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+        let products = [];
+
+        let totalPrice = 0;
+        cart.forEach(function (product) {
+            let product_id = product.id;
+            let product_quantity = product.quantity;
+            let product_price = product.price;
+            let product_sub_total = product.price * product.quantity;
+
+            // Cart total
+            totalPrice += product.price * product.quantity;
+
+            // Push product details as an object
+            products.push({
+                product_id: product_id,
+                product_quantity: product_quantity,
+                product_price: product_price,
+                product_sub_total: product_sub_total,
+            });
+        });
+
+        if(totalPrice < 1){
+            displayCart();
+        }else{
+            //if cart not empty
+            // Form data
+            let formData = new FormData(document.getElementById("placeOrder"));
+            formData.append("total_price", totalPrice)
+            // Append products array to formData
+            products.forEach(function (product) {
+                formData.append("products[]", JSON.stringify(product)); // Serialize each product object
+            });
+            
+            $.ajax({  
+                type: 'POST',  
+                url: 'app.php?action=place-order', 
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    console.log(response)
+                    if(response == 1){
+                        home_response.style.display = "flex"
+                        $(home_response_inner).html('Order Placed. Thank You.')
+                        localStorage.clear();
+                        setTimeout(() => {
+                            displayCart();
+                        }, 2000);
+                        
+                        getSettings();
+                    }else if( response == 2 ){
+                        home_response.style.display = "flex"
+                        $(home_response_inner).html('Failed')
+                    }else{
+                        home_response.style.display = "flex"
+                        $(home_response_inner).html('Already Exists')
+                    }
+                }
+            });
+        }
     })
 
     /* view blog*/
@@ -3883,82 +4369,89 @@ $(document).on('click', '#register-event', function() {
    })
    $('#regSubscriber').on('submit', function(e){
     e.preventDefault()
+    let home_response = document.getElementById("home_response")
+    let home_response_inner = document.getElementById("home_response_inner")
     $.ajax({  
         type: 'POST',  
         url: 'app.php?action=add-subscriber', 
         data: $('#regSubscriber').serialize(),
         success: function(response) {
             if (response == 1) {
-                $('#footer_response').html('Registered. Thank You');
+                home_response.style.display = "flex"
+                $(home_response_inner).html('Registered. Thank You')
             } else if (response == 2) {
-                $('#footer_response').html('Failed');
+                home_response.style.display = "flex"
+                $(home_response_inner).html('Failed')
             } else {
-                $('#footer_response').html('Already Registered');
+                home_response.style.display = "flex"
+                $(home_response_inner).html('Already Registered')
             }
-            setTimeout(() => {
-                $('#footer_response').html('');
-            }, 2000);
         }
    })
    })
    /* add volunteer */
    $('#addVolunteer').on('submit', function(e){
     e.preventDefault()
+    let home_response = document.getElementById("home_response")
+    let home_response_inner = document.getElementById("home_response_inner")
     $.ajax({  
         type: 'POST',  
         url: 'app.php?action=add-volunteer', 
         data: $('#addVolunteer').serialize(),
         success: function(response) {
             if (response == 1) {
-                $('#volunteer_response').html('Registered. Thank You');
+                home_response.style.display = "flex"
+                $(home_response_inner).html('Registered. Thank You')
             } else if (response == 2) {
-                $('#volunteer_response').html('Failed');
+                home_response.style.display = "flex"
+                $(home_response_inner).html('Failed')
             } else {
-                $('#volunteer_response').html('Already Registered');
+                home_response.style.display = "flex"
+                $(home_response_inner).html('Already Registered')
             }
-            setTimeout(() => {
-                $('#volunteer_response').html('');
-            }, 2000);
         }
    })
    })
    /* add contact */
    $('#addContact').on('submit', function(e){
     e.preventDefault()
+    let home_response = document.getElementById("home_response")
+    let home_response_inner = document.getElementById("home_response_inner")
     $.ajax({  
         type: 'POST',  
         url: 'app.php?action=add-contact', 
         data: $('#addContact').serialize(),
         success: function(response) {
             if (response == 1) {
-                $('#contact_response').html('Sent, We will get back to you. Thank You');
+                home_response.style.display = "flex"
+                $(home_response_inner).html('Sent, We will get back to you. Thank You')
             } else if (response == 2) {
-                $('#contact_response').html('Failed');
+                home_response.style.display = "flex"
+                $(home_response_inner).html('Already Registered')
             }
-            setTimeout(() => {
-                $('#contact_response').html('');
-            }, 2000);
         }
    })
    })
    /* register event */
    $('#registerEvent').on('submit', function(e){
     e.preventDefault()
+    let home_response = document.getElementById("home_response")
+    let home_response_inner = document.getElementById("home_response_inner")
     $.ajax({  
         type: 'POST',  
         url: 'app.php?action=reg-event', 
         data: $('#registerEvent').serialize(),
         success: function(response) {
             if (response == 1) {
-                $('#contact_response').html('Registered, We will get back to you. Thank You');
+                home_response.style.display = "flex"
+                $(home_response_inner).html('Registered, We will get back to you. Thank You')
             } else if (response == 2) {
-                $('#contact_response').html('Failed');
+                home_response.style.display = "flex"
+                $(home_response_inner).html('Failed')
             } else if (response == 3) {
-                $('#contact_response').html('Already Registered');
+                home_response.style.display = "flex"
+                $(home_response_inner).html('Already Registered')
             }
-            setTimeout(() => {
-                $('#contact_response').html('');
-            }, 2000);
         }
    })
    })

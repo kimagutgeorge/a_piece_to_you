@@ -111,9 +111,7 @@ $get_newsletters = $conn->query("select * from newsletters order by newsletter_i
 /* home about */
 <p class="text-white four-vh">WHO ARE WE?</p>
                     <h4 class="text-white">we believe everyone has a unique purpose and calling.</h4>
-                    <p class="text-white">Our
-                        mission is to help you discover your SHAPE—your Spiritual gifts, Heart, Abilities, Personality,
-                        and Experience—so you can live a fulfilling and impactful life.</p>
+                    <p class="text-white">Our mission is to help you discover your SHAPE—your Spiritual gifts, Heart, Abilities, Personality, and Experience—so you can live a fulfilling and impactful life.</p>
 
 /* home programs */
 <div class="card">

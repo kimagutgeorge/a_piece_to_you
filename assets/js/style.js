@@ -197,3 +197,7 @@ function previewProductImage() {
   });
 }
 
+function close_home_response(){
+  document.getElementById("home_response").style.display = "None";
+
+}

@@ -1,4 +1,5 @@
 <div class="wrapper">
+<?php include("components/response.php");?>
         <div class="main-bg position-absolute w-100">
             <img src="assets/images/bg/rect2.png" alt="">
         </div>

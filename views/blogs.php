@@ -1,4 +1,5 @@
 <div class="wrapper about">
+<?php include("components/response.php");?>
         <div class="nav-bar-wrapper">
         <?php include("components/smallbar.php");?>
         <div class="cover"></div>
