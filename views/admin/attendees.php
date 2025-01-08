@@ -1,6 +1,6 @@
 <?php include("components/admin/response.php");?>
     <div class="row dashboard categories">
-    <div class="col-12 row">
+    <div class="col-12 row dashboard-inner">
     <div class="col-12 card"  style="padding:15px !important;">
     <table id="tbl" class="table" style="width:100%">
     <thead>

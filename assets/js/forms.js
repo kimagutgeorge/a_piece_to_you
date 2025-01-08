@@ -2,6 +2,7 @@ $( document ).ready(function() {
     /* universal variables*/
     let url = window.location.href
     let universal_disabled = true
+    let disabled_quantity = true
 
 
     // formate date without time
@@ -50,7 +51,7 @@ $( document ).ready(function() {
     if(url == "http://localhost/apiecetoyou/?p=view-event" || url == "http://localhost/apiecetoyou/index.php?p=view-event" || url == "http://localhost/apiecetoyou/?p=event-details" || url == "http://localhost/apiecetoyou/index.php?p=event-details"){
         viewEvent();
     }
-    if(url == "http://localhost/apiecetoyou/?p=add-event" || url == "http://localhost/apiecetoyou/?p=add-product" || url =="http://localhost/apiecetoyou/?p=add-blog" || url =="http://localhost/apiecetoyou/?p=add-newsletter"){
+    if(url == "http://localhost/apiecetoyou/?p=add-event" || url == "http://localhost/apiecetoyou/?p=add-product" || url =="http://localhost/apiecetoyou/?p=add-blog" || url =="http://localhost/apiecetoyou/?p=add-newsletter" || url =="http://localhost/apiecetoyou/?p=messages" || url =="http://localhost/apiecetoyou/index.php?p=messages"){
         InitEditor();
     }
     if(url== "http://localhost/apiecetoyou/?p=view-product" || url== "http://localhost/apiecetoyou/index.php?p=view-product" || url == "http://localhost/apiecetoyou/?p=product-details" || url == "http://localhost/apiecetoyou/index.php?p=product-details"){
@@ -83,6 +84,9 @@ $( document ).ready(function() {
     }
     if(url == "http://localhost/apiecetoyou/?p=view-order" || url == "http://localhost/apiecetoyou/index.php?p=view-order" ){
         viewOrder();
+    }
+    if(url == "http://localhost/apiecetoyou/?p=messages" || url == "http://localhost/apiecetoyou/index.php?p=messages" ){
+        getMessages();
     }
     
     
@@ -245,6 +249,40 @@ function formatEventTime(startDateStr, eventDuration) {
 }
   //wait for element
 //edit product
+$(document).on('click', '.send-confirmation-mail', function(){
+    if(confirm("Do you want to send status email comfirmation to the client?") == true){
+        let db_response = document.getElementById("db_response").classList
+        let id = document.getElementById("client_id").value
+        let order_status = document.getElementById("order_status").value
+        $.ajax({  
+            type: 'POST',  
+            url: 'app.php?action=send-client-mail', 
+            data: {
+                id:id,
+                status:order_status
+            },
+            success: function(response) {
+                console.log(response)
+                // $('#to_send').html(response);
+                document.getElementById("db_response").style.display = "flex";
+                if (response == 1) {
+                    db_response.add("bg-primary");
+                    $('#get_response').html('Successful');
+                    // disableEditor()
+                } else if (response == 2) {
+                    db_response.add("bg-danger");
+                    $('#get_response').html('Failed');
+                } else {
+                    db_response.add("bg-warning");
+                    $('#get_response').html('Already Exists');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('AJAX error:', error);
+            }
+        });
+    }
+})
 $(document).on('click', '.edit-product', function(){
     let db_response = document.getElementById("db_response").classList
     universal_disabled = !universal_disabled
@@ -301,7 +339,57 @@ $(document).on('click', '.edit-product', function(){
 
     } 
 })
+//edit order
+$(document).on('click', '.edit-order', function(){
+    let db_response = document.getElementById("db_response").classList
+    universal_disabled = !universal_disabled
+    viewOrder()
+    if(universal_disabled == true){
+        let id = document.getElementById("client_id").value
+        let name = document.getElementById("client_name").value
+        let email = document.getElementById("client_email").value
+        let phone = document.getElementById("client_phone").value
+        let status = document.getElementById("order_status").value
+        let region = document.getElementById("client_region").value
+        let residence = document.getElementById("client_residence").value
 
+        const formData = new FormData();
+        formData.append("id", id)
+        formData.append("name", name)
+        formData.append("email", email)
+        formData.append("phone", phone)
+        formData.append("status", status)
+        formData.append("region", region)
+        formData.append("residence", residence)
+
+        $.ajax({  
+            type: 'POST',  
+            url: 'app.php?action=edit-client-details', 
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                console.log(response)
+                document.getElementById("db_response").style.display = "flex";
+                if (response == 1) {
+                    db_response.add("bg-primary");
+                    $('#get_response').html('Successful');
+                        viewOrder();
+                } else if (response == 2) {
+                    db_response.add("bg-danger");
+                    $('#get_response').html('Failed');
+                } else {
+                    db_response.add("bg-warning");
+                    $('#get_response').html('Already Exists');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('AJAX error:', error);
+            }
+        });
+
+    }
+})
 //edit event
 $(document).on('click', '.edit-event', function() {
     let db_response = document.getElementById("db_response").classList
@@ -682,7 +770,6 @@ function getOrders(){
         type: 'GET',  
         url: 'app.php?action=get-orders',
         success: function(response) {
-            console.log(response)
             if(response == 2){
                 let db_response = document.getElementById("db_response").classList
                 document.getElementById("db_response").style.display="flex"
@@ -700,6 +787,10 @@ function getOrders(){
                         return `<span class="text-secondary">PENDING</span>`
                     }else if(order.status == '1'){
                         return `<span class="text-success">COMPLETE</span>`
+                    }else if(order.status == '2'){
+                        return `<span class="text-success">SHIPPED</span>`
+                    }else if(order.status == '4'){
+                        return `<span class="text-success">APPROVED</span>`
                     }else{
                         return `<span class="text-danger">CANCELLED</span>`
                     }
@@ -763,6 +854,31 @@ $(document).on('click', '.view-order', function(){
             }, 200);
         }
     });
+})
+$(document).on('click', '.del-order', function(){
+    if(confirm("Delete this order?") == true){
+    let id = $(this).closest('tr').find('td:eq(0)').text().trim()
+    let db_response = document.getElementById("db_response").classList
+
+    $.ajax({  
+        type: 'POST',  
+        url: 'app.php?action=del-order', 
+        data: {
+            id:id
+        },
+        success: function(response) {
+            document.getElementById("db_response").style.display = "flex";
+            if (response == 1) {
+                db_response.add("bg-primary");
+                $('#get_response').html('Successful');
+                getOrders();
+            } else if (response == 2) {
+                db_response.add("bg-danger");
+                $('#get_response').html('Failed');
+            }
+        }
+    });
+}
 })
 /* get attendees */
 function getRegistrations(){
@@ -1292,93 +1408,250 @@ function viewOrder(){
         orderBody.innerHTML = ""
 
         let toggle_button_body = document.getElementById("view_order_toggle")
-        toggle_button_body.innerHTML=`<button
-        class="btn btn-primary edit-event"
+        toggle_button_body.innerHTML=`
+        <div class="col-6">
+        <button
+        class="btn btn-primary edit-order"
         type = "${universal_disabled ? 'button' : 'submit'}"
       >
         <i class="${universal_disabled ? 'fa-solid fa-edit' : 'fa-solid fa-check'}"></i>
-      </button>`
-
+      </button>
+      </div>
+      <div class="col-6">
+        <i class="fa-solid fa-paper-plane send-confirmation-mail"></i>
+      </div>
+      `
+            
         //get locations
         function shoProducts(){
             return order.order_list.map(function(product, index){
                 return `
-                <table>
-                    <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Product Details</th>
-                        <th>Product Order Details</th>
-                        <th>Product Action</th>
-                    </tr>
-                    </thead>
-                    <tbody>
                         <tr>
-                        <td>${product.order_id}</td>
+                        <td>${product.order_id}
+                        <span class="product-id" hidden>${product.product_id}</span>
+                        </td>
                         <td>
                             <p><span class="fw-bold">Name: </span> <span class="text-primar">${product.product_name}</span></p>
-                            <p><span class="fw-bold">Prev Price: </span> <span class="text-primar">${product.product_price}</span></p>
-                            <p><span class="fw-bold">Discount: </span> <span class="text-primar">${product.product_discount}</span></p>
+                            <p><span class="fw-bold">Previous Price: </span> <span class="text-primar">${product.product_price} ${order.currency}</span></p>
+                            <p><span class="fw-bold">Discount: </span> <span class="text-primar">${product.product_discount} %</span></p>
                         </td>
                         <td>
-                            <p><span class="fw-bold">Quantity: </span> <span class="text-primar">${product.order_product_quantity}</span></p>
-                            <p><span class="fw-bold">Price: </span> <span class="text-primar">${product.order_product_price}</span></p>
-                            <p><span class="fw-bold">Total Price: </span> <span class="text-primar">${product.order_product_total_price}</span></p>
+                            <p><span class="fw-bold">Quantity: </span> <span class="text-primar"><input type="number" class="product-quantity" value="${product.order_product_quantity}" readonly ></span></p>
+                            <p><span class="fw-bold">Price: </span> <span class="text-primar">${product.order_product_price}  ${order.currency}</span></p>
+                            <p><span class="fw-bold">Total Price: </span> <span class="text-primar">${product.order_product_total_price}  ${order.currency}</span></p>
                         </td>
                         <td>
-                            <i class="fa-solid fa-edit"></i>
+                            <i class="check-product-quantity fa-solid fa-edit edit-product-quantity"></i>
                         </td>
                         </tr>
-                    </tbody>
-                </table>
                 `
             }).join('')
             }
 
         function showStatus(){
             if(order.order_status == "0"){
-                return `<span class="form-control text-muted" style="padding:0px 10px !important;">PENDING</span>`
+                return `<option value="0">PENDING</option>
+                        <option value="1">COMPLETE</option>
+                        <option value="2">SHIP</option>
+                        <option value="4">APPROVE</option>
+                        <option value="3">CANCEL</option>`
             }else if(order.order_status == "1"){
-                return `<span class="form-control text-muted" style="padding:10px 10px 0px 10px !important;">COMPLETE</span>`
+                return `<option value="1">COMPLETE</option>
+                        <option value="0">PENDING</option>
+                        <option value="2">SHIP</option>
+                        <option value="4">APPROVE</option>
+                        <option value="3">CANCEL</option>`
+            }else if(order.order_status == "2"){
+                return `<option value="2">SHIPPPED</option>
+                        <option value="1">COMPLETE</option>
+                        <option value="0">PENDING</option>
+                        <option value="4">APPROVE</option>
+                        <option value="3">CANCEL</option>`
+            }else if(order.order_status == "4"){
+                return `<option value="4">APPROVED</option>
+                        <option value="2">SHIPPPED</option>
+                        <option value="1">COMPLETE</option>
+                        <option value="0">PENDING</option>
+                        <option value="3">CANCEL</option>`
             }else{
-                return `<span class="form-control text-danger" style="padding:0px 10px !important;">CANCELLED</span>`
+                return `<option value="3">CANCELLED</option>
+                        <option value="4">APPROVE</option>
+                        <option value="0">PENDING</option>
+                        <option value="2">SHIP</option>
+                        <option value="1">COMPLETE</option>`
+
             }
         }
 
 
             orderBody.innerHTML = `<div class="col-12 row" style="margin-top:20px !important">
             <div class="col-12 row">
-                <p>Client Details</p>
+            <p class="text-muted" style="margin-left:1% !important;">CLIENT DETAILS</p>
             </div>
       <div class="form-group">
+            <input type="text" hidden value="${order.client_id}" id="client_id" />
           <label class="text-muted">Client Name</label>
-          <input type="text" class="form-control"  value="${order.client_name}" ${universal_disabled ? 'readonly' : ''} id="event_name" />
+          <input type="text" class="form-control"  value="${order.client_name}" ${universal_disabled ? 'readonly' : ''} id="client_name" />
           </div>
           <div class="form-group">
-          <label class="text-muted">Order Date</label>
-          <input type="text" @change="checkDate" class="form-control"  value="${order.client_phone}" ${universal_disabled ? 'readonly': ''} id="event_date">
+          <label class="text-muted">Client Phone</label>
+          <input type="text" class="form-control"  value="${order.client_phone}" ${universal_disabled ? 'readonly': ''} id="client_phone">
             </div>
             <div class="form-group">
           <label class="text-muted">Client Email</label>
-          <input type="text" @change="checkDate" class="form-control"  value="${order.client_email}" ${universal_disabled ? 'readonly': ''} id="event_date">
+          <input type="text"  class="form-control"  value="${order.client_email}" ${universal_disabled ? 'readonly': ''} id="client_email">
+            </div>
+            <div class="form-group">
+          <label class="text-muted">Client's Region</label>
+          <select class="form-control" name="county" onfocus='this.size=10;' onblur='this.size=1;' 
+              onchange='this.size=1; this.blur();' id="client_region" ${universal_disabled ? 'disabled': ''}>
+              <option value="${order.client_county}">${order.client_county}</option>
+                <option value="Baringo">Baringo</option>
+                <option value="Bomet">Bomet</option>
+                <option value="Bungoma">Bungoma</option>
+                <option value="Busia">Busia</option>
+                <option value="Elgeyo-marakwet">Elgeyo-Marakwet</option>
+                <option value="Embu">Embu</option>
+                <option value="Garissa">Garissa</option>
+                <option value="Homa-bay">Homa Bay</option>
+                <option value="Isiolo">Isiolo</option>
+                <option value="Kajiado">Kajiado</option>
+                <option value="Kakamega">Kakamega</option>
+                <option value="Kericho">Kericho</option>
+                <option value="Kiambu">Kiambu</option>
+                <option value="Kilifi">Kilifi</option>
+                <option value="Kirinyaga">Kirinyaga</option>
+                <option value="Kisii">Kisii</option>
+                <option value="Kisumu">Kisumu</option>
+                <option value="Kitui">Kitui</option>
+                <option value="Kwale">Kwale</option>
+                <option value="Laikipia">Laikipia</option>
+                <option value="Lamu">Lamu</option>
+                <option value="Machakos">Machakos</option>
+                <option value="Makueni">Makueni</option>
+                <option value="Mandera">Mandera</option>
+                <option value="Marsabit">Marsabit</option>
+                <option value="Meru">Meru</option>
+                <option value="Migori">Migori</option>
+                <option value="Mombasa">Mombasa</option>
+                <option value="Muranga">Murang'a</option>
+                <option value="Nairobi">Nairobi</option>
+                <option value="Nakuru">Nakuru</option>
+                <option value="Nandi">Nandi</option>
+                <option value="Narok">Narok</option>
+                <option value="Nyamira">Nyamira</option>
+                <option value="Nyandarua">Nyandarua</option>
+                <option value="Nyeri">Nyeri</option>
+                <option value="Samburu">Samburu</option>
+                <option value="Siaya">Siaya</option>
+                <option value="Taita-taveta">Taita-Taveta</option>
+                <option value="Tana-river">Tana River</option>
+                <option value="Tharaka-nithi">Tharaka Nithi</option>
+                <option value="Trans-nzoia">Trans Nzoia</option>
+                <option value="Turkana">Turkana</option>
+                <option value="Uasin-gishu">Uasin Gishu</option>
+                <option value="Vihiga">Vihiga</option>
+                <option value="Wajir">Wajir</option>
+                <option value="West-pokot">West Pokot</option>
+            </select>
+            </div>
+            <div class="form-group">
+          <label class="text-muted">Client's Residence</label>
+          <input type="text"  class="form-control"  value="${order.client_residence}" ${universal_disabled ? 'readonly': ''} id="client_residence">
+            </div>
+            <div class="form-group">
+          <label class="text-muted">Order Total Price</label>
+          <input type="text"  class="form-control"  value="${order.order_total_price} ${order.currency}" readonly>
             </div>
             <div class="form-group">
           <label class="text-muted">Order Status</label>
-          ${showStatus()}
+          <select class="form-control" ${universal_disabled ? 'disabled': ''} id="order_status">
+            ${showStatus()}
+          </select>
+          
             </div>
           <div class="form-group">
           <label class="text-muted">Order Date</label>
-          <input type="text" @change="checkDate" class="form-control"  value="${formatDate(order.client_order_date)}" ${universal_disabled ? 'readonly': ''} id="event_date">
+          <input type="text" class="form-control"  value="${formatDate(order.client_order_date)}" readonly>
           
       </div>
       
         <div class="col-12 row" style="margin-top:40px !important; display:flex;">
+            <p class="text-muted" style="margin-left:1% !important;">PRODUCT DETAILS</p>
+        <table id="tbl" class="table" style="width:100%">
+        <thead>
+        <tr>
+            <th class="fw-bold">#</th>
+            <th>Product Details</th>
+            <th>Product Order Details</th>
+            <th>Product Action</th>
+        </tr>
+        </thead>
+        <tbody>
             ${shoProducts()}
+        <tbody>
+        </table>
         </div>`
                 }
         //end of show data
     })
 }
+/* edit product quantity */
+$(document).on('click', '.check-product-quantity', function(){
+
+// Find the product quantity input field
+let to_edit_quantity = $(this).closest('tr').find('.product-quantity');
+
+// Find the edit icon
+let icon = $(this);
+
+// Check if the field is currently readonly
+if (to_edit_quantity.prop('readonly')) {
+    console.log("Field is readonly. Making it editable.");
+    // Remove the readonly attribute to make it editable
+    to_edit_quantity.prop('readonly', false);
+
+    // Change the icon to 'save-product-quantity'
+    icon.removeClass('fa-edit edit-product-quantity')
+        .addClass('fa-check save-product-quantity');
+
+    //save now
+} else {
+    let db_response = document.getElementById("db_response").classList
+    let id = $(this).closest('tr').find('.product-id').text().trim()
+    let to_edit_quantity = $(this).closest('tr').find('.product-quantity').val()
+    
+    $.ajax({  
+        type: 'POST',  
+        url: 'app.php?action=edit-order-quantity', 
+        data: {
+            id:id,
+            quantity:to_edit_quantity
+        },
+        success: function(response) {
+            console.log(response)
+            document.getElementById("db_response").style.display = "flex";
+            if (response == 1) {
+                db_response.add("bg-primary");
+                $('#get_response').html('Successful');
+                viewOrder();
+            } else if (response == 2) {
+                db_response.add("bg-danger");
+                $('#get_response').html('Failed');
+            }else if(response == 3){
+                db_response.add("bg-danger");
+                $('#get_response').html('Cannot add more than available in stock!');
+            }
+        }
+    });
+    
+    viewOrder();
+
+    
+}
+
+    
+})
 /* get event */
 function viewEvent(){
     $.ajax({  
@@ -4749,6 +5022,209 @@ function getValues(){
         }
     });
     }
+/* save confirmation */
+$("#save_confirmation").on('click', function(){
+    const editorContent = tinymce.get('editor_content').getContent()
+    let db_response = document.getElementById("db_response").classList
+    if(editorContent == ""){
+        db_response.add("bg-primary");
+        $('#get_response').html('Please fill in the required field!');
+    }else{
+    $.ajax({  
+        type: 'POST',  
+        url: 'app.php?action=save-confirmation', 
+        data: {
+            content: editorContent
+        },
+        success: function(response) {
+            document.getElementById("db_response").style.display = "flex";
+            if (response == 1) {
+                db_response.add("bg-primary");
+                $('#get_response').html('Successful');
+                getMessages();
+                // disableEditor()
+            } else if (response == 2) {
+                db_response.add("bg-danger");
+                $('#get_response').html('Failed');
+            } else {
+                db_response.add("bg-warning");
+                $('#get_response').html('Already Exists');
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error('AJAX error:', error);
+        }
+    });
+}
+
+})
+/* save shipping */
+$("#save_shipping").on('click', function(){
+    const editorContent = tinymce.get('editor_content').getContent()
+    let db_response = document.getElementById("db_response").classList
+    if(editorContent == ""){
+        db_response.add("bg-primary");
+        $('#get_response').html('Please fill in the required field!');
+    }else{
+    $.ajax({  
+        type: 'POST',  
+        url: 'app.php?action=save-shipping', 
+        data: {
+            content: editorContent
+        },
+        success: function(response) {
+            document.getElementById("db_response").style.display = "flex";
+            if (response == 1) {
+                db_response.add("bg-primary");
+                $('#get_response').html('Successful');
+                getMessages();
+                // disableEditor()
+            } else if (response == 2) {
+                db_response.add("bg-danger");
+                $('#get_response').html('Failed');
+            } else {
+                db_response.add("bg-warning");
+                $('#get_response').html('Already Exists');
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error('AJAX error:', error);
+        }
+    });
+}
+
+})
+/* save cancellation */
+$("#save_cancellation").on('click', function(){
+    const editorContent = tinymce.get('editor_content').getContent()
+    let db_response = document.getElementById("db_response").classList
+    if(editorContent == ""){
+        db_response.add("bg-primary");
+        $('#get_response').html('Please fill in the required field!');
+    }else{
+    $.ajax({  
+        type: 'POST',  
+        url: 'app.php?action=save-cancellation', 
+        data: {
+            content: editorContent
+        },
+        success: function(response) {
+            document.getElementById("db_response").style.display = "flex";
+            if (response == 1) {
+                db_response.add("bg-primary");
+                $('#get_response').html('Successful');
+                getMessages();
+                // disableEditor()
+            } else if (response == 2) {
+                db_response.add("bg-danger");
+                $('#get_response').html('Failed');
+            } else {
+                db_response.add("bg-warning");
+                $('#get_response').html('Already Exists');
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error('AJAX error:', error);
+        }
+    });
+}
+})
+/* save delivery */
+$("#save_delivery").on('click', function(){
+    const editorContent = tinymce.get('editor_content').getContent()
+    let db_response = document.getElementById("db_response").classList
+    if(editorContent == ""){
+        db_response.add("bg-primary");
+        $('#get_response').html('Please fill in the required field!');
+    }else{
+    $.ajax({  
+        type: 'POST',  
+        url: 'app.php?action=save-delivery', 
+        data: {
+            content: editorContent
+        },
+        success: function(response) {
+            document.getElementById("db_response").style.display = "flex";
+            if (response == 1) {
+                db_response.add("bg-primary");
+                $('#get_response').html('Successful');
+                getMessages();
+                // disableEditor()
+            } else if (response == 2) {
+                db_response.add("bg-danger");
+                $('#get_response').html('Failed');
+            } else {
+                db_response.add("bg-warning");
+                $('#get_response').html('Already Exists');
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error('AJAX error:', error);
+        }
+    });
+}
+
+})
+/* get messages */
+function getMessages(){
+    $.ajax({  
+        type: 'GET',  
+        url: 'app.php?action=get-messages',
+        success: function(response) {
+            if(response == 2){
+                let db_response = document.getElementById("db_response").classList
+                document.getElementById("db_response").style.display="flex"
+                db_response.add("bg-warning")
+                    $('#get_response').html('No Messages Found')
+    
+            }else{
+                let messages = JSON.parse(response)
+                let message = messages[0]
+
+                let tableBody = document.getElementById("tbl_messages")
+                tableBody.innerHTML = "";
+                tableBody.innerHTML = `
+                    <div class="row">
+                    <div class="col-12">
+                    <p class="top-20 fw-bold text-primary">Confirmation</p>
+                    </div>
+                    <div class="row">
+                    ${message.confirmation}
+                    </div>
+                    </div>
+                    <!-- row one -->
+                    <div class="row">
+                    <div class="col-12">
+                    <p class="top-20 fw-bold text-primary">Shipping</p>
+                    </div>
+                    <div class="row">
+                    ${message.shipping}
+                    </div>
+                    </div>
+                    <!-- row two -->
+                    <div class="row">
+                    <div class="col-12">
+                    <p class="top-20 fw-bold text-primary">Cancellation</p>
+                    </div>
+                    <div class="row">
+                    ${message.cancellation}
+                    </div>
+                    </div>
+                    <!-- row three -->
+                    <div class="row">
+                    <div class="col-12">
+                    <p class="top-20 fw-bold text-primary">Delivery</p>
+                    </div>
+                    <div class="row">
+                    ${message.delivery}
+                    </div>
+                    </div>
+                `
+        }
+            
+        }
+    });
+}
 
 
 

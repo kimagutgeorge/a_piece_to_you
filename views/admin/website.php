@@ -1,6 +1,6 @@
 <?php include("components/admin/response.php"); ?>
     <div class="row dashboard categories">
-    <div class="col-12 row">
+    <div class="col-12 row dashboard-inner">
     <div class="col-7 card" style="height:82vh; overflow-y:scroll; padding-bottom:10px !important;">
     <div class="content-holder" style="border-bottom:1px solid rgb(200,200,200);padding-bottom:20px !important;">
     <h4 class="text-primary">About Us</h4>

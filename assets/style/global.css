@@ -115,8 +115,13 @@ padding-bottom: 20px !important;
 /*cards*/
 .other-page .row.dashboard{
     height: 82vh;
-    overflow-y: scroll;
-    overflow-x: hidden;
+    /* overflow-y: scroll;
+    overflow-x: hidden; */
+}
+.other-page .dashboard-inner{
+    max-height:76vh; 
+    overflow-y:scroll;
+    overflow-x:hidden;
 }
 .other-page .row.dashboard .col-7.row .card.col-3,
 .other-page .row.dashboard .col-11.card,
@@ -618,6 +623,11 @@ margin-left:2.5% !important;
 .other-page .edit-panel .fa-solid{
 font-size: 18px;
 cursor: pointer;
+}
+.other-page .edit-panel .fa-paper-plane{
+    background-color: #83a234ff;
+    color:white;
+    padding:8px !important;
 }
 .other-page table .edit-mode{
 border-bottom: 1px solid #83a234ff !important;

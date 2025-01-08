@@ -1,5 +1,6 @@
 <?php include("components/admin/response.php");?>
-    <div class="row dashboard add-event-modal categories">
+<div class="row dashboard add-event-modal categories">
+<div class="dashboard-inner">
 <form id="addEvent" method="POST" enctype="multipart/form-data">
   <div class="col-12">
       <h4 class="fw-bold text-primary">Add Event</h4>
@@ -66,7 +67,4 @@
             
           </form>
         </div>
-<!-- Place the following <script> and <textarea> tags your HTML's <body> -->
-<script>
-
-</script>
+</div>

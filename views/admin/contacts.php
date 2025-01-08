@@ -1,12 +1,12 @@
 <?php include("components/admin/response.php");?>
     <div class="row dashboard categories">
-    <div class="col-12 row" >
+    <div class="col-12 row dashboard-inner" >
     <div class="col-7">
     <div class="col-12 card"  style="padding:15px !important;">
     <div class="form-group text-primary ">
         Contacts
     </div>
-    <table id="tbl" class="table" style="width:100%">
+    <table id="tbl" class="table top-20" style="width:100%">
     <thead>
     <tr>
     <th class="fw-bold" hidden>#</th>
@@ -28,7 +28,7 @@
     <div class="form-group text-primary">
         Volunteers
     </div>
-    <table id="tbl" class="table" style="width:100%">
+    <table id="tbl" class="table top-20" style="width:100%">
     <thead>
     <tr>
     <th class="fw-bold" hidden>#</th>

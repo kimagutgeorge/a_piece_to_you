@@ -1,5 +1,6 @@
 <?php include("components/admin/response.php");?>
     <div class="row dashboard">
+    <div class="dashboard-inner">
     <div class="col-12 row event-search">
         <div class="col-8">
         <select class="form-control col-4" style="text-align:left" id="blog_categories">
@@ -13,4 +14,5 @@
     <div class="col-12 row blogs" id="tbl_blogs">
         <!-- insert data here -->
     </div>
+</div>
     </div>

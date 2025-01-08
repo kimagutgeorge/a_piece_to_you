@@ -122,6 +122,587 @@ else if($action == 'edit-location'){
         echo "2";
     }
 }
+/* EDIT ORDER DETAILS */
+else if($action == 'edit-client-details'){
+    $id = $_POST['id'];
+    $name = $_POST["name"];
+    $email = $_POST["email"];
+    $phone = $_POST["phone"];
+    $status = $_POST["status"];
+    $region = $_POST["region"];
+    $residence = $_POST["residence"];
+    
+    $insert_qry = "update client_order_details set client_name =?, client_phone = ?, client_email = ?, client_county =?, client_residence = ?, order_status = ? where client_id = ?";
+    $insert_stmt = mysqli_stmt_init($conn);
+    mysqli_stmt_prepare($insert_stmt, $insert_qry);
+    mysqli_stmt_bind_param($insert_stmt, "sssssss", $name, $phone, $email, $region, $residence, $status, $id);
+    if(mysqli_stmt_execute($insert_stmt)){
+        echo "1";
+    }else{
+        echo "2";
+    }
+}
+/* SEND EMAIL TO CLIENT */
+else if($action == "send-client-mail"){
+    $id = $_POST["id"];
+    $status = $_POST["status"];
+    //check 
+    /* confirm order */
+    if($status == "4"){
+        //get message
+        $get_messages = $conn->query("select confirmation_message from messages limit 1");
+        $get_message_row = mysqli_fetch_assoc($get_messages);
+        $message = $get_message_row["confirmation_message"];
+
+        //get orders
+        $sql = "select * from client_order_details where client_order_details.client_id = ?";
+
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        $currency_result = $conn->query("select currency from settings limit 1");
+        $currency_row = mysqli_fetch_assoc($currency_result);
+        $currency = $currency_row["currency"];
+
+        $response = [];
+
+        while ($row = $result->fetch_assoc()) {
+            $order_number = $row["client_order_id"];
+
+            $order_product_results = "select * from orders inner join products on products.product_id = orders.order_product_id and orders.order_number = ?";
+            
+
+            $orders_stmt = $conn->prepare($order_product_results);
+            $orders_stmt->bind_param("s", $order_number);
+            $orders_stmt->execute();
+            $orders_result = $orders_stmt->get_result();
+
+            $order_list = [];
+
+            while ($order = $orders_result->fetch_assoc()) {
+                $order_list[] = [
+                    'order_product_quantity' => $order['order_product_quantity'],
+                    'order_product_price' => $order['order_product_price'],
+                    'order_product_total_price' => $order['order_product_total_price'],
+                    'product_name' => $order['product_name'],
+                    'product_price' => $order['product_price'],
+                    'product_id' => $order['product_id'],
+                ];
+            }
+
+            // Append event data with speaker details
+            $response[] = [
+                'client_order_id' => $row['client_order_id'],
+                'client_email' => $row['client_email'],
+                'order_total_price' => $row['client_product_total_price'],
+                'client_county' => $row['client_county'],
+                'client_residence' => $row['client_residence'],
+                'client_name' => $row['client_name'],
+                'client_phone' => $row['client_phone'],
+                'client_email' => $row['client_email'],
+                'date' => $row['client_order_date'],
+                'currency' => $currency
+            ];
+        }
+        // create order to send
+        $client_details = $response[0];
+        $html = $message;
+        $html .= "<div class='client-details' style='margin-top:20px !important;'>";
+        $html .= "<div class='1st-half' style='width:100%;font-size:24px;'><strong>Your Order <span style='color:#83a234ff;'>".htmlspecialchars($client_details['client_order_id'])."</span></strong></div>";
+        $html .= "<div>";
+        $html .= "<div>Placed on ".htmlspecialchars($client_details['date'])."</div>";
+        $html .= "<div style='margin-top:20px !important'><strong>Name: </strong>".htmlspecialchars($client_details['client_name'])."</div>";
+        $html .= "<div><strong>Address: </strong>".htmlspecialchars($client_details['client_residence']).", ".htmlspecialchars($client_details['client_county'])."</div>";
+        $html .= "<div><strong>Phone: </strong>".htmlspecialchars($client_details['client_phone'])."</div>";
+        $html .= "</div>";
+        $html .= "</div>";
+
+        $html .= "<table border='1' style='border-collapse:collapse; width:100%;margin-top:30px !important;'>";
+        $html .="<thead><tr style='background-color:#83a234ff;'>";
+        $html .="<th style='padding:8px !important;color:white !important;font-weight:bold;'>Product</th>";
+        $html .="<th style='padding:8px !important;color:white !important;font-weight:bold;'>Quantity</th>";
+        $html .="<th style='padding:8px !important;color:white !important;font-weight:bold;'>Price </th>";
+        $html .="<th style='padding:8px !important;color:white !important;font-weight:bold;'>Total Price </th>";
+        $html .="</tr></thead><tbody>";
+
+        //append order details
+        foreach ($order_list as $order){
+            $html .= "<tr>";
+            $html .= "<td>".htmlspecialchars($order['product_name'])."</td>";
+            $html .= "<td>".htmlspecialchars($order['order_product_quantity'])."</td>";
+            $html .= "<td>".htmlspecialchars($order['order_product_price'])." ".$currency."</td>";
+            $html .= "<td>".htmlspecialchars($order['order_product_total_price'])." ".$currency."</td>";
+            $html.= "</tr>";
+        }
+        $html .="</tbody></table>";
+        $html .="<div style='width:100%; border-top:2px solid #83a234ff !important; dispaly:flex !important; margin-top:30px !important'>";
+        $html .= "<div style='width:100%; font-size:18px; padding-top:10px !important;'><strong>Total</strong>"." ".htmlspecialchars($client_details['order_total_price'])." ".$currency. "</div>";
+        $html .="</div>";
+        
+        //send mail
+        //get SMTP values
+        $get_settings =$conn->query("select * from settings limit 1");
+        $count = mysqli_num_rows($get_settings);
+        if($count < 1){
+            $result = 3; // no SMTP configs
+            echo json_encode($result);
+        }else{
+            $setting = mysqli_fetch_assoc($get_settings);
+            $smtp_email = $setting['smtp_email'];
+            $smtp_password = $setting['smtp'];
+            $smtp_server = $setting['smtp_server'];
+            $smtp_port = $setting['smtp_port'];
+
+            //send message
+            $mail = new PHPMailer(true);
+
+            try {
+                // Server settings
+                $mail->isSMTP();                                            // Send using SMTP
+                $mail->Host       = $smtp_server;                     // Set the SMTP server
+                $mail->SMTPAuth   = true;                                   // Enable SMTP authentication
+                $mail->Username   = $smtp_email;               // SMTP username
+                $mail->Password   = $smtp_password;                  // SMTP password
+                $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;         // Enable TLS encryption
+                $mail->Port       = $smtp_port;                                   // TCP port to connect to
+            
+                // Recipients
+                $mail->setFrom($smtp_email, 'A Piece To You');
+                $mail->addAddress($client_details['client_email'], ""); // Add a recipient
+            
+                // Content
+                $mail->isHTML(true);                                       // Set email format to HTML
+                $mail->Subject = "Your Order Has Been Placed.";
+                $mail->Body    = $html;
+                $mail->AltBody = strip_tags($html);
+                
+
+                $mail->send();
+                echo "1";
+            } catch (Exception $e) {
+                echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+            }
+        }
+    }
+    /* shipped order */
+    else if($status == "2"){
+        //get message
+        $get_messages = $conn->query("select shipping_message from messages limit 1");
+        $get_message_row = mysqli_fetch_assoc($get_messages);
+        $message = $get_message_row["shipping_message"];
+
+        //get orders
+        $sql = "select * from client_order_details where client_order_details.client_id = ?";
+
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        $currency_result = $conn->query("select currency from settings limit 1");
+        $currency_row = mysqli_fetch_assoc($currency_result);
+        $currency = $currency_row["currency"];
+
+        $response = [];
+
+        while ($row = $result->fetch_assoc()) {
+            $order_number = $row["client_order_id"];
+
+            $order_product_results = "select * from orders inner join products on products.product_id = orders.order_product_id and orders.order_number = ?";
+            
+
+            $orders_stmt = $conn->prepare($order_product_results);
+            $orders_stmt->bind_param("s", $order_number);
+            $orders_stmt->execute();
+            $orders_result = $orders_stmt->get_result();
+
+            $order_list = [];
+
+            while ($order = $orders_result->fetch_assoc()) {
+                $order_list[] = [
+                    'order_product_quantity' => $order['order_product_quantity'],
+                    'order_product_price' => $order['order_product_price'],
+                    'order_product_total_price' => $order['order_product_total_price'],
+                    'product_name' => $order['product_name'],
+                    'product_price' => $order['product_price'],
+                    'product_id' => $order['product_id'],
+                ];
+            }
+
+            // Append event data with speaker details
+            $response[] = [
+                'client_order_id' => $row['client_order_id'],
+                'client_email' => $row['client_email'],
+                'order_total_price' => $row['client_product_total_price'],
+                'client_county' => $row['client_county'],
+                'client_residence' => $row['client_residence'],
+                'client_name' => $row['client_name'],
+                'client_phone' => $row['client_phone'],
+                'client_email' => $row['client_email'],
+                'date' => $row['client_order_date'],
+                'currency' => $currency
+            ];
+        }
+        // create order to send
+        $client_details = $response[0];
+        $html = $message;
+        $html .= "<div class='client-details' style='margin-top:20px !important;'>";
+        $html .= "<div class='1st-half' style='width:100%;font-size:24px;'><strong>Your Order <span style='color:#83a234ff;'>".htmlspecialchars($client_details['client_order_id'])."</span></strong></div>";
+        $html .= "<div>";
+        $html .= "<div>Placed on ".htmlspecialchars($client_details['date'])."</div>";
+        $html .= "<div style='margin-top:20px !important'><strong>Name: </strong>".htmlspecialchars($client_details['client_name'])."</div>";
+        $html .= "<div><strong>Address: </strong>".htmlspecialchars($client_details['client_residence']).", ".htmlspecialchars($client_details['client_county'])."</div>";
+        $html .= "<div><strong>Phone: </strong>".htmlspecialchars($client_details['client_phone'])."</div>";
+        $html .= "</div>";
+        $html .= "</div>";
+
+        $html .= "<table border='1' style='border-collapse:collapse; width:100%;margin-top:30px !important;'>";
+        $html .="<thead><tr style='background-color:#83a234ff;'>";
+        $html .="<th style='padding:8px !important;color:white !important;font-weight:bold;'>Product</th>";
+        $html .="<th style='padding:8px !important;color:white !important;font-weight:bold;'>Quantity</th>";
+        $html .="<th style='padding:8px !important;color:white !important;font-weight:bold;'>Price </th>";
+        $html .="<th style='padding:8px !important;color:white !important;font-weight:bold;'>Total Price </th>";
+        $html .="</tr></thead><tbody>";
+
+        //append order details
+        foreach ($order_list as $order){
+            $html .= "<tr>";
+            $html .= "<td>".htmlspecialchars($order['product_name'])."</td>";
+            $html .= "<td>".htmlspecialchars($order['order_product_quantity'])."</td>";
+            $html .= "<td>".htmlspecialchars($order['order_product_price'])." ".$currency."</td>";
+            $html .= "<td>".htmlspecialchars($order['order_product_total_price'])." ".$currency."</td>";
+            $html.= "</tr>";
+        }
+        $html .="</tbody></table>";
+        $html .="<div style='width:100%; border-top:2px solid #83a234ff !important; dispaly:flex !important; margin-top:30px !important'>";
+        $html .= "<div style='width:100%; font-size:18px; padding-top:10px !important;'><strong>Total</strong>"." ".htmlspecialchars($client_details['order_total_price'])." ".$currency. "</div>";
+        $html .="</div>";
+        
+        //send mail
+        //get SMTP values
+        $get_settings =$conn->query("select * from settings limit 1");
+        $count = mysqli_num_rows($get_settings);
+        if($count < 1){
+            $result = 3; // no SMTP configs
+            echo json_encode($result);
+        }else{
+            $setting = mysqli_fetch_assoc($get_settings);
+            $smtp_email = $setting['smtp_email'];
+            $smtp_password = $setting['smtp'];
+            $smtp_server = $setting['smtp_server'];
+            $smtp_port = $setting['smtp_port'];
+
+            //send message
+            $mail = new PHPMailer(true);
+
+            try {
+                // Server settings
+                $mail->isSMTP();                                            // Send using SMTP
+                $mail->Host       = $smtp_server;                     // Set the SMTP server
+                $mail->SMTPAuth   = true;                                   // Enable SMTP authentication
+                $mail->Username   = $smtp_email;               // SMTP username
+                $mail->Password   = $smtp_password;                  // SMTP password
+                $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;         // Enable TLS encryption
+                $mail->Port       = $smtp_port;                                   // TCP port to connect to
+            
+                // Recipients
+                $mail->setFrom($smtp_email, 'A Piece To You');
+                $mail->addAddress($client_details['client_email'], ""); // Add a recipient
+            
+                // Content
+                $mail->isHTML(true);                                       // Set email format to HTML
+                $mail->Subject = "Your Order Has Been Shipped.";
+                $mail->Body    = $html;
+                $mail->AltBody = strip_tags($html);
+                
+
+                $mail->send();
+                echo "1";
+            } catch (Exception $e) {
+                echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+            }
+        }
+    }
+    /* cancelled order */
+    else if($status == "3"){
+        //get message
+        $get_messages = $conn->query("select cancellation_message from messages limit 1");
+        $get_message_row = mysqli_fetch_assoc($get_messages);
+        $message = $get_message_row["cancellation_message"];
+
+        //get orders
+        $sql = "select * from client_order_details where client_order_details.client_id = ?";
+
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        $currency_result = $conn->query("select currency from settings limit 1");
+        $currency_row = mysqli_fetch_assoc($currency_result);
+        $currency = $currency_row["currency"];
+
+        $response = [];
+
+        while ($row = $result->fetch_assoc()) {
+            $order_number = $row["client_order_id"];
+
+            $order_product_results = "select * from orders inner join products on products.product_id = orders.order_product_id and orders.order_number = ?";
+            
+
+            $orders_stmt = $conn->prepare($order_product_results);
+            $orders_stmt->bind_param("s", $order_number);
+            $orders_stmt->execute();
+            $orders_result = $orders_stmt->get_result();
+
+            $order_list = [];
+
+            while ($order = $orders_result->fetch_assoc()) {
+                $order_list[] = [
+                    'order_product_quantity' => $order['order_product_quantity'],
+                    'order_product_price' => $order['order_product_price'],
+                    'order_product_total_price' => $order['order_product_total_price'],
+                    'product_name' => $order['product_name'],
+                    'product_price' => $order['product_price'],
+                    'product_id' => $order['product_id'],
+                ];
+            }
+
+            // Append event data with speaker details
+            $response[] = [
+                'client_order_id' => $row['client_order_id'],
+                'client_email' => $row['client_email'],
+                'order_total_price' => $row['client_product_total_price'],
+                'client_county' => $row['client_county'],
+                'client_residence' => $row['client_residence'],
+                'client_name' => $row['client_name'],
+                'client_phone' => $row['client_phone'],
+                'client_email' => $row['client_email'],
+                'date' => $row['client_order_date'],
+                'currency' => $currency
+            ];
+        }
+        // create order to send
+        $client_details = $response[0];
+        $html = $message;
+        $html .= "<div class='client-details' style='margin-top:20px !important;'>";
+        $html .= "<div class='1st-half' style='width:100%;font-size:24px;'><strong>Your Order <span style='color:#83a234ff;'>".htmlspecialchars($client_details['client_order_id'])."</span></strong></div>";
+        $html .= "<div>";
+        $html .= "<div>Placed on ".htmlspecialchars($client_details['date'])."</div>";
+        $html .= "<div style='margin-top:20px !important'><strong>Name: </strong>".htmlspecialchars($client_details['client_name'])."</div>";
+        $html .= "<div><strong>Address: </strong>".htmlspecialchars($client_details['client_residence']).", ".htmlspecialchars($client_details['client_county'])."</div>";
+        $html .= "<div><strong>Phone: </strong>".htmlspecialchars($client_details['client_phone'])."</div>";
+        $html .= "</div>";
+        $html .= "</div>";
+
+        $html .= "<table border='1' style='border-collapse:collapse; width:100%;margin-top:30px !important;'>";
+        $html .="<thead><tr style='background-color:#83a234ff;'>";
+        $html .="<th style='padding:8px !important;color:white !important;font-weight:bold;'>Product</th>";
+        $html .="<th style='padding:8px !important;color:white !important;font-weight:bold;'>Quantity</th>";
+        $html .="<th style='padding:8px !important;color:white !important;font-weight:bold;'>Price </th>";
+        $html .="<th style='padding:8px !important;color:white !important;font-weight:bold;'>Total Price </th>";
+        $html .="</tr></thead><tbody>";
+
+        //append order details
+        foreach ($order_list as $order){
+            $html .= "<tr>";
+            $html .= "<td>".htmlspecialchars($order['product_name'])."</td>";
+            $html .= "<td>".htmlspecialchars($order['order_product_quantity'])."</td>";
+            $html .= "<td>".htmlspecialchars($order['order_product_price'])." ".$currency."</td>";
+            $html .= "<td>".htmlspecialchars($order['order_product_total_price'])." ".$currency."</td>";
+            $html.= "</tr>";
+        }
+        $html .="</tbody></table>";
+        $html .="<div style='width:100%; border-top:2px solid #83a234ff !important; dispaly:flex !important; margin-top:30px !important'>";
+        $html .= "<div style='width:100%; font-size:18px; padding-top:10px !important;'><strong>Total</strong>"." ".htmlspecialchars($client_details['order_total_price'])." ".$currency. "</div>";
+        $html .="</div>";
+        
+        //send mail
+        //get SMTP values
+        $get_settings =$conn->query("select * from settings limit 1");
+        $count = mysqli_num_rows($get_settings);
+        if($count < 1){
+            $result = 3; // no SMTP configs
+            echo json_encode($result);
+        }else{
+            $setting = mysqli_fetch_assoc($get_settings);
+            $smtp_email = $setting['smtp_email'];
+            $smtp_password = $setting['smtp'];
+            $smtp_server = $setting['smtp_server'];
+            $smtp_port = $setting['smtp_port'];
+
+            //send message
+            $mail = new PHPMailer(true);
+
+            try {
+                // Server settings
+                $mail->isSMTP();                                            // Send using SMTP
+                $mail->Host       = $smtp_server;                     // Set the SMTP server
+                $mail->SMTPAuth   = true;                                   // Enable SMTP authentication
+                $mail->Username   = $smtp_email;               // SMTP username
+                $mail->Password   = $smtp_password;                  // SMTP password
+                $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;         // Enable TLS encryption
+                $mail->Port       = $smtp_port;                                   // TCP port to connect to
+            
+                // Recipients
+                $mail->setFrom($smtp_email, 'A Piece To You');
+                $mail->addAddress($client_details['client_email'], ""); // Add a recipient
+            
+                // Content
+                $mail->isHTML(true);                                       // Set email format to HTML
+                $mail->Subject = "Your Order Has Been Cancelled.";
+                $mail->Body    = $html;
+                $mail->AltBody = strip_tags($html);
+                
+
+                $mail->send();
+                echo "1";
+            } catch (Exception $e) {
+                echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+            }
+        }
+    }else if($status == "1"){
+        //get message
+        $get_messages = $conn->query("select delivery_message from messages limit 1");
+        $get_message_row = mysqli_fetch_assoc($get_messages);
+        $message = $get_message_row["delivery_message"];
+
+        //get orders
+        $sql = "select * from client_order_details where client_order_details.client_id = ?";
+
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        $currency_result = $conn->query("select currency from settings limit 1");
+        $currency_row = mysqli_fetch_assoc($currency_result);
+        $currency = $currency_row["currency"];
+
+        $response = [];
+
+        while ($row = $result->fetch_assoc()) {
+            $order_number = $row["client_order_id"];
+
+            $order_product_results = "select * from orders inner join products on products.product_id = orders.order_product_id and orders.order_number = ?";
+            
+
+            $orders_stmt = $conn->prepare($order_product_results);
+            $orders_stmt->bind_param("s", $order_number);
+            $orders_stmt->execute();
+            $orders_result = $orders_stmt->get_result();
+
+            $order_list = [];
+
+            while ($order = $orders_result->fetch_assoc()) {
+                $order_list[] = [
+                    'order_product_quantity' => $order['order_product_quantity'],
+                    'order_product_price' => $order['order_product_price'],
+                    'order_product_total_price' => $order['order_product_total_price'],
+                    'product_name' => $order['product_name'],
+                    'product_price' => $order['product_price'],
+                    'product_id' => $order['product_id'],
+                ];
+            }
+
+            // Append event data with speaker details
+            $response[] = [
+                'client_order_id' => $row['client_order_id'],
+                'client_email' => $row['client_email'],
+                'order_total_price' => $row['client_product_total_price'],
+                'client_county' => $row['client_county'],
+                'client_residence' => $row['client_residence'],
+                'client_name' => $row['client_name'],
+                'client_phone' => $row['client_phone'],
+                'client_email' => $row['client_email'],
+                'date' => $row['client_order_date'],
+                'currency' => $currency
+            ];
+        }
+        // create order to send
+        $client_details = $response[0];
+        $html = $message;
+        $html .= "<div class='client-details' style='margin-top:20px !important;'>";
+        $html .= "<div class='1st-half' style='width:100%;font-size:24px;'><strong>Your Order <span style='color:#83a234ff;'>".htmlspecialchars($client_details['client_order_id'])."</span></strong></div>";
+        $html .= "<div>";
+        $html .= "<div>Placed on ".htmlspecialchars($client_details['date'])."</div>";
+        $html .= "<div style='margin-top:20px !important'><strong>Name: </strong>".htmlspecialchars($client_details['client_name'])."</div>";
+        $html .= "<div><strong>Address: </strong>".htmlspecialchars($client_details['client_residence']).", ".htmlspecialchars($client_details['client_county'])."</div>";
+        $html .= "<div><strong>Phone: </strong>".htmlspecialchars($client_details['client_phone'])."</div>";
+        $html .= "</div>";
+        $html .= "</div>";
+
+        $html .= "<table border='1' style='border-collapse:collapse; width:100%;margin-top:30px !important;'>";
+        $html .="<thead><tr style='background-color:#83a234ff;'>";
+        $html .="<th style='padding:8px !important;color:white !important;font-weight:bold;'>Product</th>";
+        $html .="<th style='padding:8px !important;color:white !important;font-weight:bold;'>Quantity</th>";
+        $html .="<th style='padding:8px !important;color:white !important;font-weight:bold;'>Price </th>";
+        $html .="<th style='padding:8px !important;color:white !important;font-weight:bold;'>Total Price </th>";
+        $html .="</tr></thead><tbody>";
+
+        //append order details
+        foreach ($order_list as $order){
+            $html .= "<tr>";
+            $html .= "<td>".htmlspecialchars($order['product_name'])."</td>";
+            $html .= "<td>".htmlspecialchars($order['order_product_quantity'])."</td>";
+            $html .= "<td>".htmlspecialchars($order['order_product_price'])." ".$currency."</td>";
+            $html .= "<td>".htmlspecialchars($order['order_product_total_price'])." ".$currency."</td>";
+            $html.= "</tr>";
+        }
+        $html .="</tbody></table>";
+        $html .="<div style='width:100%; border-top:2px solid #83a234ff !important; dispaly:flex !important; margin-top:30px !important'>";
+        $html .= "<div style='width:100%; font-size:18px; padding-top:10px !important;'><strong>Total</strong>"." ".htmlspecialchars($client_details['order_total_price'])." ".$currency. "</div>";
+        $html .="</div>";
+        
+        //send mail
+        //get SMTP values
+        $get_settings =$conn->query("select * from settings limit 1");
+        $count = mysqli_num_rows($get_settings);
+        if($count < 1){
+            $result = 3; // no SMTP configs
+            echo json_encode($result);
+        }else{
+            $setting = mysqli_fetch_assoc($get_settings);
+            $smtp_email = $setting['smtp_email'];
+            $smtp_password = $setting['smtp'];
+            $smtp_server = $setting['smtp_server'];
+            $smtp_port = $setting['smtp_port'];
+
+            //send message
+            $mail = new PHPMailer(true);
+
+            try {
+                // Server settings
+                $mail->isSMTP();                                            // Send using SMTP
+                $mail->Host       = $smtp_server;                     // Set the SMTP server
+                $mail->SMTPAuth   = true;                                   // Enable SMTP authentication
+                $mail->Username   = $smtp_email;               // SMTP username
+                $mail->Password   = $smtp_password;                  // SMTP password
+                $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;         // Enable TLS encryption
+                $mail->Port       = $smtp_port;                                   // TCP port to connect to
+            
+                // Recipients
+                $mail->setFrom($smtp_email, 'A Piece To You');
+                $mail->addAddress($client_details['client_email'], ""); // Add a recipient
+            
+                // Content
+                $mail->isHTML(true);                                       // Set email format to HTML
+                $mail->Subject = "Your Order Has Been Completed.";
+                $mail->Body    = $html;
+                $mail->AltBody = strip_tags($html);
+                
+
+                $mail->send();
+                echo "1";
+            } catch (Exception $e) {
+                echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+            }
+        }
+    }
+
+}
 /* DELETE LOCATIONS */
 else if($action == 'del-location'){
     $id = $_POST['id'];
@@ -134,6 +715,24 @@ else if($action == 'del-location'){
     }else{
         echo "2";
     }
+}
+/* DELETE ORDER */
+else if($action == 'del-order'){
+    $id = $_POST['id'];
+    $get_order = $conn->query("select client_order_id from client_order_details where client_id = '$id'");
+    $get_order_row = mysqli_fetch_assoc($get_order);
+    $order = $get_order_row["client_order_id"];
+    //delete
+    if($conn->query("delete from client_order_details where client_id = '$id' ")){
+        if($conn->query("delete from orders where order_number = '$order' ")){
+            echo "1";
+        }else{
+            echo "2";
+        }
+    }else{
+        echo "Failed";
+    }
+    
 }
 /*
 ALL CATEGORY FUNCTIONS
@@ -1522,7 +2121,7 @@ else if($action == "send-letter"){
                         $mail->Port       = $smtp_port;                                   // TCP port to connect to
                     
                         // Recipients
-                        $mail->setFrom($smtp_email, 'Angaza Home Church');
+                        $mail->setFrom($smtp_email, 'A Piece To You');
                         $mail->addAddress($email, $name); // Add a recipient
                     
                         // Process content to embed Base64 images
@@ -2197,6 +2796,10 @@ $stmt->bind_param("i", $event_id);
 $stmt->execute();
 $result = $stmt->get_result();
 
+$currency_result = $conn->query("select currency from settings limit 1");
+$currency_row = mysqli_fetch_assoc($currency_result);
+$currency = $currency_row["currency"];
+
 $response = [];
 
 while ($row = $result->fetch_assoc()) {
@@ -2214,29 +2817,160 @@ while ($row = $result->fetch_assoc()) {
 
     while ($order = $orders_result->fetch_assoc()) {
         $order_list[] = [
-            'order_id' => $order['order_product_id'],
+            'order_id' => $order['order_id'],
             'order_product_quantity' => $order['order_product_quantity'],
             'order_product_price' => $order['order_product_price'],
             'order_product_total_price' => $order['order_product_total_price'],
             'product_name' => $order['product_name'],
             'product_price' => $order['product_price'],
-            'product_discount' => $order['product_discount']
+            'product_id' => $order['product_id'],
+            'product_discount' => $order['product_discount'],
         ];
     }
 
     // Append event data with speaker details
     $response[] = [
+        'client_id' => $row['client_id'],
         'client_name' => $row['client_name'],
         'client_phone' => $row['client_phone'],
         'client_email' => $row['client_email'],
         'client_order_id' => $row['client_order_id'],
         'order_status' => $row['order_status'],
+        'client_county' => $row['client_county'],
+        'client_residence' => $row['client_residence'],
+        'order_total_price' => $row['client_product_total_price'],
         'client_order_date' => $row['client_order_date'],
-        'order_list' => $order_list
+        'order_list' => $order_list,
+        'currency' => $currency
     ];
 }
 
 echo json_encode($response);
+}
+/* EDIT ORDER DETAILS */
+else if($action == "edit-order-quantity"){
+    $id = $_POST["id"];
+    $quantity = $_POST["quantity"];
+
+    //check quantity in stock
+    $result = $conn->query("select product_balance from products where product_id = '$id' limit 1 ");
+    $row = mysqli_fetch_assoc($result);
+    $product_balance = $row["product_balance"];
+    if($product_balance >= $quantity){
+
+    //get initial quantity
+    $initial_result = $conn->query("select order_product_quantity from orders where order_product_id = '$id' limit 1");
+    $result_row = mysqli_fetch_assoc($initial_result);
+    $initial_quantity = $result_row["order_product_quantity"];
+
+    //update quantity
+    $insert_qry = "update orders set order_product_quantity =? where order_product_id = ?";
+    $insert_stmt = mysqli_stmt_init($conn);
+    mysqli_stmt_prepare($insert_stmt, $insert_qry);
+    mysqli_stmt_bind_param($insert_stmt, "ss", $quantity, $id);
+    if(mysqli_stmt_execute($insert_stmt)){
+        $update_balance = "update products set product_balance = product_balance + '$initial_quantity' - ? where product_id = ?";
+        $update_stmt = mysqli_stmt_init($conn);
+        mysqli_stmt_prepare($update_stmt, $update_balance);
+        mysqli_stmt_bind_param($update_stmt, "ss", $quantity, $id);
+        if(mysqli_stmt_execute($update_stmt)){
+            echo "1";
+        }
+        // echo "1";
+    }else{
+        echo "2";
+    }
+
+}else{
+    echo "3";
+}
+}
+/* ADD CONFIRMATION */
+else if($action == 'save-confirmation'){
+    $content = $_POST['content'];
+
+    //inserting data into db
+    $insert_qry="update messages set confirmation_message = ? ";
+    $insert_stmt=mysqli_stmt_init($conn);
+    mysqli_stmt_prepare($insert_stmt, $insert_qry);
+   
+    mysqli_stmt_bind_param($insert_stmt, "s",$content);
+    if(mysqli_stmt_execute($insert_stmt)){
+        echo "1";
+    }else{
+        echo "2";
+    }
+
+}
+/* ADD SHIPPING */
+else if($action == 'save-shipping'){
+    $content = $_POST['content'];
+
+    //inserting data into db
+    $insert_qry="update messages set shipping_message = ? ";
+    $insert_stmt=mysqli_stmt_init($conn);
+    mysqli_stmt_prepare($insert_stmt, $insert_qry);
+   
+    mysqli_stmt_bind_param($insert_stmt, "s",$content);
+    if(mysqli_stmt_execute($insert_stmt)){
+        echo "1";
+    }else{
+        echo "2";
+    }
+
+}
+/* ADD CANCELLATION */
+else if($action == 'save-cancellation'){
+    $content = $_POST['content'];
+
+    //inserting data into db
+    $insert_qry="update messages set cancellation_message = ? ";
+    $insert_stmt=mysqli_stmt_init($conn);
+    mysqli_stmt_prepare($insert_stmt, $insert_qry);
+   
+    mysqli_stmt_bind_param($insert_stmt, "s",$content);
+    if(mysqli_stmt_execute($insert_stmt)){
+        echo "1";
+    }else{
+        echo "2";
+    }
+
+}
+/* ADD DELIVERY */
+else if($action == 'save-delivery'){
+    $content = $_POST['content'];
+
+    //inserting data into db
+    $insert_qry="update messages set delivery_message = ? ";
+    $insert_stmt=mysqli_stmt_init($conn);
+    mysqli_stmt_prepare($insert_stmt, $insert_qry);
+   
+    mysqli_stmt_bind_param($insert_stmt, "s",$content);
+    if(mysqli_stmt_execute($insert_stmt)){
+        echo "1";
+    }else{
+        echo "2";
+    }
+
+}
+/* GET MESSAGES */
+else if($action == 'get-messages'){
+    $get_messages =$conn->query("select * from messages limit 1");
+    $count = mysqli_num_rows($get_messages);
+    if($count < 1){
+        $result = 2;
+        echo json_encode($result);
+    }else{
+    while($message = mysqli_fetch_assoc($get_messages)){
+        $result[] = [
+            'confirmation' => $message['confirmation_message'],
+            'shipping' => $message['shipping_message'],
+            'cancellation' => $message['cancellation_message'],
+            'delivery' => $message['delivery_message'],
+        ];
+    }
+    echo json_encode($result);
+}
 }
 
 

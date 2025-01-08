@@ -134,6 +134,20 @@ include("components/header.php");?>
     </div>
     </div>
     </div>
+    <?php }else if($_GET["p"] == "messages"){?>
+    <div class="other-page">
+    <div class="main-page row">
+    <div class="col-2">
+    <?php include("components/admin/navbar.php");?>
+    </div>
+    <div class="col-10 side-page overflow-auto">
+    <?php 
+    include("components/admin/topbar.php");
+    include("views/admin/messages.php");
+    include("components/admin/footer.php");?>
+    </div>
+    </div>
+    </div>
     <?php }else if($_GET["p"] == "locations"){?>
     <div class="other-page">
     <div class="main-page row">
