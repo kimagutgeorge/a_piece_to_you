@@ -1,6 +1,7 @@
 <?php
 error_reporting(E_ERROR | E_PARSE);
 session_start();
+$if_user = $_SESSION["is_user"];
 include("components/header.php");?>
   <?php
     # include main pages
@@ -60,7 +61,8 @@ include("components/header.php");?>
         include("components/footer.php");?>
         </div>
     <!-- OTHER PAGES -->
-    <?php }else if($_GET["p"] == "adminhome"){?>
+    <?php }else if($_GET["p"] == "adminhome"){
+        if(empty($if_user)){?><script>location.href = "?p=adminhub";</script><?php }?>
     <div class="other-page">
     <div class="main-page row">
     <div class="col-2">
@@ -75,7 +77,8 @@ include("components/header.php");?>
     </div>
     </div>
     </div>
-    <?php }else if($_GET["p"] == "adminevents"){?>
+    <?php }else if($_GET["p"] == "adminevents"){
+        if(empty($if_user)){?><script>location.href = "?p=adminhub";</script><?php }?>
     <div class="other-page">
     <div class="main-page row">
     <div class="col-2">
@@ -90,7 +93,8 @@ include("components/header.php");?>
     </div>
     </div>
     </div>
-    <?php }else if($_GET["p"] == "orders"){?>
+    <?php }else if($_GET["p"] == "orders"){
+        if(empty($if_user)){?><script>location.href = "?p=adminhub";</script><?php }?>
     <div class="other-page">
     <div class="main-page row">
     <div class="col-2">
@@ -105,7 +109,8 @@ include("components/header.php");?>
     </div>
     </div>
     </div>
-    <?php }else if($_GET["p"] == "view-order"){?>
+    <?php }else if($_GET["p"] == "view-order"){
+        if(empty($if_user)){?><script>location.href = "?p=adminhub";</script><?php }?>
     <div class="other-page">
     <div class="main-page row">
     <div class="col-2">
@@ -120,7 +125,8 @@ include("components/header.php");?>
     </div>
     </div>
     </div>
-    <?php }else if($_GET["p"] == "categories"){?>
+    <?php }else if($_GET["p"] == "categories"){
+        if(empty($if_user)){?><script>location.href = "?p=adminhub";</script><?php }?>
     <div class="other-page">
     <div class="main-page row">
     <div class="col-2">
@@ -134,7 +140,8 @@ include("components/header.php");?>
     </div>
     </div>
     </div>
-    <?php }else if($_GET["p"] == "messages"){?>
+    <?php }else if($_GET["p"] == "messages"){
+        if(empty($if_user)){?><script>location.href = "?p=adminhub";</script><?php }?>
     <div class="other-page">
     <div class="main-page row">
     <div class="col-2">
@@ -148,7 +155,8 @@ include("components/header.php");?>
     </div>
     </div>
     </div>
-    <?php }else if($_GET["p"] == "locations"){?>
+    <?php }else if($_GET["p"] == "locations"){
+        if(empty($if_user)){?><script>location.href = "?p=adminhub";</script><?php }?>
     <div class="other-page">
     <div class="main-page row">
     <div class="col-2">
@@ -162,7 +170,8 @@ include("components/header.php");?>
     </div>
     </div>
     </div>
-    <?php }else if($_GET["p"] == "adminshop"){?>
+    <?php }else if($_GET["p"] == "adminshop"){
+        if(empty($if_user)){?><script>location.href = "?p=adminhub";</script><?php }?>
     <div class="other-page">
     <div class="main-page row">
     <div class="col-2">
@@ -176,7 +185,8 @@ include("components/header.php");?>
     </div>
     </div>
     </div>
-    <?php }else if($_GET["p"] == "add-blog"){?>
+    <?php }else if($_GET["p"] == "add-blog"){
+        if(empty($if_user)){?><script>location.href = "?p=adminhub";</script><?php }?>
     <div class="other-page">
     <div class="main-page row">
     <div class="col-2">
@@ -190,7 +200,8 @@ include("components/header.php");?>
     </div>
     </div>
     </div>
-    <?php }else if($_GET["p"] == "contacts"){?>
+    <?php }else if($_GET["p"] == "contacts"){
+        if(empty($if_user)){?><script>location.href = "?p=adminhub";</script><?php }?>
     <div class="other-page">
     <div class="main-page row">
     <div class="col-2">
@@ -204,7 +215,8 @@ include("components/header.php");?>
     </div>
     </div>
     </div>
-    <?php }else if($_GET["p"] == "roles"){?>
+    <?php }else if($_GET["p"] == "roles"){
+        if(empty($if_user)){?><script>location.href = "?p=adminhub";</script><?php }?>
     <div class="other-page">
     <div class="main-page row">
     <div class="col-2">
@@ -218,7 +230,8 @@ include("components/header.php");?>
     </div>
     </div>
     </div>
-    <?php }else if($_GET["p"] == "website"){?>
+    <?php }else if($_GET["p"] == "website"){
+        if(empty($if_user)){?><script>location.href = "?p=adminhub";</script><?php }?>
     <div class="other-page">
     <div class="main-page row">
     <div class="col-2">
@@ -232,7 +245,8 @@ include("components/header.php");?>
     </div>
     </div>
     </div>
-    <?php }else if($_GET["p"] == "add-newsletter"){?>
+    <?php }else if($_GET["p"] == "add-newsletter"){
+        if(empty($if_user)){?><script>location.href = "?p=adminhub";</script><?php }?>
     <div class="other-page">
     <div class="main-page row">
     <div class="col-2">
@@ -246,7 +260,8 @@ include("components/header.php");?>
     </div>
     </div>
     </div>
-    <?php }else if($_GET["p"] == "profile"){?>
+    <?php }else if($_GET["p"] == "profile"){
+        if(empty($if_user)){?><script>location.href = "?p=adminhub";</script><?php }?>
     <div class="other-page">
     <div class="main-page row">
     <div class="col-2">
@@ -260,7 +275,8 @@ include("components/header.php");?>
     </div>
     </div>
     </div>
-    <?php }else if($_GET["p"] == "subscribers"){?>
+    <?php }else if($_GET["p"] == "subscribers"){
+        if(empty($if_user)){?><script>location.href = "?p=adminhub";</script><?php }?>
     <div class="other-page">
     <div class="main-page row">
     <div class="col-2">
@@ -274,7 +290,8 @@ include("components/header.php");?>
     </div>
     </div>
     </div>
-    <?php }else if($_GET["p"] == "adminblogs"){?>
+    <?php }else if($_GET["p"] == "adminblogs"){
+        if(empty($if_user)){?><script>location.href = "?p=adminhub";</script><?php }?>
     <div class="other-page">
     <div class="main-page row">
     <div class="col-2">
@@ -288,7 +305,8 @@ include("components/header.php");?>
     </div>
     </div>
     </div>
-    <?php }else if($_GET["p"] == "payments"){?>
+    <?php }else if($_GET["p"] == "payments"){
+        if(empty($if_user)){?><script>location.href = "?p=adminhub";</script><?php }?>
     <div class="other-page">
     <div class="main-page row">
     <div class="col-2">
@@ -302,7 +320,8 @@ include("components/header.php");?>
     </div>
     </div>
     </div>
-    <?php }else if($_GET["p"] == "newsletters"){?>
+    <?php }else if($_GET["p"] == "newsletters"){
+        if(empty($if_user)){?><script>location.href = "?p=adminhub";</script><?php }?>
     <div class="other-page">
     <div class="main-page row">
     <div class="col-2">
@@ -316,7 +335,8 @@ include("components/header.php");?>
     </div>
     </div>
     </div>
-    <?php }else if($_GET["p"] == "registration"){?>
+    <?php }else if($_GET["p"] == "registration"){
+        if(empty($if_user)){?><script>location.href = "?p=adminhub";</script><?php }?>
     <div class="other-page">
     <div class="main-page row">
     <div class="col-2">
@@ -330,7 +350,23 @@ include("components/header.php");?>
     </div>
     </div>
     </div>
-    <?php }else if($_GET["p"] == "members"){?>
+    <?php }else if($_GET["p"] == "newsletter-details"){
+        if(empty($if_user)){?><script>location.href = "?p=adminhub";</script><?php }?>
+    <div class="other-page">
+    <div class="main-page row">
+    <div class="col-2">
+    <?php include("components/admin/navbar.php");?>
+    </div>
+    <div class="col-10 side-page overflow-auto">
+    <?php 
+    include("components/admin/topbar.php");
+    include("views/admin/viewnewsletter.php");
+    include("components/admin/footer.php");?>
+    </div>
+    </div>
+    </div>
+    <?php }else if($_GET["p"] == "members"){
+        if(empty($if_user)){?><script>location.href = "?p=adminhub";</script><?php }?>
     <div class="other-page">
     <div class="main-page row">
     <div class="col-2">
@@ -344,7 +380,8 @@ include("components/header.php");?>
     </div>
     </div>
     </div>
-    <?php }else if($_GET["p"] == "reports"){?>
+    <?php }else if($_GET["p"] == "reports"){
+        if(empty($if_user)){?><script>location.href = "?p=adminhub";</script><?php }?>
     <div class="other-page row">
     <div class="main-page row">
     <div class="col-2">
@@ -358,7 +395,8 @@ include("components/header.php");?>
     </div>
     </div>
     </div>
-    <?php }else if($_GET["p"] == "profile"){?>
+    <?php }else if($_GET["p"] == "profile"){
+        if(empty($if_user)){?><script>location.href = "?p=adminhub";</script><?php }?>
     <div class="other-page row">
     <div class="main-page row">
     <div class="col-2">
@@ -372,7 +410,8 @@ include("components/header.php");?>
     </div>
     </div>
     </div>
-    <?php }else if($_GET["p"] == "settings"){?>
+    <?php }else if($_GET["p"] == "settings"){
+        if(empty($if_user)){?><script>location.href = "?p=adminhub";</script><?php }?>
     <div class="other-page">
     <div class="main-page row">
     <div class="col-2">
@@ -386,7 +425,8 @@ include("components/header.php");?>
     </div>
     </div>
     </div>
-    <?php }else if($_GET["p"] == "add-event"){?>
+    <?php }else if($_GET["p"] == "add-event"){
+        if(empty($if_user)){?><script>location.href = "?p=adminhub";</script><?php }?>
         <div class="other-page">
     <div class="main-page row">
     <div class="col-2">
@@ -400,7 +440,8 @@ include("components/header.php");?>
     </div>
     </div>
     </div>
-    <?php }else if($_GET["p"] == "view-event"){?>
+    <?php }else if($_GET["p"] == "view-event"){
+        if(empty($if_user)){?><script>location.href = "?p=adminhub";</script><?php }?>
         <div class="other-page">
     <div class="main-page row">
     <div class="col-2">
@@ -414,7 +455,8 @@ include("components/header.php");?>
     </div>
     </div>
     </div>
-    <?php }else if($_GET["p"] == "view-blog"){?>
+    <?php }else if($_GET["p"] == "view-blog"){
+        if(empty($if_user)){?><script>location.href = "?p=adminhub";</script><?php }?>
         <div class="other-page">
     <div class="main-page row">
     <div class="col-2">
@@ -428,7 +470,8 @@ include("components/header.php");?>
     </div>
     </div>
     </div>
-    <?php }else if($_GET["p"] == "view-product"){?>
+    <?php }else if($_GET["p"] == "view-product"){
+        if(empty($if_user)){?><script>location.href = "?p=adminhub";</script><?php }?>
         <div class="other-page">
     <div class="main-page row">
     <div class="col-2">
@@ -442,7 +485,8 @@ include("components/header.php");?>
     </div>
     </div>
     </div>
-    <?php }else if($_GET["p"] == "add-product"){?>
+    <?php }else if($_GET["p"] == "add-product"){
+        if(empty($if_user)){?><script>location.href = "?p=adminhub";</script><?php }?>
         <div class="other-page">
     <div class="main-page row">
     <div class="col-2">
@@ -456,7 +500,8 @@ include("components/header.php");?>
     </div>
     </div>
     </div>
-    <?php }else if($_GET["p"] == "add-product-category"){?>
+    <?php }else if($_GET["p"] == "add-product-category"){
+        if(empty($if_user)){?><script>location.href = "?p=adminhub";</script><?php }?>
         <div class="other-page">
     <div class="main-page row">
     <div class="col-2">
@@ -474,7 +519,17 @@ include("components/header.php");?>
     <div class="other-page">
     <div class="main-page row">
     <?php 
-    include("views/admin/login.php");?>
+    include("views/admin/login.php");
+    include("components/admin/footer.php");?>
+    </div>
+    </div>
+    <?php }else if($_GET["p"] == "logout"){
+        session_destroy();?>
+    <div class="other-page">
+    <div class="main-page row">
+    <?php 
+    include("views/admin/login.php");
+    include("components/admin/footer.php");?>
     </div>
     </div>
     <?php }else{?>

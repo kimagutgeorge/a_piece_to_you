@@ -1,5 +1,6 @@
 <?php include("components/admin/response.php"); ?>
     <div class="row dashboard categories members">
+    <div class="dashboard-inner col-12">
     <div class="col-12 row">
     <div class="col-4 card" style="height:fit-content !important">
     <h4 class="text-primary">Add Member</h4>
@@ -78,6 +79,6 @@
     </table>
     
     </div>
-    
+    </div>
     </div>
     </div>

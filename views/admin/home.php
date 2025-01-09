@@ -1,4 +1,5 @@
 <div class="row dashboard">
+<div class="dashboard-inner col-12">
         <div class="col-7 row">
             <div class="card col-3" style="height:fit-content !important">
                 <h4 class="text-primary fw-bold"><span id="event_count"><span> Events</h4>
@@ -45,3 +46,4 @@
             </vue-cal>
         </div>
     </div>
+</div>

@@ -1,5 +1,6 @@
 <?php include("components/admin/response.php");?>
       <div class="row dashboard add-event-modal categories">
+    <div class="dashboard-inner col-12">
     <div class="col-12">
     <form id="sendNewsletter">
         <h4 class="fw-bold text-primary">Create Newsletter</h4>
@@ -32,3 +33,4 @@
     
   </div> 
         </div>
+      </div>

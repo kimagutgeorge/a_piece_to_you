@@ -1,6 +1,6 @@
 <?php include("components/admin/response.php"); ?>
       <div class="row dashboard add-event-modal categories">
-    <div class="col-12 views">
+    <div class="col-12 views dashboard-inner">
       <div class="edit-panel" id="view_event_toggle">
         <!-- insert button -->
       </div>

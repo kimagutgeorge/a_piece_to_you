@@ -1,6 +1,6 @@
 <?php include("components/admin/response.php"); ?>
     <div class="row dashboard">
-    <div class="col-12 events-panel" style="margin-top:15px !important">
+    <div class="col-12 events-panel dashboard-inner" style="margin-top:15px !important">
         <div class="col-4 card" style="height:fit-content">
             <!-- add roles -->
                 <p class="text-primary fw-bold">Add Roles</p>

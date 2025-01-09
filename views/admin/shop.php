@@ -12,9 +12,9 @@
     </form>
     </div>
     <div class="col-4">
-    <a href="?p=add-product"><button class="btn btn-primary">ADD PRODUCT</button></a>
+    <!-- <a href="?p=add-product"><button class="btn btn-primary">ADD PRODUCT</button></a>
     <a href="?p=add-product-category"><button class="btn btn-primary">CATEGORIES</button></a>
-    <a href="?p=orders"><button class="btn btn-primary">ORDERS</button></a>
+    <a href="?p=orders"><button class="btn btn-primary">ORDERS</button></a> -->
     </div>
     </div>
     <div class="col-12 events-panel" style="margin-top:15px !important" id="tbl_shop">

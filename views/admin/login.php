@@ -1,11 +1,12 @@
 <div class="container col-12 lg-page">
+<?php include("components/admin/response.php");?>
         <div class="login-panel">
-            <form @submit.prevent="loginUser" method="POST">
+            <form id="loginUser" method="POST">
             <div class="form-group">
-            <input type="text" class="form-control" placeholder="Username" v-model="email" required>
+            <input type="email" class="form-control" placeholder="Username" name="email" required>
             </div>
             <div class="form-group">
-            <input type="password" v-model="password" class="form-control" placeholder="Password" required>
+            <input type="password" name="password" class="form-control" placeholder="Password" required>
             </div>
             <div class="form-group">
             <button type="submit" class="col-md-12 form-control btn btn-primary">Login <i class="fa-solid fa-unlock"></i></button>

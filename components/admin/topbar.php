@@ -53,6 +53,12 @@
                         echo "Orders";
                     }else if($_GET["p"] == 'view-order'){
                         echo "View Order";
+                    }else if($_GET["p"] == 'reports'){
+                        echo "Reports";
+                    }else if($_GET["p"] == 'newsletter-details'){
+                        echo "Newsletter Details";
+                    }else if($_GET["p"] == 'messages'){
+                        echo "Messages";
                     }
                 ?>
             </p></div>
@@ -119,6 +125,12 @@
                         echo "Orders";
                     }else if($_GET["p"] == 'view-order'){
                         echo "View Order";
+                    }else if($_GET["p"] == 'reports'){
+                        echo "Reports";
+                    }else if($_GET["p"] == 'newsletter-details'){
+                        echo "Newsletter Details";
+                    }else if($_GET["p"] == 'messages'){
+                        echo "Messages";
                     }
                 ?>
             </h3>

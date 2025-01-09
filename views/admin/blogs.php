@@ -8,7 +8,7 @@
         </select>
         </div>
         <div class="col-4">
-        <a href="?p=add-blog"><button class="btn btn-primary">ADD BLOG</button></a>
+        <!-- <a href="?p=add-blog"><button class="btn btn-primary">ADD BLOG</button></a> -->
         </div>
         </div>
     <div class="col-12 row blogs" id="tbl_blogs">

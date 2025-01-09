@@ -1,6 +1,6 @@
 <?php include("components/admin/response.php"); ?>
     <div class="row dashboard">
-    <div class="col-12 events-panel settings row" style="margin-top:15px !important">
+    <div class="col-12 events-panel settings row dashboard-inner" style="margin-top:15px !important">
         <div class="col-6 card" style="padding:10px !important; height:fit-content;">
             <form id="setSettings">
             <div class="form-group top-20">

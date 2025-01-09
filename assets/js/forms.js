@@ -44,8 +44,11 @@ $( document ).ready(function() {
     getCount();
     getPrograms();
     getValues();
-    getContacts();
-    getVolunteers();
+    if(url == "http://localhost/apiecetoyou/?p=contacts" || url == "http://localhost/apiecetoyou/index.php?p=contacts"){
+        getContacts();
+        getVolunteers();
+    }
+
     getRegistrations();
     
     if(url == "http://localhost/apiecetoyou/?p=view-event" || url == "http://localhost/apiecetoyou/index.php?p=view-event" || url == "http://localhost/apiecetoyou/?p=event-details" || url == "http://localhost/apiecetoyou/index.php?p=event-details"){
@@ -87,6 +90,9 @@ $( document ).ready(function() {
     }
     if(url == "http://localhost/apiecetoyou/?p=messages" || url == "http://localhost/apiecetoyou/index.php?p=messages" ){
         getMessages();
+    }
+    if(url == "http://localhost/apiecetoyou/?p=newsletter-details" || url == "http://localhost/apiecetoyou/index.php?p=newsletter-details" ){
+        viewNewsletter();
     }
     
     
@@ -225,17 +231,13 @@ function InitEditor(){
       /* end of picker*/
   });
   }
-//disable editor
-// function disableEditor() {
-//     const editor = tinymce.get('editor_content');
-//     if (editor) {
-        
-//         tinymce.remove(editor);
-//     } else {
-//         console.log('Editor not found');
-//     }
-// }
-
+/* disable editor */
+function disableEditor(){
+    tinymce.get('editor_content').destroy();
+}
+function disableEditor2(){
+    tinymce.get('editor_content_2').destroy();
+}
 function formatEventTime(startDateStr, eventDuration) {
     const startDate = new Date(startDateStr);
     const endDate = new Date(startDate.getTime() + eventDuration * 60 * 60 * 1000); // Calculate end time
@@ -272,6 +274,9 @@ $(document).on('click', '.send-confirmation-mail', function(){
                 } else if (response == 2) {
                     db_response.add("bg-danger");
                     $('#get_response').html('Failed');
+                } else if(response == 3){
+                    db_response.add("bg-warning");
+                    $('#get_response').html('Change Order Status before sending mail');
                 } else {
                     db_response.add("bg-warning");
                     $('#get_response').html('Already Exists');
@@ -300,6 +305,7 @@ $(document).on('click', '.edit-product', function(){
         const product_quantity = document.getElementById("product_quantity").value 
         const product_category = document.getElementById("product_category").value 
         const editorContent = tinymce.get('editor_content').getContent()
+        disableEditor();
 
         const formData = new FormData()
         formData.append("product_id", product_id)
@@ -369,7 +375,6 @@ $(document).on('click', '.edit-order', function(){
             processData: false,
             contentType: false,
             success: function(response) {
-                console.log(response)
                 document.getElementById("db_response").style.display = "flex";
                 if (response == 1) {
                     db_response.add("bg-primary");
@@ -409,6 +414,7 @@ $(document).on('click', '.edit-event', function() {
         const event_category = document.getElementById("event_category").value
         const all_speakers = document.querySelectorAll('.single-speaker-id')
         const editorContent = tinymce.get('editor_content').getContent()
+        disableEditor();
 
         const formData = new FormData()
         formData.append("event_id", event_id)
@@ -470,6 +476,7 @@ $(document).on('click', '.edit-blog', function() {
         const blog_category = document.getElementById("category").value
         const blog_name = document.getElementById("blog_name").value
         const editorContent = tinymce.get('editor_content').getContent()
+        disableEditor();
 
         const formData = new FormData()
         formData.append("blog_id", blog_id)
@@ -509,6 +516,65 @@ $(document).on('click', '.edit-blog', function() {
     
     
 });
+/* view newsletter */
+function viewNewsletter(){
+    $.ajax({  
+        type: 'GET',  
+        url: 'app.php?action=get-letter',
+        success: function(response) {
+            let newsletters = JSON.parse(response)
+            //admins
+            let newsletter = newsletters[0]
+
+            let tableBody = document.getElementById("letter_body")
+            tableBody.innerHTML = ""
+
+            let toggle_button_body = document.getElementById("view_newsletter_toggle")
+            toggle_button_body.innerHTML=`
+            <button class="btn btn-primary edit-letter" ><i class="${universal_disabled ? 'fa-solid fa-edit ' : 'fa-solid fa-check'}"></i></button>
+        `
+            //body
+            tableBody.innerHTML = `
+            <form id="sendNewsletter">
+                <input id="letter_id"  name="id" value="${newsletter.status}">
+                <div class="row">
+                <div class="col-6">
+                    <div class="col-12 row" style="margin-top:20px !important">
+                        <label class="text-muted">Newsletter Title</label>
+                    </div>
+                    <input type="text" class="form-control" value="${newsletter.title}" ${universal_disabled ? 'readonly': ''} placeholder="Newsletter Title" name="title" id="newsletter_title">
+                </div>
+                <div class="col-6">
+                <div class="col-12 row" style="margin-top:20px !important">
+                        <label class="text-muted">Attachment (Optional)</label>
+                    </div>
+                    <input type="file" class="form-control" name="attachments[]" ${universal_disabled ? 'disabled': ''}  multiple >
+                </div>
+                </div>
+                <label class="text-muted">Newsletter</label>
+                <!-- editor -->
+                <div class="form-group" id="editor-panel">
+                <div id="editor_content">${newsletter.content}</div>
+                <!-- end of editor -->
+                </div>
+            </form>
+            `
+
+            }
+        })
+}
+/* edit */
+$(document).on('click', '.edit-letter', function(){
+    universal_disabled = !universal_disabled
+    viewNewsletter();
+    if(universal_disabled == false){
+        setTimeout(() => {
+            InitEditor();
+        }, 500);
+    }else{
+        disableEditor();
+    }
+})
 /* get about us */
 function getAboutUs(){
         $.ajax({  
@@ -597,6 +663,9 @@ $(document).on('click', '.save-about', function(){
     let vision = document.getElementById("vision").value
     const mission_Content = tinymce.get('editor_content').getContent()
     const offer_Content = tinymce.get("editor_content_2").getContent()
+    //disable editor
+    disableEditor();
+    disableEditor2();
     
     if(title == "" || vision == "" || mission_Content == "" || offer_Content == ""){
         document.getElementById("db_response").style.display="flex"
@@ -726,6 +795,16 @@ function getNewsletters(){
                         return `<span>DRAFT</span>`
                     }
                 }
+                function showAction(){
+                    if(newsletter.status == '0'){
+                        return `<i class="fa-solid fa-eye view-letter"></i>
+                                <i class="fa-solid fa-trash del-letter"></i>`
+                    }else{
+                        return `<i class="fa-solid fa-eye view-letter"></i>
+                        <i class="fa-solid fa-paper-plane send-draft-letter"></i>
+                                <i class="fa-solid fa-trash del-letter"></i>`
+                    }
+                }
 
                 let row = document.createElement("tr"); // Create a new table row
     
@@ -744,8 +823,7 @@ function getNewsletters(){
                 dateCell.innerHTML = `${formatDateWithTime(newsletter.date)}`
                 
                 let actionCell = document.createElement('td');
-                actionCell.innerHTML = `<i class="fa-solid fa-eye view-letter"></i>
-                <i class="fa-solid fa-trash del-letter"></i> `
+                actionCell.innerHTML = showAction();
 
                 // // Append cells to the row
                 row.appendChild(idCell);
@@ -1195,13 +1273,13 @@ $(document).on('click', '.del-volunteer', function(){
     const id = $(this).closest('tr').find('td:eq(0)').text().trim()
     $.ajax({  
         type: 'POST',  
-        url: 'app.php?action=del-contact', 
+        url: 'app.php?action=del-volunteer', 
         data: {id: id},
         success: function(response) {
             document.getElementById("db_response").style.display = "flex";
             if (response == 1) {
                 db_response.add("bg-primary");
-                $('#get_response').html('Successful');
+                $('#get_response').html("Successful");
                 getVolunteers();
             } else if (response == 2) {
                 db_response.add("bg-danger");
@@ -2487,6 +2565,22 @@ $(document).on('click', '.del-product', function(){
 }
 
 })
+/* view letter */
+$(document).on('click', '.view-letter', function(){
+    const id = $(this).closest('tr').find('td:eq(0)').text().trim()
+    $.ajax({  
+        type: 'POST',  
+        url: 'app.php?action=view-letter', 
+        data: {
+            id:id
+        },
+        success: function(response) {
+            setTimeout(() => {
+                location.href="?p=newsletter-details"
+            }, 200);
+        }
+    });
+})
 /* delete letter */
 $(document).on('click', '.del-letter', function(){
     let db_response = document.getElementById("db_response").classList
@@ -2511,6 +2605,56 @@ $(document).on('click', '.del-letter', function(){
         }
     });
 }
+
+})
+/* delete letter */
+$(document).on('click', '.del-member', function(){
+    let db_response = document.getElementById("db_response").classList
+    let status = confirm("Delete this member?");
+    if(status == true){
+    const id = $(this).closest('tr').find('td:eq(0)').text().trim()
+    $.ajax({  
+        type: 'POST',  
+        url: 'app.php?action=del-member', 
+        data: {id: id},
+        success: function(response) {
+            document.getElementById("db_response").style.display = "flex";
+            if (response == 1) {
+                db_response.add("bg-primary");
+                $('#get_response').html('Successful');
+                getMembers();
+            } else if (response == 2) {
+                db_response.add("bg-danger");
+                $('#get_response').html('Failed');
+            }
+        }
+    });
+}
+
+})
+/* delete letter */
+$(document).on('click', '.send-draft-letter', function(){
+    let db_response = document.getElementById("db_response").classList
+    
+    const id = $(this).closest('tr').find('td:eq(0)').text().trim()
+    $.ajax({  
+        type: 'POST',  
+        url: 'app.php?action=send-draft-letter', 
+        data: {id: id},
+        success: function(response) {
+            console.log(response)
+            document.getElementById("db_response").style.display = "flex";
+            if (response == 1) {
+                db_response.add("bg-primary");
+                $('#get_response').html('Successful');
+                getNewsletters();
+            } else if (response == 2) {
+                db_response.add("bg-danger");
+                $('#get_response').html('Failed');
+            }
+        }
+    });
+
 
 })
 /* get count */
@@ -2639,7 +2783,7 @@ function getMembers(){
 
                 
                 let actionCell = document.createElement('td');
-                actionCell.innerHTML = `<i class="fa-solid fa-trash text-danger" @click="deleteMember(member.member_id)"></i>`
+                actionCell.innerHTML = `<i class="fa-solid fa-trash text-danger del-member"></i>`
                 // Append cells to the row
                 row.appendChild(idCell);
                 row.appendChild(nameCell);
@@ -4093,6 +4237,34 @@ function getBlogs(){
             }
         });
         getRoles();
+    })
+    /* add location */
+    $('#loginUser').on('submit', function(e){
+        e.preventDefault()
+        let db_response = document.getElementById("db_response").classList
+        $.ajax({  
+            type: 'POST',  
+            url: 'app.php?action=login', 
+            data: $('#loginUser').serialize(),
+            success: function(response) {
+                console.log(response)
+                document.getElementById("db_response").style.display="flex"
+                if(response == 1){
+                    db_response.add("bg-primary")
+                    $('#get_response').html('Successful')
+                    //login
+                    setTimeout(() => {
+                        location.href = "?p=adminhome";
+                    }, 200);
+                }else if( response == 2 ){
+                    db_response.add("bg-danger")
+                    $('#get_response').html('Incorrect Credentials!')
+                }else{
+                    db_response.add("bg-warning")
+                    $('#get_response').html('Already Exists')
+                }
+            }
+        });
     })
     /*
     add event

@@ -1,6 +1,6 @@
 <?php include("components/admin/response.php");?>
     <div class="row dashboard categories">
-    <div class="col-12 row">
+    <div class="col-12 row dashboard-inner">
     <div class="col-4 card" style="height:fit-content !important">
     <h4 class="text-primary">Add Subscriber</h4>
     <form id="addSubscriber">

@@ -43,8 +43,28 @@ function is_connected()
         return false; // Not connected
     }
 }
+if($action == "login"){
+    $email = $_POST["email"];
+    $password = md5($_POST["password"]);
+
+    $confirm_qry = "select * from users where username = ? and password = ? limit 1";
+    $confirm_stmt=mysqli_stmt_init($conn);
+    mysqli_stmt_prepare($confirm_stmt,$confirm_qry);
+    
+    mysqli_stmt_bind_param($confirm_stmt, 'ss', $email, $password);
+    mysqli_stmt_execute($confirm_stmt);
+    $result=mysqli_stmt_get_result($confirm_stmt);
+    $rowcount=mysqli_num_rows($result);
+    $row = mysqli_fetch_assoc($result);
+    if($rowcount > 0){
+        echo "1";
+        $_SESSION["is_user"] = $row["username"];
+    }else{
+        echo "2";
+    }
+}
 /* BASE64 IMAGE CREATOR */
-if($action == "create-image"){
+else if($action == "create-image"){
     // Get the uploaded file
     $file = $_FILES['file']['tmp_name'];
     
@@ -700,6 +720,8 @@ else if($action == "send-client-mail"){
                 echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
             }
         }
+    }else{
+        echo "3";
     }
 
 }
@@ -714,6 +736,20 @@ else if($action == 'del-location'){
         echo "1";
     }else{
         echo "2";
+    }
+}
+/* DELETE MEMBER */
+else if($action == 'del-member'){
+    $id = $_POST['id'];
+    $images = $conn->query("select member_photo from members where member_id = '$id' limit 1");
+    $single_image = mysqli_fetch_assoc($images);
+    $image = $single_image["member_photo"];
+    if(unlink("assets/images/bg/members/".$image)){
+        if($conn->query("delete from members where member_id = '$id' ")){
+            echo "1";
+        }else{
+            echo "2";
+        }
     }
 }
 /* DELETE ORDER */
@@ -1180,6 +1216,11 @@ else if($action === "view-event"){
 /* GO TO REGISTER */
 else if($action === "register-event"){
     $_SESSION['event-id'] = $_POST['id'];
+    
+}
+/* GO TO REGISTER */
+else if($action === "view-letter"){
+    $_SESSION['letter-id'] = $_POST['id'];
     
 }
 /* REGISTER EVENT */
@@ -1684,7 +1725,7 @@ else if($action == 'enable-product'){
 /* DELETE CONTACT */
 else if($action == 'del-contact'){
     $id = $_POST['id'];
-    if($conn->query("delete from contacts where contact_id =".$id)){
+    if($conn->query("delete from contacts where contact_id = '$id' ")){
         echo "1";
     }else{
         echo "2";
@@ -1692,9 +1733,9 @@ else if($action == 'del-contact'){
 
 }
 /* DELETE VOLUNTEER */
-else if($action == 'del-volunteers'){
+else if($action == "del-volunteer"){
     $id = $_POST['id'];
-    if($conn->query("delete from volunteers where volunteer_id =".$id)){
+    if($conn->query("delete from volunteers where volunteer_id = '$id' ")){
         echo "1";
     }else{
         echo "2";
@@ -2002,9 +2043,291 @@ else if($action == "del-blog"){
 }
 /* SEND NEWSETTER */
 else if($action == "send-letter"){
+    $status = $_POST["id"];
     $title = $_POST["title"];
     $content = $_POST["content"];
 
+    if($status == "0"){
+        echo $status. " Is not empty";
+        if(!is_connected()){
+            echo "4"; //no connection
+        }else{
+            //connected to the internet
+        function embedBase64Images($emailContent, $mail) {
+            // Regular expression to find Base64 images in the content
+            $imagePattern = '/data:image\/[^;]+;base64,([^\"]+)/';
+            preg_match_all($imagePattern, $emailContent, $matches);
+        
+            if (!empty($matches[1])) {
+                foreach ($matches[1] as $index => $base64Image) {
+                    // Decode the Base64 image
+                    $imageData = base64_decode($base64Image);
+        
+                    // Create a unique Content-ID
+                    $cid = "image{$index}@pic.com";
+        
+                    // Replace the Base64 in the HTML with a CID reference
+                    $emailContent = str_replace(
+                        $matches[0][$index],
+                        "cid:$cid",
+                        $emailContent
+                    );
+        
+                    // Add the image as an attachment with the CID
+                    $mail->addStringEmbeddedImage(
+                        $imageData,     // Image content
+                        $cid,           // CID
+                        "image{$index}.png", // Filename
+                        'base64',       // Encoding
+                        'image/png'     // MIME type
+                    );
+                }
+            }
+        
+            return $emailContent;
+        }
+        //save data to db before sending
+        $uploadDir = 'assets/images/newsletter_attachments/';
+    
+        
+        //prepare files for storage
+        $attachmentNames = [];
+        $attachmentPaths = [];
+        if (!empty($_FILES['attachments']['name'][0])) { // Check if files are uploaded
+            foreach ($_FILES['attachments']['tmp_name'] as $key => $tmp_name) {
+                $originalName = $_FILES['attachments']['name'][$key];
+                $uniqueName = uniqid() . '_' . $originalName; // Create a unique filename
+                $targetPath = $uploadDir . $uniqueName;
+    
+                // Move the uploaded file to the target directory
+                if (move_uploaded_file($tmp_name, $targetPath)) {
+                    $attachmentNames[] = $uniqueName; // Store the file name
+                    $attachmentPaths [] = $targetPath;
+                }
+            }
+        }
+    
+        $mail = new PHPMailer(true);
+        $attachmentsString = implode(',', $attachmentNames);
+        $empty_var = "";
+        $newsletter_content = embedBase64Images($content, $mail);
+    
+                $get_settings =$conn->query("select * from settings limit 1");
+                $count = mysqli_num_rows($get_settings);
+                if($count < 1){
+                    $result = 3; // no SMTP configs
+                    echo json_encode($result);
+                }else{
+                    $setting = mysqli_fetch_assoc($get_settings);
+                    $smtp_email = $setting['smtp_email'];
+                    $smtp_password = $setting['smtp'];
+                    $smtp_server = $setting['smtp_server'];
+                    $smtp_port = $setting['smtp_port'];
+                }
+                
+    
+                //get emails
+                $get_subscribers =$conn->query("select * from subscribers where subscriber_status = '0' ");
+                $count = mysqli_num_rows($get_subscribers);
+                if($count < 1){
+                    $result = 2; //no active subscribers
+                    echo json_encode($result);
+                }else{
+                    while($subscriber = mysqli_fetch_assoc($get_subscribers)){
+                        //clear addresses
+                        $mail->clearAddresses();
+                        $mail->clearAttachments();
+    
+                        $name = $subscriber['subscriber_name'];
+                        $email = $subscriber['subscriber_email'];
+    
+                        //send mail here
+                        try {
+                            // Server settings
+                            $mail->isSMTP();                                            // Send using SMTP
+                            $mail->Host       = $smtp_server;                     // Set the SMTP server
+                            $mail->SMTPAuth   = true;                                   // Enable SMTP authentication
+                            $mail->Username   = $smtp_email;               // SMTP username
+                            $mail->Password   = $smtp_password;                  // SMTP password
+                            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;         // Enable TLS encryption
+                            $mail->Port       = $smtp_port;                                   // TCP port to connect to
+                        
+                            // Recipients
+                            $mail->setFrom($smtp_email, 'A Piece To You');
+                            $mail->addAddress($email, $name); // Add a recipient
+                        
+                            // Process content to embed Base64 images
+                            $processedContent = embedBase64Images($content, $mail);
+                        
+                            // Content
+                            $mail->isHTML(true);                                       // Set email format to HTML
+                            $mail->Subject = $title;
+                            $mail->Body    = $processedContent;
+                            $mail->AltBody = strip_tags($processedContent);
+    
+                            //add attachments
+                            foreach ($attachmentNames as $index => $attachmentName) {
+                                $attachmentPath = $attachmentPaths[$index];
+                                $mail->addAttachment($attachmentPath, $attachmentName);
+                            }
+                            
+    
+                            $mail->send();
+                        } catch (Exception $e) {
+                            echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+                        }
+                    }
+                    // send mail successful
+                    echo "1"; //successful
+                }
+                /* end of sending newsletter */
+        
+    }
+    
+    }else if($status == "1"){
+        echo $status. " Is not empty";
+        if(!is_connected()){
+            echo "4"; //no connection
+        }else{
+            //connected to the internet
+        function embedBase64Images($emailContent, $mail) {
+            // Regular expression to find Base64 images in the content
+            $imagePattern = '/data:image\/[^;]+;base64,([^\"]+)/';
+            preg_match_all($imagePattern, $emailContent, $matches);
+        
+            if (!empty($matches[1])) {
+                foreach ($matches[1] as $index => $base64Image) {
+                    // Decode the Base64 image
+                    $imageData = base64_decode($base64Image);
+        
+                    // Create a unique Content-ID
+                    $cid = "image{$index}@pic.com";
+        
+                    // Replace the Base64 in the HTML with a CID reference
+                    $emailContent = str_replace(
+                        $matches[0][$index],
+                        "cid:$cid",
+                        $emailContent
+                    );
+        
+                    // Add the image as an attachment with the CID
+                    $mail->addStringEmbeddedImage(
+                        $imageData,     // Image content
+                        $cid,           // CID
+                        "image{$index}.png", // Filename
+                        'base64',       // Encoding
+                        'image/png'     // MIME type
+                    );
+                }
+            }
+        
+            return $emailContent;
+        }
+        //save data to db before sending
+        $uploadDir = 'assets/images/newsletter_attachments/';
+    
+        
+        //prepare files for storage
+        $attachmentNames = [];
+        $attachmentPaths = [];
+        if (!empty($_FILES['attachments']['name'][0])) { // Check if files are uploaded
+            foreach ($_FILES['attachments']['tmp_name'] as $key => $tmp_name) {
+                $originalName = $_FILES['attachments']['name'][$key];
+                $uniqueName = uniqid() . '_' . $originalName; // Create a unique filename
+                $targetPath = $uploadDir . $uniqueName;
+    
+                // Move the uploaded file to the target directory
+                if (move_uploaded_file($tmp_name, $targetPath)) {
+                    $attachmentNames[] = $uniqueName; // Store the file name
+                    $attachmentPaths [] = $targetPath;
+                }
+            }
+        }
+    
+        $mail = new PHPMailer(true);
+        $attachmentsString = implode(',', $attachmentNames);
+        $empty_var = "";
+        $newsletter_content = embedBase64Images($content, $mail);
+    
+                $get_settings =$conn->query("select * from settings limit 1");
+                $count = mysqli_num_rows($get_settings);
+                if($count < 1){
+                    $result = 3; // no SMTP configs
+                    echo json_encode($result);
+                }else{
+                    $setting = mysqli_fetch_assoc($get_settings);
+                    $smtp_email = $setting['smtp_email'];
+                    $smtp_password = $setting['smtp'];
+                    $smtp_server = $setting['smtp_server'];
+                    $smtp_port = $setting['smtp_port'];
+                }
+                
+    
+                //get emails
+                $get_subscribers =$conn->query("select * from subscribers where subscriber_status = '0' ");
+                $count = mysqli_num_rows($get_subscribers);
+                if($count < 1){
+                    $result = 2; //no active subscribers
+                    echo json_encode($result);
+                }else{
+                    while($subscriber = mysqli_fetch_assoc($get_subscribers)){
+                        //clear addresses
+                        $mail->clearAddresses();
+                        $mail->clearAttachments();
+    
+                        $name = $subscriber['subscriber_name'];
+                        $email = $subscriber['subscriber_email'];
+    
+                        //send mail here
+                        try {
+                            // Server settings
+                            $mail->isSMTP();                                            // Send using SMTP
+                            $mail->Host       = $smtp_server;                     // Set the SMTP server
+                            $mail->SMTPAuth   = true;                                   // Enable SMTP authentication
+                            $mail->Username   = $smtp_email;               // SMTP username
+                            $mail->Password   = $smtp_password;                  // SMTP password
+                            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;         // Enable TLS encryption
+                            $mail->Port       = $smtp_port;                                   // TCP port to connect to
+                        
+                            // Recipients
+                            $mail->setFrom($smtp_email, 'A Piece To You');
+                            $mail->addAddress($email, $name); // Add a recipient
+                        
+                            // Process content to embed Base64 images
+                            $processedContent = embedBase64Images($content, $mail);
+                        
+                            // Content
+                            $mail->isHTML(true);                                       // Set email format to HTML
+                            $mail->Subject = $title;
+                            $mail->Body    = $processedContent;
+                            $mail->AltBody = strip_tags($processedContent);
+    
+                            //add attachments
+                            foreach ($attachmentNames as $index => $attachmentName) {
+                                $attachmentPath = $attachmentPaths[$index];
+                                $mail->addAttachment($attachmentPath, $attachmentName);
+                            }
+                            
+    
+                            $mail->send();
+                        } catch (Exception $e) {
+                            echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+                        }
+                    }
+                    // send mail successful
+                   
+                    $letter_session = $_SESSION["letter-id"];
+                    echo $letter_session;
+                    $conn->query("update newsletters set newsletter_status = '0' where newsletter_id = '$letter_session' ");
+                    echo "1"; //successful
+                }
+                /* end of sending newsletter */
+        
+    }
+    
+    }else{
+    echo $status. " Is empty";
+    // if it is not a draft
     if(!is_connected()){
         echo "4"; //no connection
     }else{
@@ -2062,9 +2385,6 @@ else if($action == "send-letter"){
             }
         }
     }
-    // echo json_encode($attachmentNames);
-    // echo json_encode($attachmentPaths);
-    // Create a comma-separated string of attachment names
 
     $mail = new PHPMailer(true);
     $attachmentsString = implode(',', $attachmentNames);
@@ -2155,15 +2475,36 @@ else if($action == "send-letter"){
     } else {
         echo "3"; // Query preparation error
     }
+}
+
 
     
 }
 }
 /* SAVE DRAFT */
 if($action == "save-draft"){
+    $new_status = $_POST["id"];
     $title = $_POST["title"];
     $content = $_POST["content"];
     $status = "1";
+    $letter_session = $_SESSION["letter-id"];
+
+    if($new_status == "0" || $new_status == "1"){
+        // Save data to DB before sending
+        $insert_qry = "update newsletters set newsletter_title = ?, newsletter_content = ?, newsletter_status = ? where newsletter_id = ?";
+        $insert_stmt = mysqli_stmt_init($conn);
+
+        if (mysqli_stmt_prepare($insert_stmt, $insert_qry)) {
+            mysqli_stmt_bind_param($insert_stmt, "ssss", $title, $content, $status, $letter_session);
+            if (mysqli_stmt_execute($insert_stmt)) {
+            echo "1";
+        } else {
+            echo "Database Error: " . mysqli_error($conn);
+        }
+        } else {
+            echo "2"; // Query preparation error
+        }
+    }else{
 
     // Save data to DB before sending
     $insert_qry = "INSERT INTO newsletters(newsletter_title, newsletter_content, newsletter_status) VALUES (?, ?, ?)";
@@ -2179,6 +2520,7 @@ if($action == "save-draft"){
     } else {
         echo "2"; // Query preparation error
     }
+}
 
 }
 /* GET NEWSLETTERS */
@@ -2971,6 +3313,177 @@ else if($action == 'get-messages'){
     }
     echo json_encode($result);
 }
+}
+/* SEND DRAFT LETTER */
+else if($action == "send-draft-letter"){
+    $id = $_POST["id"];
+    //get details for the draft
+    $get_contents = $conn->query("select * from newsletters where newsletter_id = '$id' limit 1");
+    $get_contents_row = mysqli_fetch_assoc($get_contents);
+    $title = $get_contents_row["newsletter_title"];
+    $content = $get_contents_row["newsletter_content"];
+
+    if(!is_connected()){
+        echo "4"; //no connection
+    }else{
+        //connected to the internet
+    function embedBase64Images($emailContent, $mail) {
+        // Regular expression to find Base64 images in the content
+        $imagePattern = '/data:image\/[^;]+;base64,([^\"]+)/';
+        preg_match_all($imagePattern, $emailContent, $matches);
+    
+        if (!empty($matches[1])) {
+            foreach ($matches[1] as $index => $base64Image) {
+                // Decode the Base64 image
+                $imageData = base64_decode($base64Image);
+    
+                // Create a unique Content-ID
+                $cid = "image{$index}@pic.com";
+    
+                // Replace the Base64 in the HTML with a CID reference
+                $emailContent = str_replace(
+                    $matches[0][$index],
+                    "cid:$cid",
+                    $emailContent
+                );
+    
+                // Add the image as an attachment with the CID
+                $mail->addStringEmbeddedImage(
+                    $imageData,     // Image content
+                    $cid,           // CID
+                    "image{$index}.png", // Filename
+                    'base64',       // Encoding
+                    'image/png'     // MIME type
+                );
+            }
+        }
+    
+        return $emailContent;
+    }
+    //save data to db before sending
+    $uploadDir = 'assets/images/newsletter_attachments/';
+
+    
+    //prepare files for storage
+    $attachmentNames = [];
+    $attachmentPaths = [];
+    if (!empty($_FILES['attachments']['name'][0])) { // Check if files are uploaded
+        foreach ($_FILES['attachments']['tmp_name'] as $key => $tmp_name) {
+            $originalName = $_FILES['attachments']['name'][$key];
+            $uniqueName = uniqid() . '_' . $originalName; // Create a unique filename
+            $targetPath = $uploadDir . $uniqueName;
+
+            // Move the uploaded file to the target directory
+            if (move_uploaded_file($tmp_name, $targetPath)) {
+                $attachmentNames[] = $uniqueName; // Store the file name
+                $attachmentPaths [] = $targetPath;
+            }
+        }
+    }
+
+    $mail = new PHPMailer(true);
+    $attachmentsString = implode(',', $attachmentNames);
+    $empty_var = "";
+    $newsletter_content = embedBase64Images($content, $mail);
+
+    // Save data to DB before sending
+    $insert_qry = "INSERT INTO newsletters(newsletter_title, newsletter_content, newsletter_attachments) VALUES (?, ?, ?)";
+    $insert_stmt = mysqli_stmt_init($conn);
+
+            //get SMTP values
+            $get_settings =$conn->query("select * from settings limit 1");
+            $count = mysqli_num_rows($get_settings);
+            if($count < 1){
+                $result = 3; // no SMTP configs
+                echo json_encode($result);
+            }else{
+                $setting = mysqli_fetch_assoc($get_settings);
+                $smtp_email = $setting['smtp_email'];
+                $smtp_password = $setting['smtp'];
+                $smtp_server = $setting['smtp_server'];
+                $smtp_port = $setting['smtp_port'];
+            }
+            
+
+            //get emails
+            $get_subscribers =$conn->query("select * from subscribers where subscriber_status = '0' ");
+            $count = mysqli_num_rows($get_subscribers);
+            if($count < 1){
+                $result = 2; //no active subscribers
+                echo json_encode($result);
+            }else{
+                while($subscriber = mysqli_fetch_assoc($get_subscribers)){
+                    //clear addresses
+                    $mail->clearAddresses();
+                    $mail->clearAttachments();
+
+                    $name = $subscriber['subscriber_name'];
+                    $email = $subscriber['subscriber_email'];
+
+                    //send mail here
+                    try {
+                        // Server settings
+                        $mail->isSMTP();                                            // Send using SMTP
+                        $mail->Host       = $smtp_server;                     // Set the SMTP server
+                        $mail->SMTPAuth   = true;                                   // Enable SMTP authentication
+                        $mail->Username   = $smtp_email;               // SMTP username
+                        $mail->Password   = $smtp_password;                  // SMTP password
+                        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;         // Enable TLS encryption
+                        $mail->Port       = $smtp_port;                                   // TCP port to connect to
+                    
+                        // Recipients
+                        $mail->setFrom($smtp_email, 'A Piece To You');
+                        $mail->addAddress($email, $name); // Add a recipient
+                    
+                        // Process content to embed Base64 images
+                        $processedContent = embedBase64Images($content, $mail);
+                    
+                        // Content
+                        $mail->isHTML(true);                                       // Set email format to HTML
+                        $mail->Subject = $title;
+                        $mail->Body    = $processedContent;
+                        $mail->AltBody = strip_tags($processedContent);
+
+                        //add attachments
+                        foreach ($attachmentNames as $index => $attachmentName) {
+                            $attachmentPath = $attachmentPaths[$index];
+                            $mail->addAttachment($attachmentPath, $attachmentName);
+                        }
+                        
+
+                        $mail->send();
+                    } catch (Exception $e) {
+                        echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+                    }
+                }
+                //update status
+                if($conn->query("update newsletters set newsletter_status = '0' where newsletter_id = '$id' ")){
+                    echo "1";
+                }else{
+                    echo "2";
+                }
+            }
+            /* end of sending newsletter */
+    
+}
+}
+/* VIEW NEWSLETTER */
+else if($action == "get-letter"){
+    $letter_id = $_SESSION["letter-id"];
+
+    $newsletters = [];
+    $newsletter = $conn->query("select * from newsletters where newsletter_id = '$letter_id' ");
+
+    while($result = mysqli_fetch_assoc($newsletter)){
+        $newsletters[] = [
+            'id' => $result['newsletter_id'],
+            'title' => $result['newsletter_title'],
+            'content' => $result['newsletter_content'],
+            'status' => $result['newsletter_status']
+        ];
+    }
+
+    echo json_encode($newsletters);
 }
 
 

@@ -1,5 +1,6 @@
 <?php include("components/admin/response.php");?>
     <div class="row dashboard add-event-modal categories products">
+  <div class="dashboard-inner">
   <div class="col-6">
     <form id="addProduct" enctype="multipart/form-data">
       <h4 class="fw-bold text-primary">Add Product</h4>
@@ -48,5 +49,6 @@
   <div class="preview-item col-12 row" id="preview">
   
   </div>
+</div>
 </div>
         </div>
