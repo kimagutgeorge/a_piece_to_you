@@ -4,7 +4,6 @@ $( document ).ready(function() {
     let universal_disabled = true
     let disabled_quantity = true
 
-
     // formate date without time
     function formatDate(dateString) {
         const date = new Date(dateString);
@@ -29,6 +28,36 @@ $( document ).ready(function() {
             hour12: false // Use 12-hour clock (e.g., AM/PM)
         });
     }
+    function formatEventDate(dateString) {
+        // Split the datetime string by space to separate the date and time
+        // let datePart = dateString.split(' ')[0];
+        // return datePart;
+
+
+        // Parse the input date string into a Date object
+        let date = new Date(dateString);
+
+        // Subtract one day (24 hours in milliseconds)
+        date.setDate(date.getDate() - 1);
+
+        // Format the date back to 'YYYY-MM-DD'
+        let year = date.getFullYear();
+        let month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed
+        let day = String(date.getDate()).padStart(2, '0');
+
+        return `${year}-${month}-${day}`;
+    }
+    
+    function formatDateTimeStamp(date) {
+        let year = date.getFullYear();
+        let month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed
+        let day = String(date.getDate()).padStart(2, '0');
+        let hours = String(date.getHours()).padStart(2, '0');
+        let minutes = String(date.getMinutes()).padStart(2, '0');
+        let seconds = String(date.getSeconds()).padStart(2, '0');
+
+        return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+    }
       
 
     /* load data */
@@ -44,12 +73,11 @@ $( document ).ready(function() {
     getCount();
     getPrograms();
     getValues();
+    getRegistrations();
     if(url == "http://localhost/apiecetoyou/?p=contacts" || url == "http://localhost/apiecetoyou/index.php?p=contacts"){
         getContacts();
         getVolunteers();
     }
-
-    getRegistrations();
     
     if(url == "http://localhost/apiecetoyou/?p=view-event" || url == "http://localhost/apiecetoyou/index.php?p=view-event" || url == "http://localhost/apiecetoyou/?p=event-details" || url == "http://localhost/apiecetoyou/index.php?p=event-details"){
         viewEvent();
@@ -82,7 +110,7 @@ $( document ).ready(function() {
     if(url == "http://localhost/apiecetoyou/?p=website" || url == "http://localhost/apiecetoyou/index.php?p=website" || url == "http://localhost/apiecetoyou/?p=home" || url == "http://localhost/apiecetoyou/index.php?p=home" || url == "http://localhost/apiecetoyou/" || url == "http://localhost/apiecetoyou/index.php" || url == "http://localhost/apiecetoyou/?p=about-us" || url == "http://localhost/apiecetoyou/index.php?p=about-us"){
         getAboutUs();
     }
-    if(url == "http://localhost/apiecetoyou/?p=orders" || url == "http://localhost/apiecetoyou/index.php?p=orders" ){
+    if(url == "http://localhost/apiecetoyou/?p=orders" || url == "http://localhost/apiecetoyou/index.php?p=orders" || url == "http://localhost/apiecetoyou/?p=adminhome" || url == "http://localhost/apiecetoyou/index.php?p=adminhome" ){
         getOrders();
     }
     if(url == "http://localhost/apiecetoyou/?p=view-order" || url == "http://localhost/apiecetoyou/index.php?p=view-order" ){
@@ -93,6 +121,12 @@ $( document ).ready(function() {
     }
     if(url == "http://localhost/apiecetoyou/?p=newsletter-details" || url == "http://localhost/apiecetoyou/index.php?p=newsletter-details" ){
         viewNewsletter();
+    }
+    if(url == "http://localhost/apiecetoyou/?p=adminhome" || url == "http://localhost/apiecetoyou/index.php?p=adminhome" ){
+        getHomeCount();
+    }
+    if(url == "http://localhost/apiecetoyou/?p=adminhome" || url == "http://localhost/apiecetoyou/index.php?p=adminhome" || url == "http://localhost/apiecetoyou/?p=home" || url == "http://localhost/apiecetoyou/index.php?p=home"  || url == "http://localhost/apiecetoyou/"  || url == "http://localhost/apiecetoyou"){
+        getCalendarEvents();
     }
     
     
@@ -249,6 +283,19 @@ function formatEventTime(startDateStr, eventDuration) {
 
     return `${formattedDate}, ${startTime} to ${endTime}`;
 }
+function getHomeCount(){
+    $.ajax({  
+        type: 'GET',  
+        url: 'app.php?action=get-home-count',
+        success: function(response) {
+            let homecounts = JSON.parse(response)
+            let homecount = homecounts[0]
+            document.getElementById("event_count").innerHTML = homecount.event
+            document.getElementById("member_count").innerHTML = homecount.member
+            document.getElementById("subscriber_count").innerHTML = homecount.subscriber
+        }
+    })
+}
   //wait for element
 //edit product
 $(document).on('click', '.send-confirmation-mail', function(){
@@ -264,7 +311,6 @@ $(document).on('click', '.send-confirmation-mail', function(){
                 status:order_status
             },
             success: function(response) {
-                console.log(response)
                 // $('#to_send').html(response);
                 document.getElementById("db_response").style.display = "flex";
                 if (response == 1) {
@@ -592,7 +638,7 @@ function getAboutUs(){
                     let abouts = JSON.parse(response)
                     //admins
                     let about = abouts[0]
-                    if(url == "http://localhost/apiecetoyou/?p=home" || url == "http://localhost/apiecetoyou/index.php?p=home" || url == "http://localhost/apiecetoyou/" || url == "http://localhost/apiecetoyou/index.php"){
+                    if(url == "http://localhost/apiecetoyou/?p=home" || url == "http://localhost/apiecetoyou/index.php?p=home" || url == "http://localhost/apiecetoyou/" || url == "http://localhost/apiecetoyou/index.php" || url == "http://localhost/apiecetoyou"){
                         //home
                         let tableBody = document.getElementById("home_about")
                         tableBody.innerHTML = `<p class="text-white four-vh">WHO ARE WE?</p>
@@ -661,8 +707,8 @@ $(document).on('click', '.save-about', function(){
     let db_response = document.getElementById("db_response").classList
     let title = document.getElementById("about_title").value
     let vision = document.getElementById("vision").value
-    const mission_Content = tinymce.get('editor_content').getContent()
-    const offer_Content = tinymce.get("editor_content_2").getContent()
+    const offer_Content = tinymce.get('editor_content').getContent()
+    const mission_Content = tinymce.get("editor_content_2").getContent()
     //disable editor
     disableEditor();
     disableEditor2();
@@ -856,6 +902,53 @@ function getOrders(){
     
             }else{
                 let orders = JSON.parse(response)
+                if(url == "http://localhost/apiecetoyou/?p=adminhome" || url == "http://localhost/apiecetoyou/index.php?p=adminhome"){
+                    let tableBody = document.getElementById("home_orders");
+                    tableBody.innerHTML = "";
+
+                    // Get today's date in local time
+                    let today = new Date();
+                    today.setHours(0, 0, 0, 0); // Set time to 00:00:00 for accurate comparison
+
+                    orders.forEach(function(order) {
+                        // Convert order.date timestamp to a Date object
+                        let orderDate = new Date(order.date); 
+                        orderDate.setHours(0, 0, 0, 0); // Normalize to midnight for comparison
+
+                        // Check if the order's date matches today's date
+                        if (orderDate.getTime() === today.getTime()) {
+                            function showStatus() {
+                                if (order.status == '0') {
+                                    return `<span class="text-secondary">PENDING</span>`;
+                                } else if (order.status == '1') {
+                                    return `<span class="text-success">COMPLETE</span>`;
+                                } else if (order.status == '2') {
+                                    return `<span class="text-success">SHIPPED</span>`;
+                                } else if (order.status == '4') {
+                                    return `<span class="text-success">APPROVED</span>`;
+                                } else {
+                                    return `<span class="text-danger">CANCELLED</span>`;
+                                }
+                            }
+
+                            let order_row = document.createElement("tr");
+                            let client_cell = document.createElement("td");
+                            client_cell.innerHTML = order.name;
+
+                            let order_cell = document.createElement("td");
+                            order_cell.innerHTML = `<p>${order.order}</p>
+                                                    <p>${showStatus()}</p>`;
+
+                            order_row.appendChild(client_cell);
+                            order_row.appendChild(order_cell);
+                            tableBody.appendChild(order_row);
+                        }
+                    });
+
+
+                    
+                }else{
+                
                 let tableBody = document.getElementById("tbl_orders")
                 tableBody.innerHTML = "";
                 orders.forEach(function(order){
@@ -912,6 +1005,7 @@ function getOrders(){
             })
         
     }
+}
             
         }
     });
@@ -1834,7 +1928,7 @@ function viewEvent(){
           </div>
           <div class="form-group">
           <label class="text-muted">Date & Time</label>
-          <input type="datetime-local" @change="checkDate" class="form-control"  value="${event.event_start_date}" ${universal_disabled ? 'readonly': ''} id="event_date">
+          <input type="datetime-local" @change="checkDate" class="form-control" id="confirm_event_date"  value="${event.event_start_date}" ${universal_disabled ? 'readonly': ''} id="event_date">
           
       </div>
       <div class="form-group">
@@ -2543,7 +2637,7 @@ $(document).on('click', '.enable-product', function(){
 /* delete product */
 $(document).on('click', '.del-product', function(){
     let db_response = document.getElementById("db_response").classList
-    let status = confirm("Delete this product?");
+    let status = confirm("Deleting this product will delete all the data related to it?");
     if(status == true){
     const id = $(this).closest('.card').find('.product-card-id').text().trim()
     $.ajax({  
@@ -2551,6 +2645,7 @@ $(document).on('click', '.del-product', function(){
         url: 'app.php?action=del-product', 
         data: {id: id},
         success: function(response) {
+            console.log(response)
             document.getElementById("db_response").style.display = "flex";
             if (response == 1) {
                 db_response.add("bg-primary");
@@ -2694,7 +2789,7 @@ function getMembers(){
                 selectBody.appendChild(option)
                 })
 
-            }else if(url == "http://localhost/apiecetoyou/?p=about-us"){
+            }else if(url == "http://localhost/apiecetoyou/?p=about-us" || url == "http://localhost/apiecetoyou/index.php?p=about-us"){
                 let tableBody = document.getElementById("tbl_members")
                 tableBody.innerHTML =="";
                 members.forEach(function(member){
@@ -3013,7 +3108,7 @@ function getCategories(){
                         
                         let actionCell = document.createElement('td');
                         actionCell.innerHTML = `<i class="fa-solid fa-edit btn-edit-category text-primary"></i>
-                        <i class="fa-solid fa-trash text-danger btn-del-category"></i> `
+                        <i class="fa-solid fa-trash text-danger btn-del-product-category"></i> `
                         // Append cells to the row
                         row.appendChild(idCell);
                         row.appendChild(nameCell);
@@ -3318,11 +3413,15 @@ function getEvents(){
                 })
 
             }else if(url =="http://localhost/apiecetoyou/?p=events" || url =="http://localhost/apiecetoyou/index.php?p=events"){
+                
                 let events = JSON.parse(response)
                 let tableBody = document.getElementById("tbl_events")
                 tableBody.innerHTML = "";
                 events.forEach(function(event){
-                    let row = document.createElement("div")
+                    let currentdate = new Date(); 
+                    let formattedDate = formatDateTimeStamp(currentdate);
+                    if(formattedDate < event.date){
+                        let row = document.createElement("div")
                     row.className = "col-3"
                     row.innerHTML = `
                     <div class="card">
@@ -3347,6 +3446,8 @@ function getEvents(){
                     </div>`
 
                     tableBody.appendChild(row)
+                    }
+                    
                 })
             }else if(url =="http://localhost/apiecetoyou/?p=event-details" || url =="http://localhost/apiecetoyou/index.php?p=event-details"){
                 let events = JSON.parse(response)
@@ -4165,6 +4266,38 @@ function getBlogs(){
             $.ajax({  
                 type: 'POST',  
                 url: 'app.php?action=del-category', 
+                data: {
+                    id:id
+                },
+                success: function(response) {
+                    document.getElementById("db_response").style.display="flex"
+                    if(response == 1){
+                        db_response.add("bg-primary")
+                        $('#get_response').html('Successful')
+                        getCategories();
+                    }else if( response == 2 ){
+                        db_response.add("bg-danger")
+                        $('#get_response').html('Failed')
+                    }
+                }
+            });
+    }
+
+    });
+    /*
+    delete category
+    */
+    $(document).on('click', '.btn-del-product-category', function() {
+        let db_response = document.getElementById("db_response").classList
+        // Find the associated input field
+        let status = confirm("Deleting This Category Will Delete All The Data Related To This It")
+        if(status == true){
+            let row = $(this).closest('tr');
+            let id = row.find('td:eq(0)').text().trim()
+
+            $.ajax({  
+                type: 'POST',  
+                url: 'app.php?action=del-product-category', 
                 data: {
                     id:id
                 },
@@ -5128,7 +5261,7 @@ function getValues(){
                 tableBody.innerHTML = "";
                 programs.slice(0, 3).forEach(function(program){
                     let value_card = document.createElement("div")
-                    value_card.className = "col-3 value bg-gradient"
+                    value_card.className = "col-2 value bg-gradient"
                     value_card.innerHTML = `<div class="inner-value text-white">
                     ${program.icon}
                     <p class="text-white">${program.title}</p>
@@ -5141,7 +5274,7 @@ function getValues(){
                 bottomBody.innerHTML = ""
                 programs.forEach(function(program){
                     let value_card = document.createElement("div")
-                    value_card.className = "col-4 card four-vh"
+                    value_card.className = "col-3 card four-vh"
                     value_card.innerHTML = `<div class="icon-holder">
                     ${program.icon}
                     </div>
@@ -5397,6 +5530,210 @@ function getMessages(){
         }
     });
 }
+/* show calendar */
+function getCalendarEvents(){
+    $.ajax({  
+        type: 'GET',  
+        url: 'app.php?action=get-events',
+        success: function(response) {
+            
+            if(response == 2){
+                let db_response = document.getElementById("db_response").classList
+                document.getElementById("db_response").style.display="flex"
+                db_response.add("bg-warning")
+                    $('#get_response').html('No Events Found')
+
+            }
+            // else if(url == "http://localhost/apiecetoyou/?p=adminhome" || url == "http://localhost/apiecetoyou/index.php?p=adminhome"){
+                let events = JSON.parse(response)
+                let eventDates = [];
+                events.forEach(function(event){
+                    let new_date = formatEventDate(event.date)
+                    eventDates.push(new_date)
+                })
+                /* the calendar */
+                let currentYear, currentMonth;
+
+                function buildCalendar(year, month) {
+                    const calendar = document.getElementById("calendar");
+                    calendar.innerHTML = ""; // Clear previous calendar
+
+                    // Display month and year
+                    const monthYear = document.getElementById("monthYear");
+                    const monthNames = ["January", "February", "March", "April", "May", "June", 
+                                        "July", "August", "September", "October", "November", "December"];
+                    monthYear.textContent = `${monthNames[month]} ${year}`;
+
+                    // Month and Year
+                    const firstDay = new Date(year, month, 1); // First day of the month
+                    const lastDay = new Date(year, month + 1, 0); // Last day of the month
+                    const daysInMonth = lastDay.getDate();
+
+                    // Days of the week header
+                    const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+                    daysOfWeek.forEach(day => {
+                        const header = document.createElement("div");
+                        header.className = "header";
+                        header.textContent = day;
+                        calendar.appendChild(header);
+                    });
+
+                    // Empty cells before the first day
+                    for (let i = 0; i < firstDay.getDay(); i++) {
+                        const emptyCell = document.createElement("div");
+                        emptyCell.className = "empty";
+                        calendar.appendChild(emptyCell);
+                    }
+
+                    // Add days of the month
+                    for (let day = 1; day <= daysInMonth; day++) {
+                        const date = new Date(year, month, day);
+                        const dateStr = date.toISOString().split("T")[0]; // Format as YYYY-MM-DD
+
+                        const dayCell = document.createElement("div");
+                        dayCell.className = "day";
+                        dayCell.textContent = day;
+
+                        // Add styles for today
+                        const today = new Date();
+                        if (
+                            date.getFullYear() === today.getFullYear() &&
+                            date.getMonth() === today.getMonth() &&
+                            date.getDate() === today.getDate()
+                        ) {
+                            dayCell.classList.add("today");
+                        }
+
+                        // Add styles for events
+                        if (eventDates.includes(dateStr)) {
+                            dayCell.classList.add("event");
+                        }
+
+                        calendar.appendChild(dayCell);
+                    }
+                }
+
+                // Handle navigation
+                document.getElementById("prevMonth").addEventListener("click", () => {
+                    currentMonth--;
+                    if (currentMonth < 0) {
+                        currentMonth = 11;
+                        currentYear--;
+                    }
+                    buildCalendar(currentYear, currentMonth);
+                });
+
+                document.getElementById("nextMonth").addEventListener("click", () => {
+                    currentMonth++;
+                    if (currentMonth > 11) {
+                        currentMonth = 0;
+                        currentYear++;
+                    }
+                    buildCalendar(currentYear, currentMonth);
+                });
+
+                // Initialize calendar with the current month
+                const now = new Date();
+                currentYear = now.getFullYear();
+                currentMonth = now.getMonth();
+                buildCalendar(currentYear, currentMonth);
+
+            // }
+        }
+    });
+    }
+ /* check date */
+$(document).on('change', '#confirm_event_date', function(){
+    // Get the value from the datetime-local input
+    const datetimeInput = document.getElementById('confirm_event_date').value;
+
+    const selectedDate = new Date(datetimeInput);
+
+    // Get the current date and time
+    const currentDate = new Date();
+
+    // Compare the selected date with the current date
+    if (selectedDate < currentDate) {
+        let db_response = document.getElementById("db_response").classList
+        document.getElementById("db_response").style.display="flex"
+        db_response.add("bg-warning")
+            $('#get_response').html('Please select a future date!')
+            document.getElementById('confirm_event_date').value =  ''
+
+        setTimeout(() => {
+            document.getElementById("db_response").style.display="none"
+        }, 2000);
+    }
+})
+$('#home_contact').on('click', function(){
+    location.href = '?p=contact-us'
+})
+/* FORGOT PASSWORD */
+$('#forgotPassword').on('submit', function(e){
+    e.preventDefault()
+        let db_response = document.getElementById("db_response").classList
+        $.ajax({  
+            type: 'POST',  
+            url: 'app.php?action=forgot', 
+            data: $('#forgotPassword').serialize(),
+            success: function(response) {
+                console.log(response)
+                document.getElementById("db_response").style.display="flex"
+                if(response == 1){
+                    db_response.add("bg-primary")
+                    $('#get_response').html('Successful')
+                    //login
+                    setTimeout(() => {
+                        location.href = "?p=change-pass";
+                    }, 2000);
+                }else if( response == 2 ){
+                    db_response.add("bg-danger")
+                    $('#get_response').html('Incorrect Email Address')
+                }else{
+                    db_response.add("bg-warning")
+                    $('#get_response').html('Already Exists')
+                }
+            }
+        });
+})
+/* change password */
+$('#changeLoginPass').on('submit', function(e){
+    e.preventDefault()
+        let db_response = document.getElementById("db_response").classList
+        let pass = document.getElementById("new_password").value
+        let confirm_pass = document.getElementById("confirm_password").value
+        if(pass != confirm_pass){
+            document.getElementById("db_response").style.display="flex"
+            db_response.add("bg-danger")
+            $('#get_response').html('Passwords do not match')
+            document.getElementById("new_password").focus()
+            return
+        }
+        $.ajax({  
+            type: 'POST',  
+            url: 'app.php?action=change-login-pass', 
+            data: $('#changeLoginPass').serialize(),
+            success: function(response) {
+                console.log(response)
+                document.getElementById("db_response").style.display="flex"
+                if(response == 1){
+                    db_response.add("bg-primary")
+                    $('#get_response').html('Successful')
+                    //login
+                    setTimeout(() => {
+                        location.href = "?p=adminhub";
+                    }, 2000);
+                }else if( response == 2 ){
+                    db_response.add("bg-danger")
+                    $('#get_response').html('Incorrect Email Address')
+                }else{
+                    db_response.add("bg-warning")
+                    $('#get_response').html('Incorrect email or OTP')
+                }
+            }
+        });
+})
+
 
 
 

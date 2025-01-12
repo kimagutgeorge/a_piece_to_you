@@ -149,8 +149,7 @@
             <div class="row col-12 position-absolute" id="profile-panel">
                 <li><a href="?p=profile" class="text-secondary"><i class="fa-solid fa-user"></i>Profile</a></li>
                 <li><a href="?p=settings" class="text-secondary"><i class="fa-solid fa-gear"></i>Settings</a></li>
-                <li style="cursor:pointer !important" @click="logout" class="text-secondary"><i class="fa-solid fa-right-from-bracket"></i>Logout
-                </li>
+                <li><a href="?p=logout"  class="text-secondary"><i class="fa-solid fa-right-from-bracket"></i>Logout</a></li>
             </div>
             </div>
             </div>

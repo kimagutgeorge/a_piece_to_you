@@ -12,7 +12,7 @@
 <h3 class="text-primary fw-bold">OUR CORE <span class="text-black">VALUES</span></h3>
 <p class="text-third">We believe in the power of</p>
 </div>
-<div class="col-12 row values four-vh" id="about_top_values">
+<div class="col-11 row values four-vh" id="about_top_values">
 <!-- insert data here -->
 </div>
 </div>

@@ -11,6 +11,50 @@ html{
 .other-page{
     background-color: rgb(240, 240, 240);
 }
+.other-page .calendar,
+.home-route .calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px !important;
+    margin: auto;
+    max-width: 500px;
+}
+.other-page .calendar div,
+.home-route .calendar div {
+    text-align: center;
+    padding: 10px 5px !important;
+    border: 1px solid rgb(220, 220, 220);
+    border-radius: 5px;
+    background-color: #ffffff;
+}
+.other-page .calendar .header,
+.home-route .calendar .header {
+    font-weight: bold;
+    background-color: #f4f4f4;
+}
+.other-page .calendar .today,
+.home-route .calendar .today{
+    background-color: #000;
+    color:#83a234ff;
+}
+.other-page .calendar .event,
+.home-route .calendar .event {
+    background-color: #83a234ff;
+    font-weight: bold;
+}
+.other-page .cal-header,
+.home-route .cal-header{
+    margin-bottom: 10px;
+}
+.other-page .cal-header #monthYear,
+.home-route .cal-header #monthYear{
+    text-transform: uppercase;
+}
+.other-page calendar .empty,
+.home-route calendar .empty {
+    background: none;
+    border: none;
+}
 .other-page a{
 text-decoration: none;
 }
@@ -1561,14 +1605,14 @@ transition: 0.3s ease-in-out;
 background-color: #83a234ff;
 color:#000;
 }
-.core-values .col-4.card{
+.core-values .col-3.card{
 border:1px solid rgb(230, 230, 230);
 width:30%;
 margin-left:1.5% !important;
 padding:20px !important;
 text-align: center;
 }
-.core-values .col-4.card .fa-solid{
+.core-values .col-3.card .fa-solid{
 font-size: 26px;
 border:3px solid #83a234ff;
 padding:10px !important;
@@ -1621,7 +1665,7 @@ margin-left:5% !important;
 display: flex;
 flex-direction: column;
 justify-content: center;
-box-shadow: 0px 0px 10px rgb(230, 230, 230);
+/* box-shadow: 0px 0px 10px rgb(230, 230, 230); */
 }
 .home-route .member-inner img{
 width: 150px;

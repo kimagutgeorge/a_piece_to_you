@@ -523,6 +523,22 @@ include("components/header.php");?>
     include("components/admin/footer.php");?>
     </div>
     </div>
+    <?php }else if($_GET["p"] == "forgot"){?>
+    <div class="other-page">
+    <div class="main-page row">
+    <?php 
+    include("views/admin/forgot.php");
+    include("components/admin/footer.php");?>
+    </div>
+    </div>
+    <?php }else if($_GET["p"] == "change-pass"){?>
+    <div class="other-page">
+    <div class="main-page row">
+    <?php 
+    include("views/admin/reset.php");
+    include("components/admin/footer.php");?>
+    </div>
+    </div>
     <?php }else if($_GET["p"] == "logout"){
         session_destroy();?>
     <div class="other-page">

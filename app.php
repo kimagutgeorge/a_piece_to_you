@@ -63,6 +63,117 @@ if($action == "login"){
         echo "2";
     }
 }
+else if($action == "forgot"){
+    $email = $_POST["email"];
+
+    $confirm_qry = "select * from users where username = ? limit 1";
+    $confirm_stmt=mysqli_stmt_init($conn);
+    mysqli_stmt_prepare($confirm_stmt,$confirm_qry);
+    
+    mysqli_stmt_bind_param($confirm_stmt, 's', $email);
+    mysqli_stmt_execute($confirm_stmt);
+    $result=mysqli_stmt_get_result($confirm_stmt);
+    $rowcount=mysqli_num_rows($result);
+    $row = mysqli_fetch_assoc($result);
+    if($rowcount > 0){
+        //proceed
+        
+        $get_settings =$conn->query("select * from settings limit 1");
+        $count = mysqli_num_rows($get_settings);
+        if($count < 1){
+            $result = 3; // no SMTP configs
+            echo json_encode($result);
+        }else{
+            $verification_code = random_int(100000, 999999);
+
+            $html = "Your A Piece To You verification code is :<br> <strong style='font-size:23px'>" .$verification_code. "</strong><br><p>Use it to reset your login password</p>";
+
+            $setting = mysqli_fetch_assoc($get_settings);
+            $smtp_email = $setting['smtp_email'];
+            $smtp_password = $setting['smtp'];
+            $smtp_server = $setting['smtp_server'];
+            $smtp_port = $setting['smtp_port'];
+
+            //send message
+            $mail = new PHPMailer(true);
+
+            try {
+                // Server settings
+                $mail->isSMTP();                                            // Send using SMTP
+                $mail->Host       = $smtp_server;                     // Set the SMTP server
+                $mail->SMTPAuth   = true;                                   // Enable SMTP authentication
+                $mail->Username   = $smtp_email;               // SMTP username
+                $mail->Password   = $smtp_password;                  // SMTP password
+                $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;         // Enable TLS encryption
+                $mail->Port       = $smtp_port;                                   // TCP port to connect to
+            
+                // Recipients
+                $mail->setFrom($smtp_email, 'A Piece To You');
+                $mail->addAddress($email, ""); // Add a recipient
+            
+                // Content
+                $mail->isHTML(true);                                       // Set email format to HTML
+                $mail->Subject = "Login Verification Code";
+                $mail->Body    = $html;
+                $mail->AltBody = strip_tags($html);
+                
+
+                $mail->send();
+                //save info to database
+                $insert_qry = "insert into verification_codes(verification_email, verification_otp) values(?,?)";
+                $insert_stmt=mysqli_stmt_init($conn);
+                mysqli_stmt_prepare($insert_stmt, $insert_qry);
+            
+                mysqli_stmt_bind_param($insert_stmt, "ss",$email, $verification_code);
+                mysqli_stmt_execute($insert_stmt);
+                echo "1";
+            } catch (Exception $e) {
+                echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+            }
+        }
+
+    }else{
+        echo "2";
+    }
+}
+/* change password */
+else if($action == "change-login-pass"){
+    $email = $_POST["email"];
+    $otp = $_POST["otp"];
+    $password = md5($_POST["password"]);
+
+    $confirm_qry = "select * from verification_codes where verification_email = ? and verification_otp = ? limit 1";
+    $confirm_stmt=mysqli_stmt_init($conn);
+    mysqli_stmt_prepare($confirm_stmt,$confirm_qry);
+    
+    mysqli_stmt_bind_param($confirm_stmt, 'ss', $email, $otp);
+    mysqli_stmt_execute($confirm_stmt);
+    $result=mysqli_stmt_get_result($confirm_stmt);
+    $rowcount=mysqli_num_rows($result);
+    $row = mysqli_fetch_assoc($result);
+    if($rowcount > 0){
+        //save
+        $insert_qry = "update users set username = ?, password = ?";
+        $insert_stmt = mysqli_stmt_init($conn);
+        mysqli_stmt_prepare($insert_stmt, $insert_qry);
+        mysqli_stmt_bind_param($insert_stmt, "ss", $email, $password);
+        if(mysqli_stmt_execute($insert_stmt)){
+            //delete otp
+            $confirm_qry = "delete from verification_codes where verification_email = ? and verification_otp = ?";
+            $confirm_stmt=mysqli_stmt_init($conn);
+            mysqli_stmt_prepare($confirm_stmt,$confirm_qry);
+            
+            mysqli_stmt_bind_param($confirm_stmt, 'ss', $email, $otp);
+            mysqli_stmt_execute($confirm_stmt);
+            echo "1";
+        }else{
+            echo "2";
+        }
+    }else{
+        //invalid otp
+        echo "3";
+    }
+}
 /* BASE64 IMAGE CREATOR */
 else if($action == "create-image"){
     // Get the uploaded file
@@ -728,6 +839,17 @@ else if($action == "send-client-mail"){
 /* DELETE LOCATIONS */
 else if($action == 'del-location'){
     $id = $_POST['id'];
+
+    //delete events of this location
+    $images = $conn->query("select event_banner from events where event_location= '$id' ");
+    while($single_image = mysqli_fetch_assoc($images)){
+        $image = $single_image["event_banner"];
+        if(unlink("assets/images/bg/events/".$image)){
+        }
+    }
+    //delete all events
+    $conn->query("delete from events where event_location = '$id' ");
+    //delete locations after that
     $insert_qry = "delete from locations where location_id = ?";
     $insert_stmt = mysqli_stmt_init($conn);
     mysqli_stmt_prepare($insert_stmt, $insert_qry);
@@ -836,7 +958,44 @@ else if($action == 'edit-category'){
 /* DELETE CATEGORY */
 else if($action == 'del-category'){
     $id = $_POST['id'];
+    //delete events of this location
+    $images = $conn->query("select event_banner from events where event_category= '$id' ");
+    while($single_image = mysqli_fetch_assoc($images)){
+        $image = $single_image["event_banner"];
+        if(unlink("assets/images/bg/events/".$image)){
+        }
+    }
+    //delete all events
+    $conn->query("delete from events where event_category = '$id' ");
+    //delete categories after that
     $insert_qry = "delete from categories where category_id = ?";
+    $insert_stmt = mysqli_stmt_init($conn);
+    mysqli_stmt_prepare($insert_stmt, $insert_qry);
+    mysqli_stmt_bind_param($insert_stmt, "s", $id);
+    if(mysqli_stmt_execute($insert_stmt)){
+        echo "1";
+    }else{
+        echo "2";
+    }
+}
+/* DELETE CATEGORY */
+else if($action == 'del-product-category'){
+    $id = $_POST['id'];
+    //delete images
+    $product_ids = $conn->query("select product_id from products where product_category = '$id' ");
+    while($product_id_row = mysqli_fetch_assoc($product_ids)){
+        $product_id = $product_id_row["product_id"];
+        $images = $conn->query("select product_image_name from product_images where product_id_key = '$product_id' ");
+        while($single_image = mysqli_fetch_assoc($images)){
+            $image = $single_image["product_image_name"];
+            unlink("assets/images/bg/products/".$image);
+        }
+    }
+    
+    //delete all events
+    $conn->query("delete from products where product_category = '$id' ");
+    //delete categories after that
+    $insert_qry = "delete from product_categories where product_category_id = ?";
     $insert_stmt = mysqli_stmt_init($conn);
     mysqli_stmt_prepare($insert_stmt, $insert_qry);
     mysqli_stmt_bind_param($insert_stmt, "s", $id);
@@ -1805,13 +1964,27 @@ else if($action == 'read-volunteer'){
 /* DELETE PRODUCT */
 else if($action == 'del-product'){
     $id = $_POST['id'];
+
+    //delete orders
+    $order_ids = $conn->query("select order_number from orders where order_product_id = '$id' limit 1");
+    $order_id_row = mysqli_fetch_assoc($order_ids);
+    $order_number = $order_id_row["order_number"];
+
+    //delete orders
+    $conn->query("delete from orders where order_product_id = '$id'");
+    $conn->query("delete from client_order_details where client_order_id = '$order_number'");
+
+
     $images = $conn->query("select product_image_name from product_images where product_id_key = '$id' ");
     while($single_image = mysqli_fetch_assoc($images)){
         $image = $single_image["product_image_name"];
         unlink("assets/images/bg/products/".$image);
     }
     //delete product
+    $conn->query("delete from product_images where product_id_key = '$id'");
     if($conn->query("delete from products where product_id = '$id' ")){
+        //delete orders
+        
         echo "1";
     }else{
         echo "2";
@@ -3485,6 +3658,32 @@ else if($action == "get-letter"){
 
     echo json_encode($newsletters);
 }
+/* GET HOME COUNT */
+else if($action == "get-home-count"){
+    //event count
+    $event_result = $conn->query("select event_id from events");
+    $event_count = mysqli_num_rows($event_result);
+
+    //member count
+    $member_result = $conn->query("select member_id from members");
+    $member_count = mysqli_num_rows($member_result);
+
+    //subscribers
+    $subscriber_result = $conn->query("select subscriber_id from subscribers");
+    $subscriber_count = mysqli_num_rows($subscriber_result);
+
+    $response = [];
+    // Append event data with speaker details
+    $response[] = [
+        'event' => $event_count,
+        'member' => $member_count,
+        'subscriber' => $subscriber_count
+    ];
+
+
+echo json_encode($response);
+}
+
 
 
 

@@ -11,7 +11,7 @@
         </div>
         <div class="form-group">
         <label class="text-muted">Date & Time</label>
-        <input type="datetime-local" class="form-control" name="eventdatetime" required>
+        <input type="datetime-local" class="form-control" id="confirm_event_date" name="eventdatetime" required>
     </div>
     <div class="form-group">
       <label class="text-muted">Event Duration</label>
