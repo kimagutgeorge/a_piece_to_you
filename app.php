@@ -941,6 +941,40 @@ else if($action == 'add-category'){
     
     }
 }
+/* ADD PAYMENT */
+else if($action == 'add-payment'){
+    $order_number = $_POST['order_number'];
+    $price = $_POST["price"];    
+    $method = $_POST["method"];    
+    $transaction = $_POST["transaction_id"];    
+
+
+
+    $confirm_qry="select * from payments where payment_order_number = ? limit 1";
+    $confirm_stmt=mysqli_stmt_init($conn);
+    mysqli_stmt_prepare($confirm_stmt,$confirm_qry);
+    
+    mysqli_stmt_bind_param($confirm_stmt, 's', $order_number);
+    mysqli_stmt_execute($confirm_stmt);
+    $result=mysqli_stmt_get_result($confirm_stmt);
+    $rowcount=mysqli_num_rows($result);
+    if($rowcount>=1){
+        echo "3";
+    }else{
+    //inserting data into db
+    $insert_qry="insert into payments(payment_order_number, payment_method, payment_amount, transaction_id) values(?,?,?,?) ";
+    $insert_stmt=mysqli_stmt_init($conn);
+    mysqli_stmt_prepare($insert_stmt, $insert_qry);
+   
+    mysqli_stmt_bind_param($insert_stmt, "ssss",$order_number, $method, $price, $transaction);
+    if(mysqli_stmt_execute($insert_stmt)){
+        echo "1";
+    }else{
+        echo "2";
+    }
+    
+    }
+}
 /* EDIT CATEGORIES */
 else if($action == 'edit-category'){
     $id = $_POST['id'];
@@ -2713,6 +2747,57 @@ else if($action == "get-newsletters"){
                 'title' => $newsletter['newsletter_title'],
                 'status' => $newsletter['newsletter_status'],
                 'date' => $newsletter['created_at']
+            ];
+        }
+        echo json_encode($result); // Send result as JSON
+    }
+}
+/* GET PAYMENTS */
+else if($action == "get-pending-orders"){
+    $get_orders = $conn->query("select * from client_order_details where order_status !='1' and order_status !='3' order by client_id DESC");
+    $count = mysqli_num_rows($get_orders);
+
+    if ($count < 1) {
+        $result = 2;
+        echo json_encode($result);
+    } else {
+        $result = []; // Initialize result array
+        while ($order = mysqli_fetch_assoc($get_orders)) {
+            // Prepare each newsletter with attachments
+            $result[] = [
+                'id' => $order['client_id'],
+                'name' => $order['client_name'],
+                'phone' => $order['client_phone'],
+                'order' => $order['client_order_id'],
+                'status' => $order['order_status'],
+                'total' => $order['client_product_total_price'],
+                'date' => $order['client_order_date']
+            ];
+        }
+        echo json_encode($result); // Send result as JSON
+    }
+}
+/* GET PAYMENTS */
+else if($action == "get-payments"){
+    $get_orders = $conn->query("select * from client_order_details inner join payments on client_order_details.client_order_id = payments.payment_order_number order by payment_id DESC");
+    $count = mysqli_num_rows($get_orders);
+
+    if ($count < 1) {
+        $result = 2;
+        echo json_encode($result);
+    } else {
+        $result = []; // Initialize result array
+        while ($order = mysqli_fetch_assoc($get_orders)) {
+            // Prepare each newsletter with attachments
+            $result[] = [
+                'id' => $order['payment_id'],
+                'order' => $order['client_order_id'],
+                'status' => $order['order_status'],
+                'total' => $order['client_product_total_price'],
+                'date' => $order['transaction_date'],
+                'transaction' => $order['transaction_id'],
+                'method' => $order['payment_method'],
+                'paid' => $order['payment_amount']
             ];
         }
         echo json_encode($result); // Send result as JSON

@@ -8,19 +8,19 @@
           </div>
         </div>
         <div class="view-event blogs hero-84 row ten-vh">
-            <div class="col-8 row" id="tbl_blogs">
+            <div class="custom-eight row" id="tbl_blogs">
             <!-- insert data here -->
             </div>
-            <div class="col-4">
-                <div class="card col-12">
+            <div class="custom-four">
+                <div class="card custom-twelve">
                     <h4 class="text-third two-vh">Categories</h4>
-                    <div class="col-11" id="tbl_user_categories">
+                    <div class="custom-eleven" id="tbl_user_categories">
                         <!-- insert data here -->
                     </div>
                 </div>
-                <div class="card col-12 four-vh">
+                <div class="card custom-twelve four-vh">
                     <h4 class="text-third two-vh">Recent Posts</h4>
-                    <div class="col-11" id="recent_posts">
+                    <div class="custom-eleven" id="recent_posts">
                         <!-- insert data here -->
                     </div>
                 </div>

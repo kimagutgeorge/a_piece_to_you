@@ -30,11 +30,11 @@
       <form id="placeOrder">
       <div class="cart-summary four-vh">
         <h3 class="text-primary">Total <span id="cart_currency">(Kshs)</span>: <span class="text-dark fw-bold" id="cart_total"></span></h3>
-        <div class="col-12 order-details four-vh" v-if="beforeCheckout">
-          <div class="col-12">
+        <div class="custom-twelve order-details four-vh" v-if="beforeCheckout">
+          <div class="custom-twelve">
             <h3 class="text-muted">Please Fill In The Details</h3>
           </div>
-          <div class="col-12 delivery">
+          <div class="custom-twelve delivery">
             <div class="form-group">
               <label class="text-muted">Enter Your Name</label>
               <input type="text" name="client_name" class="form-control" placeholder="John Doe" required>

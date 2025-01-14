@@ -7,27 +7,27 @@
 <?php include("components/navbar.php");?>
 </div>
 </div>
-<div class="hero-84 row four-vh">
-<div class="col-12 centered-div">
-<h3 class="text-primary fw-bold">OUR CORE <span class="text-black">VALUES</span></h3>
-<p class="text-third">We believe in the power of</p>
+<div class="hero-84 row four-vh" style="display:flex;">
+<div class="custom-twelve centered-div" >
+<h3 class="text-primary fw-bold" style="text-align:center">OUR CORE <span class="text-black">VALUES</span></h3>
+<p class="text-third" style="text-align:center">We believe in the power of</p>
 </div>
-<div class="col-11 row values four-vh" id="about_top_values">
+<div class="custom-eleven row values four-vh" id="about_top_values">
 <!-- insert data here -->
 </div>
 </div>
 <div class="main-about row ten-vh">
-<div class="col-5 five-vh">
+<div class="custom-five five-vh">
 <h3 class="text-primary fw-bold">ABOUT<span class="text-black"> US</span></h3>
 <h4 class="text-third four-vh">OUR VISION</h4>
-<p class="text-secondary col-10 two-vh" id="about_vision"></p>
+<p class="text-secondary custom-ten two-vh" id="about_vision"></p>
 </div>
-<div class="col-7 bg-black position-relative">
+<div class="custom-seven bg-black position-relative">
 <div class="about-bg position-absolute w-100 h-100"></div>
 <div class="about-cover position-absolute w-100 h-100"></div>
 <div class="bg-front position-absolute w-100 h-100">
-<h4 class="text-white col-10">JOIN OUR MISSION</h4>
-<p class="text-primary four-vh col-10">Partner with us in raising leaders who will impact communities. Together, we can transform lives and inspire lasting change.</p>
+<h4 class="text-white custom-ten">JOIN OUR MISSION</h4>
+<p class="text-primary four-vh custom-ten">Partner with us in raising leaders who will impact communities. Together, we can transform lives and inspire lasting change.</p>
 <RouterLink to="/contact">
 <button class="btn btn-primary btn-primary-box four-vh">CONTACT US</button>
 </RouterLink>
@@ -35,20 +35,20 @@
 </div>
 </div>
 <div class="hero-84 row fifteen-vh">
-<div class="col-12 centered-div">
+<div class="custom-twelve centered-div">
 <h3 class="text-primary fw-bold">OUR CORE <span class="text-black">VALUES</span></h3>
 <p class="text-third">We believe in the power of</p>
 </div>
-<div class="col-12 row core-values" id="bottom_values">
+<div class="custom-twelve row core-values" id="bottom_values">
 <!-- insert data here -->
 </div>
 
 </div>
 <div class="main-about about-2 row ten-vh">
-<div class="col-5 two-vh" id="mission_approach">
+<div class="custom-five two-vh" id="mission_approach">
 <!-- insert data here -->
 </div>
-<div class="col-7 bg-black position-relative">
+<div class="custom-seven bg-black position-relative">
 <div class="about-bg position-absolute w-100 h-100"></div>
 <div class="about-cover position-absolute w-100 h-100"></div>
 <div class="bg-front position-absolute w-100 h-100">
@@ -58,10 +58,10 @@
 </div>
 <!-- join us --> 
 <div class="join-us row w-100 fifteen-vh">
-<div class="col-6 join-bg"></div>
-<div class="col-6 join position-relative">
+<div class="custom-six join-bg"></div>
+<div class="custom-six join position-relative">
 <div class="inner-join position-absolute row w-100">
-<div class="col-6">
+<div class="custom-six">
   <div class="card">
       <h4 class="text-primary"><span class="text-black fw-bold">Join Us </span>As A Volunteer</h4>
       <p class="text-third">If you wish to help us, join us</p>
@@ -83,7 +83,7 @@
       </div>
   </div>
 </div>
-<div class="col-6">
+<div class="custom-six">
   <div class="card bg-primary">
     <h4 class="text-white">Got Some <span class="text-black fw-bold">Questions?</span> </h4>
     <p class="text-white">If you wish to help us, join us</p>
@@ -113,7 +113,7 @@
 </div>
 </div>
 <!-- Members -->
-<div class="hero-84 col-12 centered-div fifteen-vh">
+<div class="hero-84 custom-twelve centered-div fifteen-vh">
 <h3 class="text-primary fw-bold">MEET OUR <span class="text-black">TEAM</span></h3>
 </div>
 <div class="members four-vh" id="tbl_members">

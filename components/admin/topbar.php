@@ -57,6 +57,8 @@
                         echo "Reports";
                     }else if($_GET["p"] == 'newsletter-details'){
                         echo "Newsletter Details";
+                    }else if($_GET["p"] == 'payments'){
+                        echo "Accounts";
                     }else if($_GET["p"] == 'messages'){
                         echo "Messages";
                     }
@@ -131,6 +133,8 @@
                         echo "Newsletter Details";
                     }else if($_GET["p"] == 'messages'){
                         echo "Messages";
+                    }else if($_GET["p"] == 'payments'){
+                        echo "Accounts";
                     }
                 ?>
             </h3>

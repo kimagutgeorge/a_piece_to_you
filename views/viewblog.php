@@ -8,8 +8,8 @@
           </div>
         </div>
         <div class="view-event blogs hero-84 row ten-vh">
-            <div class="col-8 row">
-            <div class="col-11 card">
+            <div class="custom-eight row">
+            <div class="custom-eleven card">
                 <img id="blog_banner" src="" class="w-100 banner-img" alt="No Image">
                 <div class="blog-detail four-vh">
                     <div class="icon" id="blog_icon">
@@ -29,16 +29,16 @@
             </div>
             <!-- end of blog one -->
             </div>
-            <div class="col-4">
-                <div class="card col-12">
+            <div class="custom-four">
+                <div class="card custom-twelve">
                     <h4 class="text-third two-vh">Categories</h4>
-                    <div class="col-11" id="tbl_user_categories">
+                    <div class="custom-eleven" id="tbl_user_categories">
                             <!-- insert data here -->
                     </div>
                 </div>
-                <div class="card col-12 four-vh">
+                <div class="card custom-twelve four-vh">
                     <h4 class="text-third two-vh">Recent Posts</h4>
-                    <div class="col-11" id="recent_posts">
+                    <div class="custom-eleven" id="recent_posts">
                         <!-- insrt data here -->
                     </div>
                 </div>

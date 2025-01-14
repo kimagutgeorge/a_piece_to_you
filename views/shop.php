@@ -9,20 +9,20 @@
     </div>
     </div>
     <div class="events hero-90 row four-vh">
-    <div class="col-12 search-panel">
-    <div class="col-3">
+    <div class="custom-twelve search-panel">
+    <div class="custom-three">
     <div class="form-group">
         <a href="?p=cart"><button class="btn btn-primary-box btn-primary"><span id="cart_count">0</span> <i class="fa-solid fa-shopping-cart"></i> CART<button></a>
     </div>
     </div>
-    <div class="col-3">
+    <div class="custom-three">
     <div class="form-group">
     <select class="form-control" id="product_categories">
     <!-- insert data here -->
     </select>
     </div>
     </div>
-    <div class="col-3">
+    <div class="custom-three">
     <div class="form-group">
     <select class="form-control">
     <option disabled selected="true">All Prices</option>
@@ -35,29 +35,19 @@
     </select>
     </div>
     </div>
-    <div class="col-3">
+    <div class="custom-three">
     <div class="form-group">
     <button class="btn btn-primary-box btn-primary">SEARCH</button>
     </div>
     </div>
     </div>
     <div class="row event-panel ten-vh">
-    <table id="_tbl" style="width:100%" class="flexed-table">
-    <thead>
-    <tr hidden><th>Events</th></tr>
-    </thead>
-    <tbody style="width:100% !important">
-    <tr class="tbl-card-holder " v-for="(chunk, rowIndex) in chunkedEvents" :key="rowIndex">
-    <td>
+    <div class="tbl-card-holder ">
     <!-- Flex container to wrap cards in rows of four -->
     <div class="card-container" id="tbl_shop">
-    <!-- insert data here -->
-    </td>
-    </tr>
-    </tbody>
-    </table>
-
-
+        <!-- insert data here -->
+    </div>
+    </div>
     </div>
     </div>
     </div>

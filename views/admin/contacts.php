@@ -1,6 +1,6 @@
 <?php include("components/admin/response.php");?>
     <div class="row dashboard categories">
-    <div class="col-12 row dashboard-inner" >
+    <div class="s row dashboard-inner" >
     <div class="col-7">
     <div class="col-12 card"  style="padding:15px !important;">
     <div class="form-group text-primary ">

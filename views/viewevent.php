@@ -8,8 +8,8 @@
 </div>
 </div>
 <div class="view-event hero-84 row ten-vh">
-<div class="col-8 row">
-<div class="col-11">
+<div class="custom-eight row">
+<div class="custom-eleven">
 <p hidden id="event_id"></p>
 <h4 class="text-third" id="event_name"><!-- insert data --></h4>
 <img class="w-100 two-vh" id="event_img" src="" alt="`Preview Image`"
@@ -17,13 +17,13 @@
 <h4 class="text-third two-vh">Overview</h4>
 <div id="event_description"><!-- insert data here --></div>
 <h4 class="text-third four-vh">Speaker(s) & Chief Guest(s)</h4>
-<div class="col-12 four-vh" id="client_speakers">
+<div class="custom-twelve four-vh" id="client_speakers">
 <!-- insert data here -->
 </div>
 </div>
 </div>
-<div class="col-4">
-<div class="card col-12">
+<div class="custom-four">
+<div class="card custom-twelve">
 <h4 class="text-third two-vh">Event Details</h4>
 <p class="text-primary fw-bold four-vh">Date & Time</p>
 <p class="text-muted" id="event_time"></p>
@@ -47,7 +47,7 @@
 </div>
 </div>
 <!-- other events -->
-<div class="col-12 centered-div ten-vh">
+<div class="custom-twelve centered-div ten-vh">
 <h3 class="text-primary fw-bold">OTHER <span class="text-black">EVENTS</span></h3>
 </div>
 <div class="events hero-90 row">

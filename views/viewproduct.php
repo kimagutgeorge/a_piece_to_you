@@ -8,8 +8,8 @@
 </div>
 </div>
 <div class="view-event single-product hero-84 row ten-vh">
-<div class="col-8 row">
-<div class="col-11">
+<div class="custom-eight row">
+<div class="custom-eleven">
 <!-- carousel -->
 <div class="carousel">
   <div class="carousel-container">
@@ -37,25 +37,25 @@
 </div>
 </div>
 <!-- end of column one -->
-<div class="col-4">
-<div class="card col-12">
+<div class="custom-four">
+<div class="card custom-twelve">
 <h4 class="text-third two-vh">Product Details</h4>
-<div class="col-11 row two-vh">
+<div class="custom-eleven row two-vh">
 <p id="product_id" hidden></p>
-<p class="col-6"><i class="fa-solid fa-tag"></i> Price</p>
-<p class="col-6"><span id="product_price"></span> <span id="product_currency"></span></p>
+<p class="custom-six"><i class="fa-solid fa-tag"></i> Price</p>
+<p class="custom-six"><span id="product_price"></span> <span id="product_currency"></span></p>
 </div>
-<div class="col-11 row two-vh">
-<p class="col-6"><i class="fa-solid fa-minus"></i> Discount</p>
-<p class="col-6"><span id="product_discount"></span> <span id="product_discount_currency"></span></p>
+<div class="custom-eleven row two-vh">
+<p class="custom-six"><i class="fa-solid fa-minus"></i> Discount</p>
+<p class="custom-six"><span id="product_discount"></span> <span id="product_discount_currency"></span></p>
 </div>
-<div class="col-11 row two-vh">
-<p class="col-6"><i class="fa-solid fa-boxes"></i> In Stock</p>
-<p class="col-6" id="product_stock"></p>
+<div class="custom-eleven row two-vh">
+<p class="custom-six"><i class="fa-solid fa-boxes"></i> In Stock</p>
+<p class="custom-six" id="product_stock"></p>
 </div>
-<div class="col-11 row two-vh">
-<p class="col-6"><i class="fa-solid fa-tags"></i> Category</p>
-<p class="col-6" id="product_category"></p>
+<div class="custom-eleven row two-vh">
+<p class="custom-six"><i class="fa-solid fa-tags"></i> Category</p>
+<p class="custom-six" id="product_category"></p>
 </div>
 <button class="btn btn-primary-box btn-primary btn-add-product-cart">ADD TO CART</button>
 </div>

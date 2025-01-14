@@ -10,7 +10,7 @@
                 <!-- nav bar -->
                <?php include("components/navbar.php");?>
                 <div class="row home-page">
-                    <div class="col-6">
+                    <div class="custom-six">
                         <h2 class="text-white four-vh">DISCOVER YOUR</h2>
                         <h3 class="text-primary">UNIQUE</h3>
                         <h4 class="text-third">SHAPE</h4>
@@ -23,13 +23,13 @@
         </div>
         <!-- home hero end -->
          <div class="home-about row">
-            <div class="col-6">
+            <div class="custom-six">
                 <div class="w-80" id="home_about">
                     <!-- insert data here -->
                 </div>
                 
             </div>
-            <div class="col-6">
+            <div class="custom-six">
                 <div class="bg">
                     <img src="assets/images/bg/rect3.png" alt="">
                 </div>
@@ -56,18 +56,18 @@
             <h3 class="text-third">Our Schedules & Routines</h3>
             <p class="text-third">View And Book Our Schedules And Events</p>
             <div class="row four-vh">
-                <div class="col-4" style="margin-top:0px !important;">
-                <div class="col-12 cal-header">
+                <div class="custom-four" style="margin-top:0px !important;">
+                <div class="custom-twelve cal-header">
                 <div style="text-align: center; margin-bottom: 20px important;">
                 <button id="prevMonth" class="btn"><i class="fa-solid fa-angle-left"></i></button>
                 <span id="monthYear" ></span>
                 <button id="nextMonth"class="btn"><i class="fa-solid fa-angle-right"></i></button>
                 </div>
-                <div id="calendar" class="calendar col-12"></div>
+                <div id="calendar" class="calendar custom-twelve"></div>
                 </div>
                     
                 </div>
-                <div class="col-8 row" id="home_events">
+                <div class="custom-eight row" id="home_events">
                     <!-- insert data here -->
                 </div>
             </div>
@@ -90,6 +90,6 @@
                 </div>
               </div>
     </div>
-    </div>
 <!-- include map -->
 <?php include("components/map.php");?>
+    </div>

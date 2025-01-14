@@ -1,6 +1,6 @@
 <div class="footer four-vh">
     <div class="hero-84 row">
-        <div class="col-6">
+        <div class="custom-six">
             <h4 class="text-third">Newsletter</h4>
             <p class="text-third">Subscribe us and get news, events and all updates from A Piece To You to your inbox.</p>
             <form class="form-group flexed" id="regSubscriber">
@@ -13,19 +13,19 @@
             </div>
            
         </div>
-        <div class="col-6">
+        <div class="custom-six">
             <h4 class="text-third ">Quick Links</h4>
             <span>
-            <router-link class="text-white r-px-20 font-16" to="/">HOME</router-link>
+            <a class="text-white r-px-20 font-16" href="?p=home">HOME</a>
             </span><br>
             <span>
-                <router-link class="text-white r-px-20 font-16" to="/about">ABOUT US</router-link>
+                <a class="text-white r-px-20 font-16" href="?p=about-us">ABOUT US</a>
             </span><br>
             <span>
-                <router-link class="text-white r-px-20 font-16" to="/events">EVENTS</router-link>
+                <a class="text-white r-px-20 font-16" href="?p=events">EVENTS</a>
             </span><br>
             <span>
-                <router-link class="text-white r-px-20 font-16" to="/blogs">BLOG</router-link>
+                <a class="text-white r-px-20 font-16" href="?p=blogs">BLOG</a>
             </span>
             <h4 class="text-third">We Are Social</h4>
             <div class="icons">

@@ -3,6 +3,7 @@ $( document ).ready(function() {
     let url = window.location.href
     let universal_disabled = true
     let disabled_quantity = true
+    let isHidden = false;
 
     // formate date without time
     function formatDate(dateString) {
@@ -61,6 +62,7 @@ $( document ).ready(function() {
       
 
     /* load data */
+    smallNavigation();
     getMembers();
     getCategories();
     getSubscribers();
@@ -73,7 +75,9 @@ $( document ).ready(function() {
     getCount();
     getPrograms();
     getValues();
+    getPayments();
     getRegistrations();
+    getToPayOrders();
     if(url == "http://localhost/apiecetoyou/?p=contacts" || url == "http://localhost/apiecetoyou/index.php?p=contacts"){
         getContacts();
         getVolunteers();
@@ -128,9 +132,75 @@ $( document ).ready(function() {
     if(url == "http://localhost/apiecetoyou/?p=adminhome" || url == "http://localhost/apiecetoyou/index.php?p=adminhome" || url == "http://localhost/apiecetoyou/?p=home" || url == "http://localhost/apiecetoyou/index.php?p=home"  || url == "http://localhost/apiecetoyou/"  || url == "http://localhost/apiecetoyou"){
         getCalendarEvents();
     }
-    
-    
-    
+
+function smallNavigation(){
+// Initialization
+window.addEventListener("DOMContentLoaded", () => {
+    // Enable scrolling in case it was previously disabled
+    document.body.style.overflow = "";
+
+    // Remove any lingering event listeners
+    window.removeEventListener("keydown", disableScrollKeys);
+    window.removeEventListener("wheel", preventScroll, { passive: false });
+
+    // Attach the event listener to the button or trigger
+    const toggleButton = document.getElementById("toggle-navbar"); // Replace with your button's ID
+    toggleButton.addEventListener("click", showNavbar);
+});
+}
+ // Toggle the navigation bar visibility
+$('#show_navbar').on('click', function(){
+
+    isHidden = !isHidden;
+    const nav = document.getElementById("small-nav");
+    const inner_nav = document.getElementById("inner_nav")
+
+    if (isHidden) {
+        // Change background color
+        nav.style.backgroundColor = "#83a234ff";
+        inner_nav.style.backgroundColor = "#83a234ff";
+        inner_nav.style.display = "block"
+
+        // Disable scrolling
+        document.body.style.overflow = "hidden";
+
+        // Disable keyboard scrolling
+        window.addEventListener("keydown", disableScrollKeys);
+
+        // Disable mouse wheel scrolling
+        window.addEventListener("wheel", preventScroll, { passive: false });
+    } else {
+        // Change background color
+        nav.style.backgroundColor = "transparent";
+        inner_nav.style.backgroundColor = "transparent";
+        inner_nav.style.display="none"
+
+        // Enable scrolling
+        document.body.style.overflow = "";
+
+        // Re-enable keyboard scrolling
+        window.removeEventListener("keydown", disableScrollKeys);
+
+        // Re-enable mouse wheel scrolling
+        window.removeEventListener("wheel", preventScroll, { passive: false });
+    }
+
+})
+
+// Helper method to prevent default scrolling with keys
+function disableScrollKeys(event) {
+    const keysToDisable = ["ArrowUp", "ArrowDown", "PageUp", "PageDown", "Home", "End", " "]; // Space for spacebar scrolling
+    if (keysToDisable.includes(event.key)) {
+        event.preventDefault();
+    }
+}
+
+// Helper method to prevent default scrolling with mouse wheel
+function preventScroll(event) {
+    event.preventDefault();
+}
+
+  
 /*
 default functions 
 */
@@ -888,6 +958,139 @@ function getNewsletters(){
         }
     });
     }
+    /* get payments*/
+function getToPayOrders(){
+    $.ajax({  
+        type: 'GET',  
+        url: 'app.php?action=get-pending-orders',
+        success: function(response) {
+            if(response == 2){
+                let db_response = document.getElementById("db_response").classList
+                document.getElementById("db_response").style.display="flex"
+                db_response.add("bg-warning")
+                    $('#get_response').html('No Pending Orders')
+    
+            }else{
+                let orders = JSON.parse(response)
+                let tableBody = document.getElementById("tbl_pending_orders");
+                    tableBody.innerHTML = "";
+
+                    orders.forEach(function(order){
+                        //check status here
+                        function showStatus(){
+                            if(order.status == '0'){
+                                return `<span class="text-secondary">PENDING</span>`
+                            }else if(order.status == '1'){
+                                return `<span class="text-success">COMPLETE</span>`
+                            }else if(order.status == '2'){
+                                return `<span class="text-success">SHIPPED</span>`
+                            }else if(order.status == '4'){
+                                return `<span class="text-success">APPROVED</span>`
+                            }else{
+                                return `<span class="text-danger">CANCELLED</span>`
+                            }
+                        }
+        
+                        let row = document.createElement("tr"); // Create a new table row
+            
+                        // // Create table cells for each piece of data
+                        let idCell = document.createElement("td");
+                        idCell.textContent = order.id;
+                        idCell.hidden = true;
+                
+                        let nameCell = document.createElement("td");
+                        nameCell.innerHTML = `<p class="fw-bold"><span>Name: </span><span class="text-primary">${order.name}</span></p>
+                        <p><span>Phone: </span>${order.phone}</p>
+                        <p><span>Order No.: </span><span class="order_number">${order.order}<span></p>
+                        <p>${showStatus()}</p>
+                        <p>${formatDateWithTime(order.date)}</p>
+                        <p><span>Total: </span><span class="product-total">${order.total}<span>`
+                        
+                        let actionCell = document.createElement('td');
+                        actionCell.innerHTML = `<i class="fa-solid fa-plus add-order-payment" style="padding:5px 5px !important; border-radius:5px; background-color:rgb(0,130,189); font-weight:bold; color:white;"></i> `
+        
+                        // // Append cells to the row
+                        row.appendChild(idCell);
+                        row.appendChild(nameCell);
+                        row.appendChild(actionCell);
+                
+                        // // Append the row to the table body
+                        tableBody.appendChild(row);
+                        $('#tbl').DataTable();
+                    })
+            }
+        }
+    })
+}
+function getPayments(){
+    $.ajax({  
+        type: 'GET',  
+        url: 'app.php?action=get-payments',
+        success: function(response) {
+            if(response == 2){
+                let db_response = document.getElementById("db_response").classList
+                document.getElementById("db_response").style.display="flex"
+                db_response.add("bg-warning")
+                    $('#get_response').html('No Payments Found')
+    
+            }else{
+                let orders = JSON.parse(response)
+                let tableBody = document.getElementById("tbl_complete_orders");
+                    tableBody.innerHTML = "";
+
+                    orders.forEach(function(order){
+                        //check status here
+                        function showStatus(){
+                            if(order.status == '0'){
+                                return `<span class="text-secondary">PENDING</span>`
+                            }else if(order.status == '1'){
+                                return `<span class="text-success">COMPLETE</span>`
+                            }else if(order.status == '2'){
+                                return `<span class="text-success">SHIPPED</span>`
+                            }else if(order.status == '4'){
+                                return `<span class="text-success">APPROVED</span>`
+                            }else{
+                                return `<span class="text-danger">CANCELLED</span>`
+                            }
+                        }
+        
+                        let row = document.createElement("tr"); // Create a new table row
+            
+                        // // Create table cells for each piece of data
+                        let idCell = document.createElement("td");
+                        idCell.textContent = order.id;
+                        idCell.hidden = true;
+                
+                        let nameCell = document.createElement("td");
+                        nameCell.innerHTML = `<p class="fw-bold"><span>Order No.: </span><span class="text-primary">${order.order}</span></p>
+                        <p><span>ID.: </span><span class="order_number">${order.transaction}<span></p>
+                        <p>${formatDateWithTime(order.date)}</p>
+                        <p><span>Total: </span><span class="product-total">${order.total}<span>
+                        <p><span>Paid: </span><span class="product-total">${order.paid}<span>
+                        <p><span>Method: </span><span class="product-total">${order.method}<span>`
+                        
+                        let actionCell = document.createElement('td');
+                        actionCell.innerHTML = `<p><span>Bal: </span><span class="product-total">${order.total - order.paid} `
+        
+                        // // Append cells to the row
+                        row.appendChild(idCell);
+                        row.appendChild(nameCell);
+                        row.appendChild(actionCell);
+                
+                        // // Append the row to the table body
+                        tableBody.appendChild(row);
+                        $('#tbl').DataTable();
+                    })
+            }
+        }
+    })
+}
+$(document).on('click', '.add-order-payment', function(){
+    let order_number = $(this).closest('tr').find('.order_number').text().trim()
+    let product_total = $(this).closest('tr').find('.product-total').text().trim()
+    document.getElementById("order_number").value = order_number
+    document.getElementById("product_total").value = product_total
+})
     /* get orders*/
 function getOrders(){
     $.ajax({  
@@ -1421,20 +1624,20 @@ function getProducts(){
                             }
     
                             let row = document.createElement("div")
-                            row.className = "col-3"
+                            row.className = "custom-three"
                             row.innerHTML = `
                             <div class="card">
                             <img src="assets/images/bg/products/${product.product_image}" alt="" class="card-img-top product-img">
                             <div class="card-body position-relative">
                             <div class="card-body-inner">
                             <h3 class="text-third btn-product-name" style="cursor:pointer">${ product.product_name }</h3>
-                            <div class="col-12">
+                            <div class="custom-twelve">
                             <p class="text-primary">Price</p>
                             <p class="text-muted"><i class="fa-solid fa-tag"></i> ${ checkDiscount()} ${product.currency} </p>
                             <p class="text-primary" style="margin-top:20px !important">In Stock</p>
                             <p class="text-muted"><i class="fa-solid fa-boxes"></i> <span class="product-balance">${product.product_balance}</span></p>
                             </div>
-                            <div class="col-12 bottom-card-details" style="border-top:1px solid rgb(230,230,230)">
+                            <div class="custom-twelve bottom-card-details" style="border-top:1px solid rgb(230,230,230)">
                             <p class="card-id" hidden>${product.product_id}</p>
                             <button class="btn btn-primary-box btn-primary btn-add-cart">
                             ADD TO CART
@@ -2795,24 +2998,24 @@ function getMembers(){
                 members.forEach(function(member){
                     console.log(member)
                     let row = document.createElement("div")
-                    row.className = "col-3"
+                    row.className = "custom-three"
                     row.style.marginBottom = "20px";
                     row.innerHTML = `<div class="member-inner">
                     <img src="assets/images/bg/members/${member.photo}" alt=""><br>
                     <h4 class="text-black">${ member.name }</h4>
                     <p class="text-third">${ member.role }</p>
-                    <div class="col-12">
-                    <a href="${member.facebook}" target="_blank" ><i class="fa-brands fa-facebook-f"></i></a>
+                    <div class="custom-twelve">
+                    <a href="${member.facebook}" target="_blank" ><i class="fa-brands fa-facebook-f text-primary"></i></a>
 
                     <a href="${member.instagram}" target="_blank" ></i></a>
 
-                    <a href="${member.linkedin}" target="_blank" ><i class="fa-brands fa-linkedin"></i></a>
+                    <a href="${member.linkedin}" target="_blank" ><i class="fa-brands fa-linkedin text-primary"></i></a>
 
-                    <a href="'mailto:'${member.email}"><i class="fa-solid fa-envelope"></i></a>
+                    <a href="'mailto:'${member.email}"><i class="fa-solid fa-envelope text-primary"></i></a>
 
 
                     <a href="${member.twitter}">
-                    <i class="fa-brands fa-twitter"></i>
+                    <i class="fa-brands fa-twitter text-primary"></i>
                     </a>
                     </div>
                     </div>`
@@ -2913,11 +3116,11 @@ function getBlogCount(){
                         categories.forEach(function(category){
                         /* select options */
                         let card = document.createElement("div")
-                        card.className = "col-11 row two-vh"
+                        card.className = "custom-eleven row two-vh"
                         card.innerHTML = `
                             <p hidden class="cat-id">${category.id}</p>
-                            <p class="col-11">${category.name}</p>
-                            <p class="col-1">${category.count}</p>`
+                            <p class="custom-eleven">${category.name}</p>
+                            <p class="custom-one">${category.count}</p>`
                         
                         //append child
                         selectBody.appendChild(card)
@@ -2929,11 +3132,11 @@ function getBlogCount(){
                     categories.forEach(function(category){
                     /* select options */
                     let card = document.createElement("div")
-                    card.className = "col-11 row two-vh"
+                    card.className = "custom-eleven row two-vh"
                     card.innerHTML = `
                         <p hidden class="cat-id">${category.id}</p>
-                        <p class="col-11">${category.name}</p>
-                        <p class="col-1">${category.count}</p>`
+                        <p class="custom-eleven">${category.name}</p>
+                        <p class="custom-one">${category.count}</p>`
                     
                     //append child
                     selectBody.appendChild(card)
@@ -3200,7 +3403,7 @@ function getSettings(){
                 db_response.add("bg-warning")
                     $('#get_response').html('No Roles Found')
     
-            }if(url == "http://localhost/apiecetoyou/?p=home" || url == "http://localhost/apiecetoyou" || url == "http://localhost/apiecetoyou/"){
+            }if(url == "http://localhost/apiecetoyou/?p=home" || url == "http://localhost/apiecetoyou" || url == "http://localhost/apiecetoyou/" || url == "http://localhost/apiecetoyou/index.php?p=home" || url == "http://localhost/apiecetoyou/index.php" || url == "http://localhost/apiecetoyou/?p=contact-us" || url == "http://localhost/apiecetoyou/index.php?p=contact-us" ){
                 let settings = JSON.parse(response)
                 let setting = settings[0]
                 document.getElementById("contact_email").innerHTML = `${setting.email}`
@@ -3211,7 +3414,7 @@ function getSettings(){
                 const map = L.map('map').setView([setting.latitude, setting.longitude], 13);
 
                 // Add a tile layer (map graphics)
-                L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png?api_key=fe7340cd-8d34-4459-a623-656aef831b85', {
+                L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png?api_key=fe7340cd-8d34-4459-a623-656aef831b85', {
                 maxZoom: 20,
                 attribution: '© OpenStreetMap contributors'
                 }).addTo(map);
@@ -3395,7 +3598,7 @@ function getEvents(){
                 db_response.add("bg-warning")
                     $('#get_response').html('No Events Found')
 
-            }else if(url == "http://localhost/apiecetoyou/?p=home" || url == "http://localhost/apiecetoyou" || url == "http://localhost/apiecetoyou/"){
+            }else if(url == "http://localhost/apiecetoyou/?p=home" || url == "http://localhost/apiecetoyou" || url == "http://localhost/apiecetoyou/" || url == "http://localhost/apiecetoyou/index.php?p=home" || url == "http://localhost/apiecetoyou/index.php"){
                 let events = JSON.parse(response)
                 let tableBody = document.getElementById("home_events")
                 tableBody.innerHTML = ""
@@ -3422,20 +3625,20 @@ function getEvents(){
                     let formattedDate = formatDateTimeStamp(currentdate);
                     if(formattedDate < event.date){
                         let row = document.createElement("div")
-                    row.className = "col-3"
+                    row.className = "custom-three"
                     row.innerHTML = `
                     <div class="card">
                     <img src="assets/images/bg/events/${event.banner}" alt="" class="card-img-top">
                     <div class="card-body position-relative">
                     <div class="card-body-inner">
                     <h3 class="text-third">${event.name }</h3>
-                    <div class="col-12">
+                    <div class="custom-twelve">
                     <p class="text-primary">Date & Time</p>
                     <p class="text-muted"><i class="fa-regular fa-clock"></i> ${ formatEventTime(event.date, event.duration)} </p>
                     <p class="text-primary" style="margin-top:20px !important">Location</p>
                     <p class="text-muted"><i class="fa-solid fa-location-crosshairs"></i> ${event.location}</p>
                     </div>
-                    <div class="col-12 bottom-holder" style="border-top:1px solid rgb(230,230,230)">
+                    <div class="custom-twelve bottom-holder" style="border-top:1px solid rgb(230,230,230)">
                     <p class="event-id" hidden>${event.id}</p>
                     <button class="btn btn-primary-box btn-primary client-view-event">
                     READ MORE
@@ -3455,20 +3658,20 @@ function getEvents(){
                 tableBody.innerHTML = "";
                 events.slice(0,4).forEach(function(event){
                     let row = document.createElement("div")
-                    row.className = "col-3"
+                    row.className = "custom-three"
                     row.innerHTML = `
                     <div class="card">
                     <img src="assets/images/bg/events/${event.banner}" alt="" class="card-img-top">
                     <div class="card-body position-relative">
                     <div class="card-body-inner">
                     <h3 class="text-third">${event.name }</h3>
-                    <div class="col-12">
+                    <div class="custom-twelve">
                     <p class="text-primary">Date & Time</p>
                     <p class="text-muted"><i class="fa-regular fa-clock"></i> ${ formatEventTime(event.date, event.duration)} </p>
                     <p class="text-primary" style="margin-top:20px !important">Location</p>
                     <p class="text-muted"><i class="fa-solid fa-location-crosshairs"></i> ${event.location}</p>
                     </div>
-                    <div class="col-12 bottom-holder" style="border-top:1px solid rgb(230,230,230)">
+                    <div class="custom-twelve bottom-holder" style="border-top:1px solid rgb(230,230,230)">
                     <p class="event-id" hidden>${event.id}</p>
                     <button class="btn btn-primary-box btn-primary client-view-event">
                     READ MORE
@@ -3586,7 +3789,7 @@ function getBlogs(){
 
                     blogs.forEach(function(blog){
                         let row = document.createElement("div")
-                        row.className = "col-11 card blog-card"
+                        row.className = "custom-eleven card blog-card"
                         row.style.marginBottom = "30px !important";
                         row.innerHTML = `<img  src="assets/images/bg/blogs/${blog.banner}" class="w-100 banner-img" alt="">
                         <div class="blog-detail four-vh">
@@ -3611,12 +3814,12 @@ function getBlogs(){
                     //view recent posts
                     blogs.slice(0, 3).forEach(function(blog){
                         let card = document.createElement("div")
-                        card.className = "col-11 card small-blog"
+                        card.className = "custom-eleven small-blog"
                         card.innerHTML = `
-                            <div class="col-4">
+                            <div class="custom-four">
                                     <img src="assets/images/bg/blogs/${blog.banner}" class="w-100" alt="">
                                 </div>
-                                <div class="col-8">
+                                <div class="custom-eight">
                                     <p class="fw-bold two-vh text-primary"> ${blog.name}</p>
                                     <p class="text-muted"><i class="fa-solid fa-calendar"></i>  ${formatDate(blog.created)}</p>
                                 </div>
@@ -3630,12 +3833,12 @@ function getBlogs(){
                     //view recent posts
                     blogs.slice(0, 3).forEach(function(blog){
                         let card = document.createElement("div")
-                        card.className = "col-11 card small-blog"
+                        card.className = "custom-eleven small-blog"
                         card.innerHTML = `
-                            <div class="col-4">
+                            <div class="custom-four">
                                     <img src="assets/images/bg/blogs/${blog.banner}" class="w-100" alt="">
                                 </div>
-                                <div class="col-8">
+                                <div class="custom-eight">
                                     <p class="fw-bold two-vh text-primary"> ${blog.name}</p>
                                     <p class="text-muted"><i class="fa-solid fa-calendar"></i>  ${formatDate(blog.created)}</p>
                                 </div>
@@ -4330,6 +4533,31 @@ function getBlogs(){
             url: 'app.php?action=add-category', 
             data: $('#addCategory').serialize(),
             success: function(response) {
+                document.getElementById("db_response").style.display="flex"
+                if(response == 1){
+                    db_response.add("bg-primary")
+                    $('#get_response').html('Successful')
+                    getCategories();
+                }else if( response == 2 ){
+                    db_response.add("bg-danger")
+                    $('#get_response').html('Failed')
+                }else{
+                    db_response.add("bg-warning")
+                    $('#get_response').html('Already Exists')
+                }
+            }
+        });
+    })
+    /* add payment */
+    $('#addPayment').on('submit', function(e){
+        e.preventDefault()
+        let db_response = document.getElementById("db_response").classList
+        $.ajax({  
+            type: 'POST',  
+            url: 'app.php?action=add-payment', 
+            data: $('#addPayment').serialize(),
+            success: function(response) {
+                console.log(response)
                 document.getElementById("db_response").style.display="flex"
                 if(response == 1){
                     db_response.add("bg-primary")
@@ -5085,7 +5313,7 @@ function getPrograms(){
                         ${program.icon}
                     </div>
                     <div class="card-body">
-                        <h5 class="card-title text-primary">${program.title}</h5>
+                        <h5 class="card-title text-primary" style="text-align:center">${program.title}</h5>
                         <p class="card-text">${program.content}</p>
                     </div>`
 
@@ -5261,7 +5489,7 @@ function getValues(){
                 tableBody.innerHTML = "";
                 programs.slice(0, 3).forEach(function(program){
                     let value_card = document.createElement("div")
-                    value_card.className = "col-2 value bg-gradient"
+                    value_card.className = "custom-two value bg-gradient"
                     value_card.innerHTML = `<div class="inner-value text-white">
                     ${program.icon}
                     <p class="text-white">${program.title}</p>
@@ -5274,7 +5502,7 @@ function getValues(){
                 bottomBody.innerHTML = ""
                 programs.forEach(function(program){
                     let value_card = document.createElement("div")
-                    value_card.className = "col-3 card four-vh"
+                    value_card.className = "custom-three card four-vh"
                     value_card.innerHTML = `<div class="icon-holder">
                     ${program.icon}
                     </div>
@@ -5732,6 +5960,14 @@ $('#changeLoginPass').on('submit', function(e){
                 }
             }
         });
+})
+$("#show_pending").on('click', function(){
+    document.getElementById("completed_payments").style.display="none"
+    document.getElementById("pending_orders").style.display="block"
+})
+$("#show_complete").on('click', function(){
+    document.getElementById("pending_orders").style.display="none"
+    document.getElementById("completed_payments").style.display="block"
 })
 
 

@@ -8,21 +8,21 @@
           </div>
         </div>
         <div class="contact hero-84 row ten-vh">
-            <div class="col-6 contact-statement">
+            <div class="custom-six contact-statement">
                 <div class="inner-contact-statement">
                     <h3 class="text-primary">Get in Touch</h3>
                 <p class="text-third">Have a question? We're here to help! Contact us today for quick and friendly support and response</p>
                 <h4 class="text-primary two-vh">Get in Touch Via Socials</h4>
-                <div class="col-12 two-vh">
-                    <i class="fa-brands fa-facebook-f"></i>
-                <i class="fa-brands fa-instagram"></i>
-                <i class="fa-brands fa-tiktok"></i>
-                <i class="fa-brands fa-linkedin"></i>
+                <div class="custom-twelve two-vh">
+                    <i class="fa-brands fa-facebook-f" style="height:fit-content"></i>
+                <i class="fa-brands fa-instagram" style="height:fit-content"></i>
+                <i class="fa-brands fa-tiktok" style="height:fit-content"></i>
+                <i class="fa-brands fa-linkedin" style="height:fit-content"></i>
                 </div>
                 </div>
                 
             </div>
-            <div class="col-5">
+            <div class="custom-five">
                 <div class="card">
                     <h4 class="text-primary two-vh">Send Us A Message</h4>
                     <p class="text-muted two-vh">Fill out this form to send your inquires or complaints.</p>
@@ -49,7 +49,7 @@
                     </div>
             </div>
         </div>
-    <div class="col-12 contact-map ten-vh">
+    <div class="custom-twelve contact-map ten-vh">
     <?php include("components/map.php");?>
     </div>
     
