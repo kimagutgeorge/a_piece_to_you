@@ -6,11 +6,11 @@
         <div class="col-12 row" style="margin-top:20px !important">
       <div class="form-group">
           <label class="text-muted">Blog Name</label>
-          <input type="text" class="form-control" placeholder="Blog Name" required name="blogname">
+          <input type="text" class="form-control" maxlength = "80" placeholder="Blog Name" required name="blogname">
           </div>
           <div class="form-group">
           <label class="text-muted">Writer</label>
-          <input type="text" class="form-control" placeholder="Writer's Name" required name="blogwriter">
+          <input type="text" class="form-control" maxlength = "20"  placeholder="Writer's Name" required name="blogwriter">
       </div>
           <div class="form-group">
               <label class="text-muted">Category</label>

@@ -9,7 +9,7 @@
               <div class="col-12 row" style="margin-top:20px !important">
                 <label class="text-muted">Newsletter Title</label>
               </div>
-            <input type="text" class="form-control" placeholder="Newsletter Title" name="title" id="newsletter_title">
+            <input type="text" class="form-control" maxlength = "150"  placeholder="Newsletter Title" name="title" id="newsletter_title">
           </div>
           <div class="col-6">
           <div class="col-12 row" style="margin-top:20px !important">

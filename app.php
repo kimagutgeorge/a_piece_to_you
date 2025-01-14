@@ -959,7 +959,17 @@ else if($action == 'add-payment'){
     $result=mysqli_stmt_get_result($confirm_stmt);
     $rowcount=mysqli_num_rows($result);
     if($rowcount>=1){
-        echo "3";
+        //inserting data into db
+    $insert_qry="update payments set payment_method =? , payment_amount =?, transaction_id=? where payment_order_number =?";
+    $insert_stmt=mysqli_stmt_init($conn);
+    mysqli_stmt_prepare($insert_stmt, $insert_qry);
+   
+    mysqli_stmt_bind_param($insert_stmt, "ssss", $method, $price, $transaction, $order_number);
+    if(mysqli_stmt_execute($insert_stmt)){
+        echo "1";
+    }else{
+        echo "2";
+    }
     }else{
     //inserting data into db
     $insert_qry="insert into payments(payment_order_number, payment_method, payment_amount, transaction_id) values(?,?,?,?) ";
@@ -3114,13 +3124,6 @@ else if($action == "save-profile"){
             echo "2";
         }
     }
-}
-/* GET COUNT */
-else if($action == "get-count"){
-    //events count
-    $event_result = $conn->query("select * from events");
-    $count = mysqli_num_rows($event_result);
-    echo $count;
 }
 /* GET ABOUT US */
 else if($action == "get-about"){

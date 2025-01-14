@@ -5,17 +5,17 @@
     <h4 class="text-primary">Add Subscriber</h4>
     <form id="addSubscriber">
     <div class="form-group top-20">
-    <input type="text" name="subscriber" placeholder="Subscriber Name" class="form-control" required>
+    <input type="text" name="subscriber" maxlength = "50"  placeholder="Subscriber Name" class="form-control" required>
     </div>
     <div class="form-group top-20">
-    <input type="text" name="email" placeholder="Subscriber Email" class="form-control" required>
+    <input type="text" name="email" maxlength = "100"  placeholder="Subscriber Email" class="form-control" required>
     </div>
     <div class="form-group top-20">
     <button type="submit" class="btn btn-primary">SAVE <i class="fa-solid fa-save"></i></button>
     </div>
     </form>
     </div>
-    <div class="col-7 card">
+    <div class="col-7 card" style="height:fit-content">
     <table id="tbl" class="table" style="width:100%">
     <thead>
     <tr>

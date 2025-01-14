@@ -8,7 +8,7 @@
             </div>
             <div class="form-group top-20">
                 <label class="text-muted">Email</label>
-                <input type="email" id="email" class="form-control" maxlength="200" placeholder="Enter Email" name="email" required>
+                <input type="email" id="email" class="form-control" maxlength="100" placeholder="Enter Email" name="email" required>
             </div>
             <div class="form-group top-20">
                 <label class="text-muted">Phone (Begin with 07)</label>

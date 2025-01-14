@@ -7,7 +7,7 @@
     <form id="addMember">
     <div class="form-group top-20">
     <label class="text-muted" style="margin-left:0.5% !important">Member Name</label>
-    <input type="text" name="member" placeholder="Member Name" class="form-control" required>
+    <input type="text" name="member" maxlength = "50"  placeholder="Member Name" class="form-control" required>
     </div>
     <div class="form-group top-20">
         <label class="text-muted" style="margin-left:0.5% !important">Member's Role</label>

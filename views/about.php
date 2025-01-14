@@ -68,11 +68,11 @@
       <form id="addVolunteer">
       <div class="form-group">
         <label>Your Name</label>
-        <input type="text" name="volunteer_name" placeholder="Your Name" class="form-control" required>
+        <input type="text" name="volunteer_name" maxlength="50" placeholder="Your Name" class="form-control" required>
       </div>
       <div class="form-group">
         <label>Your Phone</label>
-        <input type="number" name="volunteer_phone" placeholder="Your Phone" class="form-control" required>
+        <input type="phone" name="volunteer_phone" placeholder="Your Phone" class="form-control" required>
       </div>
       <div class="form-group">
         <button class="btn btn-primary-box" @click="volunteer">JOIN US</button>
@@ -89,16 +89,16 @@
     <p class="text-white">If you wish to help us, join us</p>
     <form id="addContact">
     <div class="form-group">
-      <input type="text" name="contact_name" placeholder="Your Name" class="form-control" required>
+      <input type="text" name="contact_name" maxlength = "50" placeholder="Your Name" class="form-control" required>
     </div>
     <div class="form-group">
-      <input type="email" name="contact_email" placeholder="Email Address" class="form-control" required>
+      <input type="email" name="contact_email" maxlength = "100"  placeholder="Email Address" class="form-control" required>
     </div>
     <div class="form-group">
-      <input type="text" name="contact_subject"  placeholder="Subject" class="form-control" required>
+      <input type="text" name="contact_subject" maxlength = "100"  placeholder="Subject" class="form-control" required>
     </div>
     <div class="form-group">
-      <textarea class="form-control" name="contact_message" placeholder="Your Message" required></textarea>
+      <textarea class="form-control" name="contact_message" maxlength = "200"  placeholder="Your Message" required></textarea>
     </div>
     <div class="form-group">
       <button type="submit" class="btn btn-primary-box bg-black">SUBMIT</button>

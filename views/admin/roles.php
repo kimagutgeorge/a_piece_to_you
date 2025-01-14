@@ -6,7 +6,7 @@
                 <p class="text-primary fw-bold">Add Roles</p>
                 <form id="addRole" >
                 <div class="form-group top-20">
-                <input type="text" name="role" placeholder="Role Name" class="form-control" required>
+                <input type="text" name="role" maxlength = "20"  placeholder="Role Name" class="form-control" required>
                 </div>
                 <div class="form-group top-20">
                 <button type="submit" class="btn btn-primary">SAVE <i class="fa-solid fa-save"></i></button>

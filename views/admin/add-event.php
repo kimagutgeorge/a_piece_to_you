@@ -7,7 +7,7 @@
       <div class="col-12 row" style="margin-top:20px !important">
     <div class="form-group">
         <label class="text-muted">Event Name</label>
-        <input type="text" class="form-control" placeholder="Event Name" name="eventname" required>
+        <input type="text" class="form-control" placeholder="Event Name" maxlength = "80"  name="eventname" required>
         </div>
         <div class="form-group">
         <label class="text-muted">Date & Time</label>

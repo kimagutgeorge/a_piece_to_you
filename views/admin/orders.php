@@ -6,7 +6,7 @@
             <!-- nothing here -->
             </div>
             <div class="col-6" style="text-align:right">
-            <a href="?p=create-order"><button class="btn btn-primary">CREATE ORDER</button></a>
+            <a href="?p=shop"><button class="btn btn-primary">CREATE ORDER</button></a>
             </div>
             </div>
     <div class="col-12 row" style="margin-top:-34vh !important">

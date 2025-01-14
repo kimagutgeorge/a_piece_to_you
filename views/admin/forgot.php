@@ -3,7 +3,7 @@
         <div class="login-panel">
             <form id="forgotPassword" method="POST">
             <div class="form-group">
-            <input type="email" class="form-control" placeholder="Input Email" name="email" required>
+            <input type="email" class="form-control" maxlength = "100"  placeholder="Input Email" name="email" required>
             </div>
             <div class="form-group">
             <button type="submit" class="col-md-12 form-control btn btn-primary">SEND OTP <i class="fa-solid fa-unlock"></i></button>

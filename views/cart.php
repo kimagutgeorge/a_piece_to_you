@@ -37,7 +37,7 @@
           <div class="custom-twelve delivery">
             <div class="form-group">
               <label class="text-muted">Enter Your Name</label>
-              <input type="text" name="client_name" class="form-control" placeholder="John Doe" required>
+              <input type="text" name="client_name" maxlength = "50"  class="form-control" placeholder="John Doe" required>
             </div>
             <div class="form-group">
               <label class="text-muted">Enter Your Phone Number</label>
@@ -45,7 +45,7 @@
             </div>
             <div class="form-group">
               <label class="text-muted">Enter Your Email</label>
-              <input type="email" name="email" class="form-control" placeholder="someone@example.com" required>
+              <input type="email" name="email" maxlength = "100"  class="form-control" placeholder="someone@example.com" required>
             </div>
             <div class="form-group">
               <label class="text-muted">County/Region</label>
@@ -104,7 +104,7 @@
             </div>
             <div class="form-group">
               <label class="text-muted">City/Town</label>
-              <input type="text" name="town" class="form-control" placeholder="Kilomani" required>
+              <input type="text" name="town" maxlength = "120"  class="form-control" placeholder="Kilomani" required>
             </div>
           </div>
         </div>

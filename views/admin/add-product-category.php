@@ -5,7 +5,7 @@
     <h4 class="text-primary">Add Category</h4>
     <form id="productCategory">
     <div class="form-group top-20">
-    <input type="text" name="category" placeholder="Category Name" required class="form-control" required>
+    <input type="text" name="category" maxlength = "40"  placeholder="Category Name" required class="form-control" required>
     </div>
     <div class="form-group top-20">
     <button type="submit" class="btn btn-primary">SAVE <i class="fa-solid fa-save"></i></button>

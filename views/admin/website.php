@@ -19,11 +19,11 @@
     </div>
     <div class="form-group top-20">
     <label class="text-muted">Content</label>
-    <textarea name="content" id="program_content" class="form-control" style="height:100px; padding:10px !important;" placeholder ="Identify your unique..."></textarea>
+    <textarea name="content" id="program_content"  maxlength = "200"  class="form-control" style="height:100px; padding:10px !important;" placeholder ="Identify your unique..."></textarea>
     </div>
     <div class="form-group top-20">
     <label class="text-muted">Icon; Visit <a href="https://fontawesome.com/icons" target="_blank">Fontawesome</a> for icons</label>
-    <input type="text" name ="icon" id="program_icon" maxlength="100" placeholder="<i class='fa-solid fa-shapes'></i>" class="form-control" required>
+    <input type="text" name ="icon" id="program_icon" maxlength="150" placeholder="<i class='fa-solid fa-shapes'></i>" class="form-control" required>
     </div>
     <div class="form-group top-20">
     <button type="submit" id="save_program" class="btn btn-primary">SAVE <i class="fa-solid fa-save"></i></button>
@@ -39,11 +39,11 @@
     <div class="form-group top-20">
     <label class="text-muted">Title</label>
     <input type="text" name ="id" id="value_id" maxlength="100" hidden >
-    <input type="text" name ="title" maxlength="100" placeholder="Prayer" id="value_title" class="form-control" required>
+    <input type="text" name ="title" maxlength="20" placeholder="Prayer" id="value_title" class="form-control" required>
     </div>
     <div class="form-group top-20">
     <label class="text-muted">Content</label>
-    <textarea name="content" id="value_content" class="form-control" style="height:100px; padding:10px !important;" placeholder ="We believe in the power of.."></textarea>
+    <textarea name="content" id="value_content" maxlength = "200"  class="form-control" style="height:100px; padding:10px !important;" placeholder ="We believe in the power of.."></textarea>
     </div>
     <div class="form-group top-20">
     <label class="text-muted">Icon; Visit <a href="https://fontawesome.com/icons" target="_blank">Fontawesome</a> for icons</label>

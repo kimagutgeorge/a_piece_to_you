@@ -5,7 +5,7 @@
     <h4 class="text-primary">Add Locations</h4>
     <form action="" id="addLocation" method="POST">
     <div class="form-group top-20">
-    <input type="text" name ="location" maxlength="100" placeholder="Location Name" class="form-control" required>
+    <input type="text" name ="location" maxlength="40" placeholder="Location Name" class="form-control" required>
     </div>
     <div class="form-group top-20">
     <button type="submit" class="btn btn-primary">SAVE <i class="fa-solid fa-save"></i></button>

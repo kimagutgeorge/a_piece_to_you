@@ -28,16 +28,16 @@
                     <p class="text-muted two-vh">Fill out this form to send your inquires or complaints.</p>
                     <form id="addContact">
                     <div class="form-group">
-                        <input type="text" name="contact_name" class="form-control" placeholder="Your Name" required>
+                        <input type="text" name="contact_name" maxlength = "50"  class="form-control" placeholder="Your Name" required>
                     </div>
                     <div class="form-group">
-                        <input type="email" name="contact_email" class="form-control" placeholder="Your Email Address" required>
+                        <input type="email" name="contact_email" maxlength = "100"  class="form-control" placeholder="Your Email Address" required>
                     </div>
                         <div class="form-group">
-                            <input type="text" name="contact_subject" class="form-control" placeholder="Subject" required>
+                            <input type="text" name="contact_subject" maxlength = "100"  class="form-control" placeholder="Subject" required>
                         </div>
                         <div class="form-group">
-                            <textarea placeholder="Your Message" class="form-control" name="contact_message" required></textarea>
+                            <textarea placeholder="Your Message" class="form-control" maxlength = "200"  name="contact_message" required></textarea>
                         </div>
                         <div class="form-group">
                             <button class="btn btn-primary-box btn-primary" >SUBMIT <i class="fa-solid fa-paper-plane"></i></button>

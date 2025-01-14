@@ -7,7 +7,7 @@
       <div class="col-12 row" style="margin-top:20px !important">
     <div class="form-group">
         <label class="text-muted">Product Name</label>
-        <input type="text" class="form-control" style="width:98% !important" placeholder="Product Name" name="name" required>
+        <input type="text" class="form-control" style="width:98% !important" maxlength = "70"  placeholder="Product Name" name="name" required>
         </div>
         <div class="form-group">
         <label class="text-muted">Product Price</label>

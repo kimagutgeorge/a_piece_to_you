@@ -3,16 +3,16 @@
         <div class="login-panel" style="margin-top:200px !important">
             <form id="changeLoginPass" method="POST">
             <div class="form-group">
-            <input type="email" class="form-control" placeholder="Username" name="email" required>
+            <input type="email" class="form-control" maxlength = "100"  placeholder="Username" name="email" required>
             </div>
             <div class="form-group">
             <input type="number" name="otp" class="form-control" placeholder="Verification Code" required>
             </div>
             <div class="form-group">
-            <input type="password" name="password" class="form-control" id="new_password" placeholder="New Password" required>
+            <input type="password" name="password" maxlength = "50"  class="form-control" id="new_password" placeholder="New Password" required>
             </div>
             <div class="form-group">
-            <input type="password" name="confirm_password" id="confirm_password" class="form-control" placeholder="Confirm New Password" required>
+            <input type="password" name="confirm_password" maxlength = "50"  id="confirm_password" class="form-control" placeholder="Confirm New Password" required>
             </div>
             <div class="form-group">
             <button type="submit" class="col-md-12 form-control btn btn-primary">Login <i class="fa-solid fa-unlock"></i></button>

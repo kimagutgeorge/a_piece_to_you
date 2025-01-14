@@ -14,13 +14,13 @@
                     <p class="text-muted two-vh">Fill out this form to register for the event. An invite link and Details will be sent to your Email</p>
                     <form id="registerEvent">
                     <div class="form-group">
-                        <input type="text" class="form-control" name="name" placeholder="Your Name" required>
+                        <input type="text" class="form-control" maxlength = "50"  name="name" placeholder="Your Name" required>
                     </div>
                     <div class="form-group">
-                        <input type="email" class="form-control" name="email" placeholder="Your Email Address" required>
+                        <input type="email" class="form-control" maxlength = "100"  name="email" placeholder="Your Email Address" required>
                     </div>
                         <div class="form-group">
-                            <textarea placeholder="Any Enquiries?" name="enquiries" class="form-control"></textarea>
+                            <textarea placeholder="Any Enquiries?" maxlength = "200"  name="enquiries" class="form-control"></textarea>
                         </div>
                         <div class="form-group">
                             <p class="text-primary" id="contact_response"></p>

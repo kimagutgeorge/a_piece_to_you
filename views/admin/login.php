@@ -3,10 +3,10 @@
         <div class="login-panel">
             <form id="loginUser" method="POST">
             <div class="form-group">
-            <input type="email" class="form-control" placeholder="Username" name="email" required>
+            <input type="email" class="form-control" maxlength = "40"  placeholder="Username" name="email" required>
             </div>
             <div class="form-group">
-            <input type="password" name="password" class="form-control" placeholder="Password" required>
+            <input type="password" name="password" maxlength = "60"  class="form-control" placeholder="Password" required>
             </div>
             <div class="form-group">
             <button type="submit" class="col-md-12 form-control btn btn-primary">Login <i class="fa-solid fa-unlock"></i></button>
